@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1005758455282",
+    "project_id": "coraltrackerapp",
+    "storage_bucket": "coraltrackerapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1005758455282:android:0dfecb0dc6589ca1475f6b",
+        "android_client_info": {
+          "package_name": "com.rae.coral_reef"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1005758455282-o1vm35uheafa77mne3go8cckj5ps9bui.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLAvG64EUDIxqK4D3HhrHMqGqqi7bpBCQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1005758455282-o1vm35uheafa77mne3go8cckj5ps9bui.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
