@@ -2,6 +2,10 @@ import 'package:coral_reef/onboarding/splash/Onboard_screen.dart';
 import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
 import 'package:coral_reef/onboarding/sign_up/signup_screen.dart';
 import 'package:coral_reef/onboarding/forgotpassword/forgotpassword.dart';
+import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
+import 'package:coral_reef/tracker_screens/period_tracker/period_tracker_screen.dart';
+import 'package:coral_reef/tracker_screens/period_tracker/sections/login_symptoms.dart';
+import 'package:coral_reef/wellness/onboarding/conceive_info.dart';
 import 'package:coral_reef/wellness/onboarding/height.dart';
 import 'package:coral_reef/wellness/onboarding/period_info.dart';
 import 'package:coral_reef/wellness/onboarding/pregnancy_info.dart';
@@ -9,8 +13,11 @@ import 'package:coral_reef/wellness/onboarding/required_weight.dart';
 import 'package:coral_reef/wellness/onboarding/weight.dart';
 import 'package:coral_reef/wellness/onboarding/wellness.dart';
 import 'package:coral_reef/wellness/onboarding/year.dart';
+import 'package:coral_reef/wellness/wellness_tracker_options.dart';
 import 'package:flutter/widgets.dart';
 import 'package:coral_reef/homescreen/Home.dart';
+
+import 'g_chat_screen/GChatScreen.dart';
 
 
 
@@ -27,4 +34,10 @@ final Map<String, WidgetBuilder> routes = {
   HeightScreen.routeName: (context) => HeightScreen(),
   PregnancyInfo.routeName: (context) => PregnancyInfo(),
   PeriodInfo.routeName: (context) => PeriodInfo(),
+  WellnessTrackerOptions.routeName: (context) => WellnessTrackerOptions(),
+  ConceiveInfo.routeName: (context) => ConceiveInfo(),
+  CoralBottomNavigationBar.routeName: (context) => CoralBottomNavigationBar(),
+  GChatScreen.routeName: (context) => GChatScreen(),
+  PeriodTrackerScreen.routeName: (context) => PeriodTrackerScreen(),
+  LoginSymptoms.routeName: (context) => LoginSymptoms(),
 };

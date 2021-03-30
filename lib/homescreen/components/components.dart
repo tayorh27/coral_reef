@@ -94,7 +94,7 @@ class SpecialOfferCard extends StatelessWidget {
         child: GestureDetector(
           onTap: press,
           child: SizedBox(
-            width: getProportionateScreenWidth(150),
+            width: getProportionateScreenWidth(145),
             // height: getProportionateScreenWidth(250),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
@@ -120,7 +120,7 @@ class SpecialOfferCard extends StatelessWidget {
                             ),
                           ),
                           TextSpan(text: "$title2", style: Theme.of(context).textTheme.subtitle1.copyWith(
-                              color: Colors.white, fontSize: getProportionateScreenWidth(13)
+                              color: Colors.white, fontSize: getProportionateScreenWidth(11)
                           ))
                         ],
                       ),

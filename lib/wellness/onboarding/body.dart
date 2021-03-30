@@ -3,6 +3,7 @@ import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/coral_back_button.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/wellness/onboarding/component.dart';
+import 'package:coral_reef/wellness/onboarding/conceive_info.dart';
 import 'package:coral_reef/wellness/onboarding/period_info.dart';
 import 'package:coral_reef/wellness/onboarding/pregnancy_info.dart';
 import 'package:coral_reef/wellness/onboarding/year.dart';
@@ -15,7 +16,6 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-
   StorageSystem ss = new StorageSystem();
 
   @override
@@ -38,31 +38,29 @@ class _BodyState extends State<Body> {
                     Text(
                       'What are you trying to do?',
                       softWrap: true,
-                      style:
-                          Theme.of(context).textTheme.headline2.copyWith(
-                            color: Color(MyColors.titleTextColor),
-                            fontSize: getProportionateScreenWidth(18)
-                          ),
+                      style: Theme.of(context).textTheme.headline2.copyWith(
+                          color: Color(MyColors.titleTextColor),
+                          fontSize: getProportionateScreenWidth(18)),
                     ),
                   ],
                 ),
                 SizedBox(height: SizeConfig.screenHeight * 0.03),
                 BuildCard(
-                  title: 'Track period',
+                  title: 'Track Period',
                   icon: 'assets/icons/period.svg',
                   color: Color(MyColors.other3),
                   onPress: trackPeriodPress,
                 ),
                 SizedBox(height: SizeConfig.screenHeight * 0.02),
                 BuildCard(
-                  title: 'Trying to conceive',
+                  title: 'Trying to Conceive',
                   icon: 'assets/icons/conceive.svg',
                   color: Color(MyColors.other4),
                   onPress: trackConceivePress,
                 ),
                 SizedBox(height: SizeConfig.screenHeight * 0.02),
                 BuildCard(
-                  title: 'Track pregnancy',
+                  title: 'Track Pregnancy',
                   icon: 'assets/icons/belle.svg',
                   color: Color(MyColors.other5),
                   onPress: trackPregnancyPress,
@@ -73,8 +71,7 @@ class _BodyState extends State<Body> {
                   'You can always change preferences later',
                   style: Theme.of(context).textTheme.subtitle1.copyWith(
                       color: Color(MyColors.titleTextColor),
-                      fontSize: getProportionateScreenWidth(14)
-                  ),
+                      fontSize: getProportionateScreenWidth(14)),
                 )),
                 SizedBox(height: SizeConfig.screenHeight * 0.2),
               ],
@@ -91,7 +88,7 @@ class _BodyState extends State<Body> {
   Future<void> trackPeriodPress() async {
     String periodRecord = await ss.getItem("periodRecord") ?? "";
 
-    await ss.setPrefItem("dashboardGoal", "period");//set user dashboard goal
+    await ss.setPrefItem("dashboardGoal", "period"); //set user dashboard goal
 
     // if(periodRecord.isNotEmpty) {
     //   return;
@@ -107,14 +104,14 @@ class _BodyState extends State<Body> {
   Future<void> trackConceivePress() async {
     String conceiveRecord = await ss.getItem("conceiveRecord") ?? "";
 
-    await ss.setPrefItem("dashboardGoal", "conceive");//set user dashboard goal
+    await ss.setPrefItem("dashboardGoal", "conceive"); //set user dashboard goal
 
     // if(conceiveRecord.isNotEmpty) {
     //   return;
     // }
 
     //go to conceive screen to ask questions. same as period
-    Navigator.pushNamed(context, PeriodInfo.routeName);
+    Navigator.pushNamed(context, ConceiveInfo.routeName);
   }
 
   /*
@@ -123,7 +120,8 @@ class _BodyState extends State<Body> {
   Future<void> trackPregnancyPress() async {
     String pregnancyRecord = await ss.getItem("pregnancyRecord") ?? "";
 
-    await ss.setPrefItem("dashboardGoal", "pregnancy");//set user dashboard goal
+    await ss.setPrefItem(
+        "dashboardGoal", "pregnancy"); //set user dashboard goal
 
     // if(pregnancyRecord.isNotEmpty) {
     //   return;

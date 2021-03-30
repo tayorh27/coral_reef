@@ -4,10 +4,12 @@ import 'dart:convert';
 import 'package:coral_reef/ListItem/OnboardingQuestions.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
+import 'package:coral_reef/components/alertdialog.dart';
 import 'package:coral_reef/components/coral_back_button.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/shared_screens/horizontal_progress_slider.dart';
 import 'package:coral_reef/shared_screens/task_completed_screen.dart';
+import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
 import 'package:coral_reef/wellness/onboarding/last_period.dart';
 import 'package:coral_reef/wellness/onboarding/period_length.dart';
 import 'package:coral_reef/wellness/onboarding/year.dart';
@@ -28,12 +30,6 @@ enum ScreenType { year, last_period, period_length, cycle }
 class _PeriodInfo extends State<PeriodInfo> {
 
   StorageSystem ss = new StorageSystem();
-  // List<OnboardingQuestions> questionsAndOptions = [
-  //   OnboardingQuestions("Have you given birth before?", ["Yes", "No"]),
-  //   OnboardingQuestions("What is your activity level?", ["Little or no exercise", "Physically active job ","Exercise 2-3 times a week", "Exercise more than 3 times a week"]),
-  //   OnboardingQuestions("How often do you feel stressed?", ["Rarely", "Several times a month","Several times a week", "Almost everyday"]),
-  //   OnboardingQuestions("What is your diet like?", ["No restrictions", "Vegetarian","Vegan", "Other"]),
-  // ];
   List<OnboardingQuestions> questionsAndScreenType = [
     OnboardingQuestions("What year were you born?", ScreenType.year),
     OnboardingQuestions("Date of last period?", ScreenType.last_period),
@@ -54,14 +50,17 @@ class _PeriodInfo extends State<PeriodInfo> {
     // TODO: implement initState
     super.initState();
     ss.getItem("periodRecord").then((periodRecord) {
-      print(periodRecord);
-      if (periodRecord != null)
-        {
+      // print(periodRecord);
+      if (periodRecord != null) {
           setState(() {
             answers = jsonDecode(periodRecord);
             screenType = ScreenType.year;
           });
-        }
+      } else {
+        setState(() {
+          screenType = ScreenType.year;
+        });
+      }
     });
   }
 
@@ -77,7 +76,7 @@ class _PeriodInfo extends State<PeriodInfo> {
                   padding: EdgeInsets.symmetric(
                       horizontal: getProportionateScreenWidth(24)),
                   child: SingleChildScrollView(
-                    child: (!isDone) ? Column(
+                    child: Column(
                       children: [
                         SizedBox(height: SizeConfig.screenHeight * 0.05),
                         Row(
@@ -111,7 +110,7 @@ class _PeriodInfo extends State<PeriodInfo> {
                               )),): Text(""),
                         // SizedBox(height: SizeConfig.screenHeight * 0.2),
                       ],
-                    ): TaskCompletedScreen("You are all set!"),
+                    )
                   ),
                 ))));
   }
@@ -186,14 +185,26 @@ class _PeriodInfo extends State<PeriodInfo> {
   }
 
   startTimer() {
-    Timer(Duration(seconds: 2), () async {
+    _showTestDialog(context);
+    Timer(Duration(seconds: 3), () async {
       //encode the answers from the questions and store in local storage
       String periodRecord = jsonEncode(answers);
       print(periodRecord);
       await ss.setPrefItem("periodRecord", periodRecord);
       await ss.setPrefItem("wellnessSetup", "true");//don't display wellness.dart again
       //go to period dashboard
+      Navigator.pushNamed(context, CoralBottomNavigationBar.routeName);
 
     });
+  }
+
+  void _showTestDialog(context) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        //context: _scaffoldKey.currentContext,
+        builder: (context) {
+          return AlertDialogSuccessPage();
+        });
   }
 }

@@ -14,31 +14,33 @@ import 'package:flutter/material.dart';
 
 import '../../size_config.dart';
 
-class PregnancyInfo extends StatefulWidget {
-  static final routeName = '/pregnancy-info';
+class ConceiveInfo extends StatefulWidget {
+  static final routeName = '/conceive-info';
 
   @override
-  State<StatefulWidget> createState() => _PregnancyInfo();
+  State<StatefulWidget> createState() => _ConceiveInfo();
 }
 
-class _PregnancyInfo extends State<PregnancyInfo> {
+class _ConceiveInfo extends State<ConceiveInfo> {
+
   StorageSystem ss = new StorageSystem();
+
   List<OnboardingQuestions> questionsAndOptions = [
-    OnboardingQuestions("Have you given birth before?", ["Yes", "No"]),
-    OnboardingQuestions("What is your activity level?", [
-      "Little or no exercise",
-      "Physically active job ",
-      "Exercise 2-3 times a week",
-      "Exercise more than 3 times a week"
+    OnboardingQuestions("How long have you been actively trying to conceive?", ["Just getting started", "1 month","2 months","3 months","4 months","5 months","6 months","7 months","8 months","9 months","10 month","11 month","12 month","More than a year",]),
+    OnboardingQuestions("Would you describe your periods as regular?", [
+      "Yes",
+      "No",
+      "I don't know",
     ]),
-    OnboardingQuestions("How often do you feel stressed?", [
-      "Rarely",
-      "Several times a month",
-      "Several times a week",
-      "Almost everyday"
+    OnboardingQuestions("Do you calculate your fertile window when planning your sex life?", [
+      "Yes",
+      "I've heard about it, but I don't do it",
+      "I don't know what the fertile window is",
     ]),
-    OnboardingQuestions("What is your diet like?",
-        ["No restrictions", "Vegetarian", "Vegan", "Other"]),
+    OnboardingQuestions("How you sought pre-pregnancy care recently?",
+        ["I've been to a check-up", "I'm going through treatment now", "I've undergone treatment", "I'm waiting for an appointment", "I didn't think it was necessary"]),
+    OnboardingQuestions("Do you take any prenatal vitamins or supplements?", ["Yes, a special vitamin complex", "I take folic acid", "I don't take any vitamins or supplements"]),
+    OnboardingQuestions("How were you planning to track your future baby's development?", ["Week by week", "Month by month", "Trimester by trimester"]),
   ];
   Map<String, dynamic> answers = Map();
   int pageIndex = 0;
@@ -50,14 +52,14 @@ class _PregnancyInfo extends State<PregnancyInfo> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    ss.getItem("pregnancyRecord").then((pregnancyRecord) => {
-          if (pregnancyRecord != null)
-            {
-              setState(() {
-                answers = jsonDecode(pregnancyRecord);
-              })
-            }
-        });
+    ss.getItem("conceiveRecord").then((pregnancyRecord) => {
+      if (pregnancyRecord != null)
+        {
+          setState(() {
+            answers = jsonDecode(pregnancyRecord);
+          })
+        }
+    });
   }
 
   @override
@@ -73,44 +75,44 @@ class _PregnancyInfo extends State<PregnancyInfo> {
                 horizontal: getProportionateScreenWidth(24)),
             child: SingleChildScrollView(
               child: Column(
-                      children: [
-                        SizedBox(height: SizeConfig.screenHeight * 0.05),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            CoralBackButton(),
-                            Container(
-                              width: 10.0,
-                            ),
-                            HorizontalProgressSlider(sliderProgressBar)
-                          ],
-                        ),
-                        SizedBox(height: SizeConfig.screenHeight * 0.05),
-                        Container(
-                          child: Text(
-                            questionsAndOptions[pageIndex].question,
-                            softWrap: true,
-                            textAlign: TextAlign.start,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline2
-                                .copyWith(
-                                    color: Color(MyColors.titleTextColor),
-                                    fontSize: getProportionateScreenWidth(18)),
-                          ),
-                        ),
-                        SizedBox(height: SizeConfig.screenHeight * 0.05),
-                        ...buildOptions(),
-                        SizedBox(height: SizeConfig.screenHeight * 0.03),
-                        (pageIndex > 0)
-                            ? DefaultButton2(
-                                text: "Go back",
-                                press: previousClicked,
-                              )
-                            : Text(''),
-                        // SizedBox(height: SizeConfig.screenHeight * 0.2),
-                      ],
-                    )
+                children: [
+                  SizedBox(height: SizeConfig.screenHeight * 0.05),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      CoralBackButton(),
+                      Container(
+                        width: 10.0,
+                      ),
+                      HorizontalProgressSlider(sliderProgressBar, maxValue: 150.0,)
+                    ],
+                  ),
+                  SizedBox(height: SizeConfig.screenHeight * 0.05),
+                  Container(
+                    child: Text(
+                      questionsAndOptions[pageIndex].question,
+                      softWrap: true,
+                      textAlign: TextAlign.start,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline2
+                          .copyWith(
+                          color: Color(MyColors.titleTextColor),
+                          fontSize: getProportionateScreenWidth(18)),
+                    ),
+                  ),
+                  SizedBox(height: SizeConfig.screenHeight * 0.05),
+                  ...buildOptions(),
+                  SizedBox(height: SizeConfig.screenHeight * 0.03),
+                  (pageIndex > 0)
+                      ? DefaultButton2(
+                    text: "Go back",
+                    press: previousClicked,
+                  )
+                      : Text(''),
+                  // SizedBox(height: SizeConfig.screenHeight * 0.2),
+                ],
+              )
             ),
           ),
         ),
@@ -122,7 +124,7 @@ class _PregnancyInfo extends State<PregnancyInfo> {
     List<Widget> opt = [];
     questionsAndOptions[pageIndex].options.forEach((element) {
       dynamic answerSelected =
-          (answers["$pageIndex"] == null) ? '' : answers["$pageIndex"];
+      (answers["$pageIndex"] == null) ? '' : answers["$pageIndex"];
       var item = Container(
         // height: 60.0,
         margin: EdgeInsets.only(bottom: 0.0, top: 30.0),
@@ -143,9 +145,9 @@ class _PregnancyInfo extends State<PregnancyInfo> {
           ),
           trailing: (answerSelected == element)
               ? Icon(
-                  Icons.check_circle,
-                  color: Colors.white,
-                )
+            Icons.check_circle,
+            color: Colors.white,
+          )
               : Text(''),
           onTap: () {
             selectedOption(element);
@@ -197,8 +199,8 @@ class _PregnancyInfo extends State<PregnancyInfo> {
     _showTestDialog(context);
     Timer(Duration(seconds: 3), () async {
       //encode the answers from the questions and store in local storage
-      String pregnancyRecord = jsonEncode(answers);
-      await ss.setPrefItem("pregnancyRecord", pregnancyRecord);
+      String conceiveRecord = jsonEncode(answers);
+      await ss.setPrefItem("conceiveRecord", conceiveRecord);
       await ss.setPrefItem(
           "wellnessSetup", "true"); //don't display wellness.dart again
       //go to pregnancy dashboard

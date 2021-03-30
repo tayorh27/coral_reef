@@ -86,7 +86,7 @@ class _BodyState extends State<Body> {
                      DefaultButton2(
                        text: "Log in",
                        press: () {
-                         Navigator.pushNamed(context, SignInScreen.routeName);
+                         Navigator.pushReplacementNamed(context, SignInScreen.routeName);
                        },
                      ),
                      Spacer(),

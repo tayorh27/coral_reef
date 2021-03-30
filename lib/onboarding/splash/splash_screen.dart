@@ -17,6 +17,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
+
+    // ss.clearPref();
+
     var d = Duration(seconds: 4);
     // delayed 3 seconds to next page
     Future.delayed(d, () async {
@@ -50,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
 
       //if user is not logged in
-      Navigator.pushNamed(context, SignInScreen.routeName);
+      Navigator.pushReplacementNamed(context, SignInScreen.routeName);
     });
 
     super.initState();

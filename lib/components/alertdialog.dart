@@ -1,3 +1,4 @@
+import 'package:coral_reef/Utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:coral_reef/size_config.dart';
 
@@ -41,7 +42,7 @@ class CheckIcon extends StatelessWidget {
       height: getProportionateScreenHeight(50),
       width: getProportionateScreenWidth(50),
       decoration: BoxDecoration(
-        color: Colors.purple,
+        color: Color(MyColors.primaryColor),
         shape: BoxShape.circle,
       ),
       child: Icon(
@@ -52,9 +53,11 @@ class CheckIcon extends StatelessWidget {
   }
 }
 
-class AlertDialogPage extends StatelessWidget {
-  const AlertDialogPage({
-    Key key,
+class AlertDialogSuccessPage extends StatelessWidget {
+
+  final String text;
+  const AlertDialogSuccessPage({
+    Key key, this.text
   }) : super(key: key);
 
   @override
@@ -77,11 +80,11 @@ class AlertDialogPage extends StatelessWidget {
                     child: CheckIcon(),
                   ),
                   Text(
-                    'You are all set!',
-                    style: TextStyle(
-                      color: Colors.black,
+                    (text == null) ? 'You are all set!' : text,
+                    style: Theme.of(context).textTheme.subtitle1.copyWith(
+                      color: Color(MyColors.titleTextColor),
                       fontSize: getProportionateScreenWidth(25),
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.bold
                     ),
                   ),
                   Padding(

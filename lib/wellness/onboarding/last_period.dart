@@ -51,7 +51,10 @@ class LastPeriodScreen extends StatelessWidget {
                         showDay: true, //false -> only select year & month
                         fontFamily: 'AvenirNextDemiBold',
                         showLabels:
-                        false, // to show column captions, eg. year, month, etc.
+                        true, // to show column captions, eg. year, month, etc.
+                        yearText: "Year",
+                        monthText: "Month",
+                        dayText: "Day",
                         textColor: Color(MyColors.titleTextColor),
                         selectedColor: Color(MyColors.primaryColor),
                         unselectedColor: Colors.blueGrey,

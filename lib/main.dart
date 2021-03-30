@@ -1,4 +1,5 @@
 import 'package:coral_reef/Utils/constants.dart';
+import 'package:coral_reef/Utils/storage.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -15,8 +16,16 @@ void main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _MyApp();
+}
+
+class _MyApp extends State<MyApp> {
   // This widget is the root of your application.
+
+  StorageSystem ss = new StorageSystem();
+
   @override
   Widget build(BuildContext context) {
     FirebaseAnalytics analytics = FirebaseAnalytics();
@@ -38,5 +47,12 @@ class MyApp extends StatelessWidget {
         FirebaseAnalyticsObserver(analytics: analytics),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    print("dispose");
   }
 }

@@ -1,6 +1,7 @@
 import 'package:coral_reef/Utils/storage.dart';
-import 'package:coral_reef/homescreen/components/alertdialog.dart';
-import 'package:coral_reef/wellness/onboarding/wellness.dart';
+import 'package:coral_reef/components/alertdialog.dart';
+import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
+import 'package:coral_reef/wellness/wellness_tracker_options.dart';
 import 'package:flutter/material.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/homescreen/components/components.dart';
@@ -40,7 +41,6 @@ class _BodyState extends State<Body> {
 }
 
 class Cards extends StatelessWidget {
-
   Cards({
     Key key,
   }) : super(key: key);
@@ -153,7 +153,10 @@ class Cards extends StatelessWidget {
                 image: "assets/images/G-chat.png",
                 title: "G-Chat",
                 title2: 'Chat with us to solve your issues',
-                press: () {},
+                press: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext context) => new CoralBottomNavigationBar(isGChat: true,)));
+                },
               ),
             ],
           ),
@@ -174,7 +177,9 @@ class Cards extends StatelessWidget {
                 image: "assets/images/G-expert_corner.png",
                 title: "G-Expert Corner",
                 title2: 'All things you need under one click',
-                press: () {},
+                press: () {
+                  _showTestDialog(context);
+                },
               ),
             ],
           ),
@@ -188,34 +193,38 @@ class Cards extends StatelessWidget {
    */
   Future<void> wellnessTrackerClicked(BuildContext context) async {
     String wellnessSetup = await ss.getItem("wellnessSetup") ?? "";
-    if(wellnessSetup.isEmpty) {
+
+    if (wellnessSetup.isEmpty) {
       //go to wellness setup screen
-      Navigator.pushNamed(context, WellnessScreen.routeName);
-    }else {
+      Navigator.pushNamed(context, WellnessTrackerOptions.routeName);
+    } else {
+      Navigator.pushNamed(context, CoralBottomNavigationBar.routeName);
+
       String dashboardGoal = await ss.getItem("dashboardGoal") ?? "";
-      if(dashboardGoal.isEmpty || dashboardGoal == "period") {
+      if (dashboardGoal.isEmpty || dashboardGoal == "period") {
         //go to period dashboard
         return;
       }
-      if(dashboardGoal == "pregnancy") {
+      if (dashboardGoal == "pregnancy") {
         //go to pregnancy dashboard
         return;
       }
-      if(dashboardGoal == "conceive") {
+      if (dashboardGoal == "conceive") {
         //go to conceive dashboard
         return;
       }
-
     }
   }
 
   void _showTestDialog(context) {
     showDialog(
         context: context,
-        barrierDismissible: false,
+        barrierDismissible: true,
         //context: _scaffoldKey.currentContext,
         builder: (context) {
-          return AlertDialogPage();
+          return AlertDialogSuccessPage(
+            text: 'Coming Soon...',
+          );
         });
   }
 }

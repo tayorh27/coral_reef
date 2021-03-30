@@ -24,4 +24,12 @@ class MyColors {
 
   static int optionsBackgroundColor = 0xFFE8E8E8;
 
+  static int bottomNavBackgroundColor = 0xFFBABABA;
+  static int bottomNavTextColor = 0xFF9E9E9E;
+
+  static int stroke1Color = 0xFFFF9B90;
+  static int stroke2Color = 0xFFC9B2FF;
+  static int stroke3Color = 0xFFF3D538;
+  static int progressSliderColor = 0xFFF2F2F2;
+
 }

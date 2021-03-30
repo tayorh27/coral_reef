@@ -6,8 +6,9 @@ import 'package:flutter_xlider/flutter_xlider.dart';
 class HorizontalProgressSlider extends StatelessWidget {
 
   final List<double> sliderProgressBar;
+  final double maxValue;
 
-  HorizontalProgressSlider(this.sliderProgressBar);
+  HorizontalProgressSlider(this.sliderProgressBar, {this.maxValue});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class HorizontalProgressSlider extends StatelessWidget {
       width: MediaQuery.of(context).size.width - 100.0,
       child: FlutterSlider(
         values: sliderProgressBar,
-        max: 100,
+        max: (maxValue == null) ? 100 : maxValue,
         min: 0,
         trackBar: FlutterSliderTrackBar(
           inactiveTrackBar: BoxDecoration(

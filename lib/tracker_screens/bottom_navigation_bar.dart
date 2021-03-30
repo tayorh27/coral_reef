@@ -1,0 +1,109 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/storage.dart';
+import 'package:coral_reef/g_chat_screen/GChatScreen.dart';
+import 'package:coral_reef/size_config.dart';
+import 'package:coral_reef/tracker_screens/tracker_landing.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+
+class CoralBottomNavigationBar extends StatefulWidget {
+  static final routeName = 'bottom-nav-bar';
+
+  final bool isGChat;
+  CoralBottomNavigationBar({this.isGChat});
+
+  @override
+  State<StatefulWidget> createState() => _BottomNavigationBarState();
+}
+
+class _BottomNavigationBarState extends State<CoralBottomNavigationBar> {
+  StorageSystem ss = new StorageSystem();
+
+  int currentIndex = 0;
+
+  /// Set a type current number a layout class
+  Widget callPage(int current) {
+    switch (current) {
+      case 0:
+        return TrackerLanding();
+      case 1:
+        return GChatScreen();
+      case 2:
+        return TrackerLanding();
+      default:
+        return TrackerLanding();
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    bool gChat = widget.isGChat ?? false;
+    if(gChat) {
+      setState(() {
+        currentIndex = 1;
+      });
+    }
+  }
+
+  /// Build BottomNavigationBar Widget
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: callPage(currentIndex),
+      bottomNavigationBar: Theme(
+          data: Theme.of(context).copyWith(
+              canvasColor: Colors.white,
+              textTheme: Theme.of(context).textTheme.copyWith(
+                  caption: TextStyle(color: Color(MyColors.bottomNavTextColor)))),
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.shifting,
+            currentIndex: currentIndex,
+            fixedColor: Color(MyColors.primaryColor),
+            selectedLabelStyle: TextStyle(color: Color(MyColors.primaryColor)),
+            onTap: (value) {
+              setState(() {
+                currentIndex = value;
+              });
+            },
+            items: [
+              BottomNavigationBarItem(
+                  icon: SvgPicture.asset("assets/icons/dash_home.svg",
+                      height: 30.0),
+                  title: Text(
+                    "Dashboard",
+                    style: Theme.of(context).textTheme.subtitle1.copyWith(
+                        letterSpacing: 0.5,
+                        fontSize: getProportionateScreenWidth(12)),
+                  )),
+              BottomNavigationBarItem(
+                  icon: SvgPicture.asset("assets/icons/dash_g_chat.svg",
+                      height: 30.0),
+                  activeIcon: SvgPicture.asset("assets/icons/active_dash_g_chat.svg",
+                      height: 30.0),
+                  title: Text(
+                    "G-Chat",
+                    style: Theme.of(context).textTheme.subtitle1.copyWith(
+                        letterSpacing: 0.5,
+                        fontSize: getProportionateScreenWidth(12)),
+                  )),
+              BottomNavigationBarItem(
+                  icon: SvgPicture.asset("assets/icons/dash_wallet.svg",
+                      height: 30.0),
+                  activeIcon: SvgPicture.asset("assets/icons/active_dash_wallet.svg",
+                      height: 30.0),
+                  title: Text(
+                    "Wallet",
+                    style: Theme.of(context).textTheme.subtitle1.copyWith(
+                        letterSpacing: 0.5,
+                        fontSize: getProportionateScreenWidth(12)),
+                  )),
+            ],
+          )),
+    );
+  }
+}
