@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/g_chat_screen/GChatScreen.dart';
+import 'package:coral_reef/g_chat_screen/gchat_home_screen.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/tracker_screens/tracker_landing.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,8 @@ class CoralBottomNavigationBar extends StatefulWidget {
   static final routeName = 'bottom-nav-bar';
 
   final bool isGChat;
-  CoralBottomNavigationBar({this.isGChat});
+  final bool hasGChatSetup;
+  CoralBottomNavigationBar({this.isGChat, this.hasGChatSetup});
 
   @override
   State<StatefulWidget> createState() => _BottomNavigationBarState();
@@ -23,6 +25,7 @@ class _BottomNavigationBarState extends State<CoralBottomNavigationBar> {
   StorageSystem ss = new StorageSystem();
 
   int currentIndex = 0;
+  bool hasGChatSetup = false;
 
   /// Set a type current number a layout class
   Widget callPage(int current) {
@@ -30,7 +33,7 @@ class _BottomNavigationBarState extends State<CoralBottomNavigationBar> {
       case 0:
         return TrackerLanding();
       case 1:
-        return GChatScreen();
+        return (hasGChatSetup) ? GChatHomeScreen() : GChatScreen();
       case 2:
         return TrackerLanding();
       default:
@@ -43,9 +46,11 @@ class _BottomNavigationBarState extends State<CoralBottomNavigationBar> {
     // TODO: implement initState
     super.initState();
     bool gChat = widget.isGChat ?? false;
+    bool hasGChat = widget.hasGChatSetup ?? false;
     if(gChat) {
       setState(() {
         currentIndex = 1;
+        hasGChatSetup = hasGChat;
       });
     }
   }

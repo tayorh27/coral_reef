@@ -12,6 +12,22 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
+
+  String wellnessSetup = "";
+  StorageSystem ss = new StorageSystem();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    ss.getItem("wellnessSetup").then((value) {
+      String v = value ?? "";
+      setState(() {
+        wellnessSetup = v;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -29,7 +45,7 @@ class _BodyState extends State<Body> {
                 SizedBox(height: SizeConfig.screenHeight * 0.01),
                 Heading(),
                 SizedBox(height: SizeConfig.screenHeight * 0.03),
-                Cards(),
+                Cards(wellnessSetup),
                 // SizedBox(height: SizeConfig.screenHeight * 0.08),
               ],
             ),
@@ -41,7 +57,9 @@ class _BodyState extends State<Body> {
 }
 
 class Cards extends StatelessWidget {
-  Cards({
+  final String ws;
+
+  Cards(this.ws,{
     Key key,
   }) : super(key: key);
 
@@ -146,16 +164,18 @@ class Cards extends StatelessWidget {
                 title2:
                     'keep track of your well-being, exercise, period and diet',
                 press: () {
-                  wellnessTrackerClicked(context);
+                  wellnessTrackerClicked(context, ws);
                 },
               ),
               SpecialOfferCard(
                 image: "assets/images/G-chat.png",
                 title: "G-Chat",
                 title2: 'Chat with us to solve your issues',
-                press: () {
+                press: () async {
+                  String _checkSetup = await ss.getItem("gchatSetup");// check if user has set up gchat settings
+                  bool hasSetup = _checkSetup != null;
                   Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (BuildContext context) => new CoralBottomNavigationBar(isGChat: true,)));
+                      builder: (BuildContext context) => new CoralBottomNavigationBar(isGChat: true, hasGChatSetup: hasSetup,)));
                 },
               ),
             ],
@@ -191,8 +211,7 @@ class Cards extends StatelessWidget {
   /*
    * Determine if the wellness set up has been attended to
    */
-  Future<void> wellnessTrackerClicked(BuildContext context) async {
-    String wellnessSetup = await ss.getItem("wellnessSetup") ?? "";
+  Future<void> wellnessTrackerClicked(BuildContext context, String wellnessSetup) async {
 
     if (wellnessSetup.isEmpty) {
       //go to wellness setup screen

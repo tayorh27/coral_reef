@@ -32,4 +32,14 @@ class MyColors {
   static int stroke3Color = 0xFFF3D538;
   static int progressSliderColor = 0xFFF2F2F2;
 
+
+  static int avatarColor1 = 0xFFB0BEFF;
+  static int avatarColor2 = 0xFF1976D2;
+  static int avatarColor3 = 0xFFF3D538;
+  static int avatarColor4 = 0xFFFF9B90;
+  static int avatarColor5 = 0xFFFF3D00;
+  static int avatarColor6 = 0xFFC88366;
+  static int avatarColor7 = 0xFF395185;
+  static int avatarColor8 = 0xFF3EC643;
+
 }

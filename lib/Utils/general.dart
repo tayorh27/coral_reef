@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
-class GeneralUtils {
+import '../size_config.dart';
+import 'colors.dart';
 
+class GeneralUtils {
   GeneralUtils();
 
   // String formattedMoney(double price, String currency) {
@@ -24,23 +26,42 @@ class GeneralUtils {
   //   return mfo.symbolOnLeft;
   // }
 
-  Future<Null> neverSatisfied(BuildContext context, String _title, String _body) async {
+  Future<Null> displayAlertDialog(
+      BuildContext context, String _title, String _body) async {
     return showDialog<Null>(
       context: context,
       barrierDismissible: true, // user must tap button!
       builder: (BuildContext context) {
         return new AlertDialog(
-          title: new Text(_title),
+          title: new Text(_title, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyText1.copyWith(
+              color: Color(MyColors.titleTextColor),
+              fontSize: getProportionateScreenWidth(20),),),
           content: new SingleChildScrollView(
             child: new ListBody(
               children: <Widget>[
-                new Text(_body),
+                Container(
+                  height: getProportionateScreenHeight(50),
+                  width: getProportionateScreenWidth(50),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF5F6F9),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Image.asset('assets/images/logo2.png'),
+                ),
+                Padding(
+                    padding: const EdgeInsets.only(left:30.0, right: 30.0, top: 30.0),
+                    child: new Text(
+                      _body,
+                      style: Theme.of(context).textTheme.subtitle1.copyWith(
+                          color: Color(MyColors.titleTextColor),
+                          fontSize: getProportionateScreenWidth(15),),
+                    )),
               ],
             ),
           ),
           actions: <Widget>[
             new TextButton(
-              child: new Text('OK'),
+              child: new Text('OK', style: TextStyle(color: Color(MyColors.primaryColor)),),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -59,15 +80,15 @@ class GeneralUtils {
         timeInSecForIosWeb: 5,
         backgroundColor: Theme.of(context).primaryColor,
         textColor: Colors.white,
-        fontSize: 16.0
-    );
+        fontSize: 16.0);
   }
 
-  final String serverToken = 'AAAA0pPB70Y:APA91bFfVENthJfYjW3hBfBcU2yxmDOBG2L-qHzQQfoa80tGwC-ckKzx3r6xy51DhHg-zlAAZVk9-L7LjuvDuoY_SZqJxJAJSkUTfYMzRUWwg0PX6TxXIBVkRyq6lQjtI_YaD8U3dgyT';
+  final String serverToken =
+      'AAAA0pPB70Y:APA91bFfVENthJfYjW3hBfBcU2yxmDOBG2L-qHzQQfoa80tGwC-ckKzx3r6xy51DhHg-zlAAZVk9-L7LjuvDuoY_SZqJxJAJSkUTfYMzRUWwg0PX6TxXIBVkRyq6lQjtI_YaD8U3dgyT';
   // final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
 
-  Future<void> sendAndRetrieveMessage(String _body, String _title, List<dynamic> _ids) async {
-
+  Future<void> sendAndRetrieveMessage(
+      String _body, String _title, List<dynamic> _ids) async {
     // _ids.forEach((id) async {
     //   http.Response r = await http.post(
     //     'https://fcm.googleapis.com/fcm/send',
@@ -127,20 +148,23 @@ class GeneralUtils {
 
   String returnFormattedDate(String createdDate) {
     var secs = DateTime.now().difference(DateTime.parse(createdDate)).inSeconds;
-    if(secs > 60){
-      var mins = DateTime.now().difference(DateTime.parse(createdDate)).inMinutes;
-      if(mins > 60){
-        var hrs = DateTime.now().difference(DateTime.parse(createdDate)).inHours;
-        if(hrs > 24) {
-          var days = DateTime.now().difference(DateTime.parse(createdDate)).inDays;
+    if (secs > 60) {
+      var mins =
+          DateTime.now().difference(DateTime.parse(createdDate)).inMinutes;
+      if (mins > 60) {
+        var hrs =
+            DateTime.now().difference(DateTime.parse(createdDate)).inHours;
+        if (hrs > 24) {
+          var days =
+              DateTime.now().difference(DateTime.parse(createdDate)).inDays;
           return (days > 1) ? '$days days ago' : '$days day ago';
-        }else {
+        } else {
           return (hrs > 1) ? '$hrs hrs ago' : '$hrs hr ago';
         }
-      }else {
+      } else {
         return '$mins mins ago';
       }
-    }else {
+    } else {
       return '$secs secs ago';
     }
   }

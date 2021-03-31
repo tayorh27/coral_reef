@@ -18,6 +18,9 @@ import 'package:flutter/widgets.dart';
 import 'package:coral_reef/homescreen/Home.dart';
 
 import 'g_chat_screen/GChatScreen.dart';
+import 'g_chat_screen/sections/avatar_final_section.dart';
+import 'g_chat_screen/sections/create_new_gchat.dart';
+import 'g_chat_screen/sections/interested_topics.dart';
 
 
 
@@ -40,4 +43,7 @@ final Map<String, WidgetBuilder> routes = {
   GChatScreen.routeName: (context) => GChatScreen(),
   PeriodTrackerScreen.routeName: (context) => PeriodTrackerScreen(),
   LoginSymptoms.routeName: (context) => LoginSymptoms(),
+  AvatarFinalSection.routeName: (context) => AvatarFinalSection(),
+  InterestedTopics.routeName: (context) => InterestedTopics(),
+  CreateNewGChat.routeName: (context) => CreateNewGChat(),
 };

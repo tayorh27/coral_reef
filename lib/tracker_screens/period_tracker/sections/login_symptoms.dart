@@ -16,7 +16,7 @@ class LoginSymptoms extends StatefulWidget {
 }
 
 class _LoginSymptoms extends State<LoginSymptoms> {
-  List<String> options = [
+  List<String> moodOptions = [
     "Calm",
     "Happy",
     "Energetic",
@@ -29,11 +29,40 @@ class _LoginSymptoms extends State<LoginSymptoms> {
     "Self critical"
   ];
 
+  List<String> symptomsOptions = [
+    "All good",
+    "Cramps",
+    "Tender breasts",
+    "Headache",
+    "Acne",
+    "Backache",
+    "Nausea",
+    "Fatigue",
+    "Bloating",
+    "Diarrhea"
+  ];
+
+  List<String> vaginalDischargeOptions = [
+    "No discharge",
+    "Spotting",
+    "Sticky",
+    "Creamy",
+    "Eggwhite"
+  ];
+
+  List<String> selectedOptions = [];
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
       backgroundColor: Colors.white,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(MyColors.primaryColor),
+        child: Icon(Icons.check, color: Colors.white, size: 32.0,),
+        onPressed: (){},
+        tooltip: "Save",
+      ),
       body: SafeArea(
         child: SizedBox(
           width: MediaQuery.of(context).size.width,
@@ -64,14 +93,20 @@ class _LoginSymptoms extends State<LoginSymptoms> {
                   childAspectRatio: 0.7,
                   crossAxisCount: 5,
                   primary: false,
-                  children: options
-                      .map((pro) => SymptomsGridOptions(
+                  children: moodOptions
+                      .map((opt) => SymptomsGridOptions(
                             backgroundColor: Color(MyColors.stroke2Color),
-                            title: pro,
-                            image: "assets/symptoms/calm.svg",
+                            title: opt,
+                            image:
+                                "assets/symptoms/${opt.toLowerCase().replaceAll(" ", "-")}.svg",
+                            returnSelected: (_selectedOptions) {
+                              print(_selectedOptions);
+                              selectedOptions = _selectedOptions;
+                            },
                           ))
                       .toList(),
                 ),
+                SizedBox(height: SizeConfig.screenHeight * 0.01),
                 Row(
                   children: [
                     Text("Symptoms",
@@ -86,14 +121,20 @@ class _LoginSymptoms extends State<LoginSymptoms> {
                   shrinkWrap: true,
                   crossAxisSpacing: 10.0,
                   mainAxisSpacing: 0.0,
-                  childAspectRatio: 0.7,
+                  childAspectRatio: 0.6,
                   crossAxisCount: 5,
                   primary: false,
-                  children: options
-                      .map((pro) => SymptomsGridOptions(
+                  children: symptomsOptions
+                      .map((opt) => SymptomsGridOptions(
                             backgroundColor: Color(MyColors.stroke3Color),
-                            title: pro,
-                            image: "assets/symptoms/calm.svg",
+                            title: opt,
+                            image:
+                                "assets/symptoms/${opt.toLowerCase().replaceAll(" ", "-")}.svg",
+                            returnSelected: (_selectedOptions) {
+                              print("hello");
+                              print(_selectedOptions);
+                              selectedOptions = _selectedOptions;
+                            },
                           ))
                       .toList(),
                 ),
@@ -114,14 +155,20 @@ class _LoginSymptoms extends State<LoginSymptoms> {
                   childAspectRatio: 0.7,
                   crossAxisCount: 5,
                   primary: false,
-                  children: options
-                      .map((pro) => SymptomsGridOptions(
+                  children: vaginalDischargeOptions
+                      .map((opt) => SymptomsGridOptions(
                             backgroundColor: Color(MyColors.stroke1Color),
-                            title: pro,
-                            image: "assets/symptoms/calm.svg",
+                            title: opt,
+                            image:
+                                "assets/symptoms/${opt.toLowerCase().replaceAll(" ", "-")}.svg",
+                            returnSelected: (_selectedOptions) {
+                              print(_selectedOptions);
+                              selectedOptions = _selectedOptions;
+                            },
                           ))
                       .toList(),
                 ),
+                SizedBox(height: SizeConfig.screenHeight * 0.05),
                 Row(
                   children: [
                     Text("Notes",
