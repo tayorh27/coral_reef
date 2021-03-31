@@ -21,7 +21,7 @@ class TopicsSelection extends StatelessWidget {
           borderRadius: BorderRadius.circular(15.0)
       ),
       padding: EdgeInsets.only(right: 20, left: 20, top: 10.0, bottom: 10.0),
-      margin: EdgeInsets.only(right: 0.0),
+      margin: EdgeInsets.only(right: 10.0),
       child: GestureDetector(
         onTap: onTap ?? () {},
         child: Column(

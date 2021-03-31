@@ -75,7 +75,7 @@ class _AvatarFinalSection extends State<AvatarFinalSection> {
           centerTitle: true,
           toolbarHeight: 120.0,
           title: Text(
-            "Choose your Avatar",
+            "Choose your Avatar Color",
             style: Theme.of(context).textTheme.headline2.copyWith(
                 color: Color(MyColors.titleTextColor),
                 fontSize: getProportionateScreenWidth(15)),

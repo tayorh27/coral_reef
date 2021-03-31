@@ -45,6 +45,8 @@ class _JobOpportunitiesScreen extends State<JobOpportunitiesScreen> {
         "timestamp"),
     JobOpportunity("001", "Back-End Web Developer", "Full Time", "Feb 15, 2021",
         "San Francisco, CA", "https://google.com/", "Junior Level", "timestamp"),
+    JobOpportunity("001", "Back-End Web Developer", "Full Time", "Feb 15, 2021",
+        "San Francisco, CA", "https://google.com/", "Junior Level", "timestamp"),
   ];
 
   @override
@@ -69,7 +71,7 @@ class _JobOpportunitiesScreen extends State<JobOpportunitiesScreen> {
         : Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
-            margin: EdgeInsets.only(top: 30.0),
+            margin: EdgeInsets.only(top: 0.0),
             child: ListView.builder(
               itemBuilder: (context, index) {
                 return Column(

@@ -32,7 +32,7 @@ class _GChatHomeScreen extends State<GChatHomeScreen> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.grey[50],
         floatingActionButton: (selectedMenu == "G-chat") ? FloatingActionButton(
           backgroundColor: Color(MyColors.primaryColor),
           child: Icon(Icons.add, color: Colors.white, size: 32.0,),
@@ -41,19 +41,17 @@ class _GChatHomeScreen extends State<GChatHomeScreen> {
           },
           tooltip: "Create New",
         ): null,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          leading: Text(''),
-          toolbarHeight: 20.0,
-        ),
         body: Padding(
           padding:
               EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(10)),
           child: Stack(
             children: [
-              GChatHeader(),
               Container(
-                margin: EdgeInsets.only(top: 100.0),
+                margin: EdgeInsets.only(top: 40.0),
+                child: GChatHeader(),
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 140.0),
                 child: GChatScrollingOptions(
                   onSelectedMenu: (String selectedMenu) {
                     getTrackerScreen(selectedMenu);
@@ -63,7 +61,7 @@ class _GChatHomeScreen extends State<GChatHomeScreen> {
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
-                margin: EdgeInsets.only(top: 160.0),
+                margin: EdgeInsets.only(top: 220.0),
                 child: selectedScreen,
               )
             ],

@@ -86,46 +86,100 @@ class _InterestedTopics extends State<InterestedTopics> {
                   SizedBox(
                     height: 50.0,
                   ),
-                  GridView.count(
-                    shrinkWrap: true,
-                    addRepaintBoundaries: false,
-                    addAutomaticKeepAlives: false,
-                    clipBehavior: Clip.none,
-                    crossAxisSpacing: 10.0,
-                    mainAxisSpacing: 10.0,
-                    childAspectRatio: 1,
-                    crossAxisCount: 3,
-                    primary: false,
-                    children: topics
-                        .map((opt) => TopicsSelection(
-                              text: opt,
-                              selected:
-                                  (selectedTopics.contains(opt)) ? true : false,
-                              onTap: () {
-                                if(selectedTopics.contains(opt)) {
-                                  setState(() {
-                                    selectedTopics.remove(opt);
-                                  });
-                                }else {
-                                  setState(() {
-                                    selectedTopics.add(opt);
-                                  });
-                                }
-                                // print(selectedTopics);
-                              },
-                            ))
-                        .toList(),
+                  // GridView.count(
+                  //   shrinkWrap: true,
+                  //   addRepaintBoundaries: false,
+                  //   addAutomaticKeepAlives: false,
+                  //   clipBehavior: Clip.none,
+                  //   crossAxisSpacing: 10.0,
+                  //   mainAxisSpacing: 10.0,
+                  //   childAspectRatio: 1,
+                  //   crossAxisCount: 3,
+                  //   primary: false,
+                  //   children: topics
+                  //       .map((opt) => TopicsSelection(
+                  //             text: opt,
+                  //             selected:
+                  //                 (selectedTopics.contains(opt)) ? true : false,
+                  //             onTap: () {
+                  //               if(selectedTopics.contains(opt)) {
+                  //                 setState(() {
+                  //                   selectedTopics.remove(opt);
+                  //                 });
+                  //               }else {
+                  //                 setState(() {
+                  //                   selectedTopics.add(opt);
+                  //                 });
+                  //               }
+                  //               // print(selectedTopics);
+                  //             },
+                  //           ))
+                  //       .toList(),
+                  // ),
+                  // ListView.builder(
+                  //     itemBuilder: (context, index) {
+                  //       return Row(
+                  //         children: [
+                  //           TopicsSelection(
+                  //             text: topics[index],
+                  //             selected: (selectedTopics.contains(topics[index]))
+                  //                 ? true
+                  //                 : false,
+                  //             onTap: () {
+                  //               if (selectedTopics.contains(topics[index])) {
+                  //                 setState(() {
+                  //                   selectedTopics.remove(topics[index]);
+                  //                 });
+                  //               } else {
+                  //                 setState(() {
+                  //                   selectedTopics.add(topics[index]);
+                  //                 });
+                  //               }
+                  //               // print(selectedTopics);
+                  //             },
+                  //           )
+                  //         ],
+                  //       );
+                  //     },
+                  //     scrollDirection: Axis.vertical,
+                  //     shrinkWrap: true,
+                  //     reverse: true,
+                  //     semanticChildCount: 3,
+                  //     itemCount: topics.length),
+                  Column(
+                    children: [
+                      Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceEvenly,children: listTopics(0, 2)),
+                      SizedBox(
+                        height: 20.0,
+                      ),
+                      Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceEvenly,children: listTopics(2, 4)),
+                      SizedBox(
+                        height: 20.0,
+                      ),
+                      Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceEvenly,children: listTopics(4, 6)),
+                      SizedBox(
+                        height: 20.0,
+                      ),
+                      Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceEvenly,children: listTopics(6, 8)),
+                      SizedBox(
+                        height: 20.0,
+                      ),
+                      Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.spaceEvenly,children: listTopics(8, 10)),
+                    ],
                   ),
                   SizedBox(
-                    height: 20.0,
+                    height: 100.0,
                   ),
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: DefaultButton(
                       text: "Continue",
                       press: () async {
-                        if(selectedTopics.isEmpty) {
-                          new GeneralUtils().displayAlertDialog(context, "Info Message", "Please select at least one topic.");
+                        if (selectedTopics.isEmpty) {
+                          new GeneralUtils().displayAlertDialog(
+                              context,
+                              "Info Message",
+                              "Please select at least one topic.");
                           return;
                         }
                         Map<String, dynamic> gTopics = new Map();
@@ -134,7 +188,11 @@ class _InterestedTopics extends State<InterestedTopics> {
                         await ss.setPrefItem("gchatSetup", "true");
                         // Navigator.pushNamed(context, HomeScreen.routeName);
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (BuildContext context) => new CoralBottomNavigationBar(isGChat: true, hasGChatSetup: true,)));
+                            builder: (BuildContext context) =>
+                                new CoralBottomNavigationBar(
+                                  isGChat: true,
+                                  hasGChatSetup: true,
+                                )));
                       },
                     ),
                   ),
@@ -143,6 +201,29 @@ class _InterestedTopics extends State<InterestedTopics> {
             ),
           ),
         )));
+  }
+
+  List<Widget> listTopics(int start, int end) {
+    List<Widget> tops = [];
+    topics.sublist(start, end).forEach((opt) {
+      tops.add(TopicsSelection(
+        text: opt,
+        selected: (selectedTopics.contains(opt)) ? true : false,
+        onTap: () {
+          if (selectedTopics.contains(opt)) {
+            setState(() {
+              selectedTopics.remove(opt);
+            });
+          } else {
+            setState(() {
+              selectedTopics.add(opt);
+            });
+          }
+          print(selectedTopics);
+        },
+      ));
+    });
+    return tops;
   }
 
   checkIfExists(String optItem) {

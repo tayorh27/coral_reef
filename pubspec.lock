@@ -373,6 +373,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0"
+  readmore:
+    dependency: "direct main"
+    description:
+      name: readmore
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   rxdart:
     dependency: "direct main"
     description:
@@ -469,6 +476,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.19"
+  truncate:
+    dependency: "direct main"
+    description:
+      name: truncate
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1"
   typed_data:
     dependency: transitive
     description:

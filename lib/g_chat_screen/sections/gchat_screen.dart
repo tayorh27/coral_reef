@@ -3,6 +3,7 @@ import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/g_chat_screen/components/shimmer_effects.dart';
 import 'package:coral_reef/shared_screens/gchat_user_avatar.dart';
 import 'package:flutter/material.dart';
+import 'package:truncate/truncate.dart';
 
 import '../../size_config.dart';
 
@@ -80,7 +81,6 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
         : Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
-            margin: EdgeInsets.only(top: 0.0),
             child: ListView.builder(
               itemBuilder: (context, index) {
                 return Column(
@@ -88,9 +88,9 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
+                    (index > 0) ? SizedBox(
                       height: 30.0,
-                    ),
+                    ): Text(""),
                     ListTile(
                       leading: GChatUserAvatar(
                         40.0,
@@ -127,10 +127,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                     Container(
                       margin: EdgeInsets.only(left: 15.0, right: 15.0),
                       width: MediaQuery.of(context).size.width,
-                      child:Text(
-                          (chats[index].body.length <= 150)
-                              ? chats[index].body
-                              : "${chats[index].body.substring(0, 150)}...",
+                      child:Text(truncate(chats[index].body, 150, omission: "...", position: TruncatePosition.end),
                           overflow: TextOverflow.clip,
                           style: Theme.of(context).textTheme.subtitle1.copyWith(
                               color: Color(MyColors.titleTextColor),
@@ -147,7 +144,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                       width: MediaQuery.of(context).size.width,
                       height: 200.0,
                       decoration: BoxDecoration(
-                        image: DecorationImage(image: NetworkImage(chats[index].images[0]),fit: BoxFit.fill),
+                        image: DecorationImage(image: NetworkImage(chats[index].images[0]),fit: BoxFit.cover),
                       ),
                     ),
                     SizedBox(
@@ -190,4 +187,11 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
             ),
           );
   }
+
+  /**
+   *
+      (chats[index].body.length <= 150)
+      ? chats[index].body
+      : "${chats[index].body.substring(0, 150)}..."
+   * */
 }
