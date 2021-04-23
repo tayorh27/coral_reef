@@ -5,14 +5,15 @@ import 'package:coral_reef/onboarding/forgotpassword/forgotpassword.dart';
 import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/period_tracker_screen.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/sections/login_symptoms.dart';
-import 'package:coral_reef/wellness/onboarding/conceive_info.dart';
-import 'package:coral_reef/wellness/onboarding/height.dart';
-import 'package:coral_reef/wellness/onboarding/period_info.dart';
-import 'package:coral_reef/wellness/onboarding/pregnancy_info.dart';
-import 'package:coral_reef/wellness/onboarding/required_weight.dart';
-import 'package:coral_reef/wellness/onboarding/weight.dart';
+import 'package:coral_reef/wallet_screen/sections/setup_pin.dart';
+import 'package:coral_reef/wellness/conceive/conceive_info.dart';
+import 'package:coral_reef/wellness/diet_exercise_well_being/diet_exercise_well_being_info.dart';
+import 'package:coral_reef/wellness/diet_exercise_well_being/height.dart';
+import 'package:coral_reef/wellness/period/period_info.dart';
+import 'package:coral_reef/wellness/pregnancy/pregnancy_info.dart';
+import 'package:coral_reef/wellness/diet_exercise_well_being/required_weight.dart';
+import 'package:coral_reef/wellness/diet_exercise_well_being/weight.dart';
 import 'package:coral_reef/wellness/onboarding/wellness.dart';
-import 'package:coral_reef/wellness/onboarding/year.dart';
 import 'package:coral_reef/wellness/wellness_tracker_options.dart';
 import 'package:flutter/widgets.dart';
 import 'package:coral_reef/homescreen/Home.dart';
@@ -32,13 +33,14 @@ final Map<String, WidgetBuilder> routes = {
   HomeScreen.routeName: (context) => HomeScreen(),
   WellnessScreen.routeName: (context) => WellnessScreen(),
   // YearScreen.routeName: (context) => YearScreen(),
-  WeightScreen.routeName: (context) => WeightScreen(),
-  RequiredWeightScreen.routeName: (context) => RequiredWeightScreen(),
-  HeightScreen.routeName: (context) => HeightScreen(),
+  // WeightScreen.routeName: (context) => WeightScreen(),
+  // RequiredWeightScreen.routeName: (context) => RequiredWeightScreen(),
+  // HeightScreen.routeName: (context) => HeightScreen(),
   PregnancyInfo.routeName: (context) => PregnancyInfo(),
   PeriodInfo.routeName: (context) => PeriodInfo(),
   WellnessTrackerOptions.routeName: (context) => WellnessTrackerOptions(),
   ConceiveInfo.routeName: (context) => ConceiveInfo(),
+  DietExerciseWellBeingInfo.routeName: (context) => DietExerciseWellBeingInfo(),
   CoralBottomNavigationBar.routeName: (context) => CoralBottomNavigationBar(),
   GChatScreen.routeName: (context) => GChatScreen(),
   PeriodTrackerScreen.routeName: (context) => PeriodTrackerScreen(),
@@ -46,4 +48,5 @@ final Map<String, WidgetBuilder> routes = {
   AvatarFinalSection.routeName: (context) => AvatarFinalSection(),
   InterestedTopics.routeName: (context) => InterestedTopics(),
   CreateNewGChat.routeName: (context) => CreateNewGChat(),
+  SetupPin.routeName: (context) => SetupPin(),
 };

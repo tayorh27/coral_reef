@@ -3,6 +3,7 @@ import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/g_chat_screen/sections/avatar_final_section.dart';
 import 'package:coral_reef/size_config.dart';
+import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 import 'components/avatar_selection.dart';
@@ -20,6 +21,22 @@ class _GChatScreen extends State<GChatScreen> {
 
   List<String> avatarImages = ["avatar1","avatar2","avatar3","avatar4","avatar5","avatar6","avatar7","avatar8","avatar9"];
   String selectedAvatar = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    ss.getItem("gchatSetup").then((_checkSetup) {
+      bool hasSetup = _checkSetup != null;
+      if(hasSetup) {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (BuildContext context) =>
+            new CoralBottomNavigationBar(
+              isGChat: true, hasGChatSetup: hasSetup,)));
+      }
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {

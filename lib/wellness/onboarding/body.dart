@@ -3,10 +3,9 @@ import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/coral_back_button.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/wellness/onboarding/component.dart';
-import 'package:coral_reef/wellness/onboarding/conceive_info.dart';
-import 'package:coral_reef/wellness/onboarding/period_info.dart';
-import 'package:coral_reef/wellness/onboarding/pregnancy_info.dart';
-import 'package:coral_reef/wellness/onboarding/year.dart';
+import 'package:coral_reef/wellness/conceive/conceive_info.dart';
+import 'package:coral_reef/wellness/period/period_info.dart';
+import 'package:coral_reef/wellness/pregnancy/pregnancy_info.dart';
 import 'package:flutter/material.dart';
 import 'package:coral_reef/size_config.dart';
 

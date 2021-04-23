@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:coral_reef/size_config.dart';
+
 
 
 class HomeLogo extends StatelessWidget {
@@ -32,44 +35,6 @@ class HomeLogo extends StatelessWidget {
     );
   }
 }
-
-
-class Heading extends StatelessWidget {
-  const Heading({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text(
-              "Hi Dupe,",
-              style: Theme.of(context).textTheme.headline1.copyWith(
-                color: Color(MyColors.titleTextColor), fontSize: getProportionateScreenWidth(25)
-              ),
-            ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Text(
-              "Hope you're feeling good today",
-              style: Theme.of(context).textTheme.subtitle1.copyWith(
-                  color: Color(MyColors.titleTextColor), fontSize: getProportionateScreenWidth(13)
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
 
 class SpecialOfferCard extends StatelessWidget {
   const SpecialOfferCard({

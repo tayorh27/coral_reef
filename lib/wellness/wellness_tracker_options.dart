@@ -3,6 +3,8 @@ import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/alertdialog.dart';
 import 'package:coral_reef/components/coral_back_button.dart';
+import 'package:coral_reef/homescreen/Home.dart';
+import 'package:coral_reef/wellness/diet_exercise_well_being/diet_exercise_well_being_info.dart';
 import 'package:coral_reef/wellness/onboarding/wellness.dart';
 import 'package:flutter/material.dart';
 
@@ -35,7 +37,10 @@ class _WellnessTrackerOptions extends State<WellnessTrackerOptions> {
               child: Column(
                 children: [
                   SizedBox(height: SizeConfig.screenHeight * 0.05),
-                  CoralBackButton(),
+                  CoralBackButton(onPress: (){
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (BuildContext context) => new HomeScreen()));
+                  },),
                   SizedBox(height: SizeConfig.screenHeight * 0.09),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -101,48 +106,25 @@ class _WellnessTrackerOptions extends State<WellnessTrackerOptions> {
    * Determine if the diet set up has been attended to
    */
   Future<void> trackDietPress() async {
-    String conceiveRecord = await ss.getItem("conceiveRecord") ?? "";
-
     await ss.setPrefItem("dashboardGoal", "diet");//set user dashboard goal
-    _showTestDialog(context);
-    // if(conceiveRecord.isNotEmpty) {
-    //   return;
-    // }
-
-    //go to conceive screen to ask questions. same as period
-    // Navigator.pushNamed(context, PeriodInfo.routeName);
+    Navigator.pushNamed(context, DietExerciseWellBeingInfo.routeName);
+    // _showTestDialog(context);
   }
 
   /*
    * Determine if the exercise set up has been attended to
    */
   Future<void> trackExercisePress() async {
-    String pregnancyRecord = await ss.getItem("pregnancyRecord") ?? "";
-
     await ss.setPrefItem("dashboardGoal", "exercise");//set user dashboard goal
-    _showTestDialog(context);
-    // if(pregnancyRecord.isNotEmpty) {
-    //   return;
-    // }
-
-    //go to pregnancy screen to ask questions
-    // Navigator.pushNamed(context, PregnancyInfo.routeName);
+    Navigator.pushNamed(context, DietExerciseWellBeingInfo.routeName);
   }
 
   /*
    * Determine if the well-being set up has been attended to
    */
   Future<void> trackWellBeingPress() async {
-    String pregnancyRecord = await ss.getItem("pregnancyRecord") ?? "";
-
     await ss.setPrefItem("dashboardGoal", "well-being");//set user dashboard goal
-    _showTestDialog(context);
-    // if(pregnancyRecord.isNotEmpty) {
-    //   return;
-    // }
-
-    //go to pregnancy screen to ask questions
-    // Navigator.pushNamed(context, PregnancyInfo.routeName);
+    Navigator.pushNamed(context, DietExerciseWellBeingInfo.routeName);
   }
 
   void _showTestDialog(context) {

@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:coral_reef/ListItem/model_jobs.dart';
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/general.dart';
+import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/g_chat_screen/components/shimmer_effects.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +56,7 @@ class _JobOpportunitiesScreen extends State<JobOpportunitiesScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    // doOperations();
     imageNetwork.resolve(new ImageConfiguration()).addListener(
         new ImageStreamListener((ImageInfo image, bool synchronousCall) {
       if (!mounted) return;
@@ -62,6 +66,26 @@ class _JobOpportunitiesScreen extends State<JobOpportunitiesScreen> {
       });
     }));
   }
+
+  void doOperations() async {
+    List<String> selectedTopics = ["Sex life",
+      "Relationships",
+      "My body",
+      "Health",
+      "Period and cycle",
+      "Parenting",
+      "Pregnancy",
+      "Entertainment",
+      "Harmony",
+      "Trying to conceive"];
+    StorageSystem ss = new StorageSystem();
+  String getUser = await ss.getItem("user");
+  Map<String, dynamic> userData = jsonDecode(getUser);
+  print(userData["msgId"]);
+  selectedTopics.forEach((topic) async {
+  await new GeneralUtils().subscribeToTopic(topic, userData["msgId"]);
+});
+}
 
   @override
   Widget build(BuildContext context) {

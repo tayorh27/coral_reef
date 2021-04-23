@@ -1,7 +1,5 @@
 import 'package:coral_reef/Library/FlutterDatePicker/flutter_datepicker_custom.dart';
 import 'package:coral_reef/Utils/colors.dart';
-import 'package:coral_reef/components/default_button.dart';
-import 'package:coral_reef/wellness/onboarding/weight.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

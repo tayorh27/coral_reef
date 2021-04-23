@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -51,7 +50,7 @@ class GeneralUtils {
                 Padding(
                     padding: const EdgeInsets.only(left:30.0, right: 30.0, top: 30.0),
                     child: new Text(
-                      _body,
+                      _body,textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.subtitle1.copyWith(
                           color: Color(MyColors.titleTextColor),
                           fontSize: getProportionateScreenWidth(15),),
@@ -83,12 +82,8 @@ class GeneralUtils {
         fontSize: 16.0);
   }
 
-  final String serverToken =
-      'AAAA0pPB70Y:APA91bFfVENthJfYjW3hBfBcU2yxmDOBG2L-qHzQQfoa80tGwC-ckKzx3r6xy51DhHg-zlAAZVk9-L7LjuvDuoY_SZqJxJAJSkUTfYMzRUWwg0PX6TxXIBVkRyq6lQjtI_YaD8U3dgyT';
-  // final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+  Future<void> sendAndRetrieveMessage(String _body, String _title, List<dynamic> _ids) async {
 
-  Future<void> sendAndRetrieveMessage(
-      String _body, String _title, List<dynamic> _ids) async {
     // _ids.forEach((id) async {
     //   http.Response r = await http.post(
     //     'https://fcm.googleapis.com/fcm/send',
@@ -115,36 +110,36 @@ class GeneralUtils {
     //   print(r.body);
     // });
 
-    // http.Response r = await http.post(
-    //   'https://us-central1-my-coffeeapp.cloudfunctions.net/sendnt?title=$_title&message=$_body',
-    //   body: jsonEncode(
-    //     <String, dynamic>{
-    //       'id': _ids,
-    //     },
-    //   ),
-    // );
-    // print(r.body);
+    http.Response r = await http.post(
+      Uri.parse('https://us-central1-coraltrackerapp.cloudfunctions.net/sendnt?title=$_title&message=$_body'),
+      body: jsonEncode(
+        <String, dynamic>{
+          'id': _ids,
+        },
+      ),
+    );
+    print(r.body);
   }
 
-  // Future<void> sendNotificationToTopic(String _body, String _title, String topic) async {
-  //   http.Response r = await http.get(
-  //     'https://us-central1-my-coffeeapp.cloudfunctions.net/sendtopic?topic=$topic&title=$_title&message=$_body',
-  //   );
-  //   print(r.body);
-  // }
-  //
-  // Future<void> subscribeToTopic(String _topic, List<dynamic> _ids) async {
-  //
-  //   http.Response r = await http.post(
-  //     'https://us-central1-my-coffeeapp.cloudfunctions.net/subtopic?topic=$_topic',
-  //     body: jsonEncode(
-  //       <String, dynamic>{
-  //         'id': _ids,
-  //       },
-  //     ),
-  //   );
-  //   print(r.body);
-  // }
+  Future<void> sendNotificationToTopic(String _body, String _title, String topic) async {
+    http.Response r = await http.get(
+        Uri.parse('https://us-central1-coraltrackerapp.cloudfunctions.net/sendtopic?topic=$topic&title=$_title&message=$_body'),
+    );
+    print(r.body);
+  }
+
+  Future<void> subscribeToTopic(String _topic, List<dynamic> _ids) async {
+
+    http.Response r = await http.post(
+        Uri.parse('https://us-central1-coraltrackerapp.cloudfunctions.net/subtopic?topic=$_topic'),
+      body: jsonEncode(
+        <String, dynamic>{
+          'id': _ids,
+        },
+      ),
+    );
+    print(r.body);
+  }
 
   String returnFormattedDate(String createdDate) {
     var secs = DateTime.now().difference(DateTime.parse(createdDate)).inSeconds;

@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/alertdialog.dart';
+import 'package:coral_reef/shared_screens/header_name.dart';
 import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
 import 'package:coral_reef/wellness/wellness_tracker_options.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +17,7 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
 
   String wellnessSetup = "";
+
   StorageSystem ss = new StorageSystem();
 
   @override
@@ -43,7 +47,7 @@ class _BodyState extends State<Body> {
                 SizedBox(height: SizeConfig.screenHeight * 0.05),
                 HomeLogo(),
                 SizedBox(height: SizeConfig.screenHeight * 0.01),
-                Heading(),
+                Heading(body: "Hope you're feeling good today"),
                 SizedBox(height: SizeConfig.screenHeight * 0.03),
                 Cards(wellnessSetup),
                 // SizedBox(height: SizeConfig.screenHeight * 0.08),
@@ -217,7 +221,11 @@ class Cards extends StatelessWidget {
       //go to wellness setup screen
       Navigator.pushNamed(context, WellnessTrackerOptions.routeName);
     } else {
-      Navigator.pushNamed(context, CoralBottomNavigationBar.routeName);
+      String _checkSetup = await ss.getItem("gchatSetup");// check if user has set up gchat settings
+      bool hasSetup = _checkSetup != null;
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (BuildContext context) => new CoralBottomNavigationBar(isGChat: false, hasGChatSetup: hasSetup,)));
+      // Navigator.pushNamed(context, CoralBottomNavigationBar.routeName);
 
       String dashboardGoal = await ss.getItem("dashboardGoal") ?? "";
       if (dashboardGoal.isEmpty || dashboardGoal == "period") {

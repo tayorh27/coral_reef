@@ -1,7 +1,13 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/Utils/constants.dart';
 import 'package:coral_reef/Utils/storage.dart';
+import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,6 +33,12 @@ class _MyApp extends State<MyApp> {
   StorageSystem ss = new StorageSystem();
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     FirebaseAnalytics analytics = FirebaseAnalytics();
 
@@ -49,10 +61,11 @@ class _MyApp extends State<MyApp> {
     );
   }
 
+
+
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    print("dispose");
   }
 }

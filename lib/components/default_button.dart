@@ -1,5 +1,6 @@
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:progress_bars/progress_bars.dart';
 
 import '../constants.dart';
 import '../size_config.dart';
@@ -9,9 +10,11 @@ class DefaultButton extends StatelessWidget {
     Key key,
     this.text,
     this.press,
+    this.loading = false,
   }) : super(key: key);
   final String text;
   final Function press;
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +24,21 @@ class DefaultButton extends StatelessWidget {
       child: FlatButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         color: Color(MyColors.primaryColor),
-        onPressed: press,
-        child: Text(text,
+        disabledColor: Color(MyColors.primaryColor).withAlpha(100),
+        onPressed: (loading) ? null : press,
+        child: (loading) ? Center(
+          child: Container(
+            width: 20.0,
+            height: 20,
+            margin: EdgeInsets.only(bottom: 20.0, right: 20.0),
+            child: CircleProgressBar(
+              child: Text(""),
+              size: 20.0,
+              progressColor: Colors.white,
+              backgroundColor: Color(MyColors.primaryColor).withAlpha(100),
+            ),
+          ),
+        ) : Text(text,
             style: Theme.of(context).textTheme.headline2.copyWith(
                   fontSize: getProportionateScreenWidth(18),
                   color: Colors.white,
@@ -90,6 +106,36 @@ class Button extends StatelessWidget {
                   fontSize: getProportionateScreenWidth(18),
                   color: Colors.white,
                 )),
+      ),
+    );
+  }
+}
+
+class SwitchButtons extends StatelessWidget {
+  const SwitchButtons({
+    Key key,
+    this.text,
+    this.press,
+    this.selected,
+  }) : super(key: key);
+  final String text;
+  final Function press;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: getProportionateScreenWidth(100),
+      height: getProportionateScreenHeight(50),
+      child: FlatButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        color: (selected) ? Color(MyColors.primaryColor) : kPrimaryColor.withOpacity(0.2),
+        onPressed: press,
+        child: Text(text,
+            style: Theme.of(context).textTheme.headline2.copyWith(
+              fontSize: getProportionateScreenWidth(18),
+              color: (selected) ? Colors.white : Theme.of(context).primaryColor,
+            )),
       ),
     );
   }

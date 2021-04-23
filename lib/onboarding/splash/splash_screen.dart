@@ -1,6 +1,8 @@
 import 'package:coral_reef/Utils/storage.dart';
+import 'package:coral_reef/homescreen/Home.dart';
 import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
 import 'package:coral_reef/onboarding/splash/Onboard_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -18,6 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
 
+    // FirebaseAuth.instance.signOut().then((value) {print("fodne");});
     // ss.clearPref();
 
     var d = Duration(seconds: 4);
@@ -25,26 +28,29 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(d, () async {
       // await ss.clearPref();
 
-      String logged = await ss.getItem('loggedin') ?? '';
+      String logged = await ss.getItem("loggedin") ?? '';
 
-      final boarded = await ss.getItem('boarded') ?? '';
+      final boarded = await ss.getItem("boarded") ?? '';
+
+      print('boarded ========$boarded');
+      print('logged ========$logged');
 
       //check if user has viewed the boarding screens
-      if (boarded.isEmpty || boarded == 'false') {
+      if (boarded.isEmpty || boarded == "false") {
         print('boarded ========$boarded');
-        await ss.setPrefItem('boarded', 'true');
+        await ss.setPrefItem("boarded", "true");
         // Navigator.of(context).pushReplacementNamed("on_boarding");
         gotoOnBoardingScreen();
         return;
       }
 
       //check if user is logged in
-      if(logged == 'true') {
+      if(logged == "true") {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (context) {
-              return OnboardScreen();
+              return HomeScreen();
             },
           ),
               (route) => false,

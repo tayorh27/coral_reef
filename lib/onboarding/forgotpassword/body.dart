@@ -28,14 +28,6 @@ class Body extends StatelessWidget {
                 Heading(),
                 SizedBox(height: SizeConfig.screenHeight * 0.08),
                 EmailField(),
-                SizedBox(height: SizeConfig.screenHeight * 0.08),
-                DefaultButton(
-                text: "Send new password",
-                press: () {
-                  Navigator.pushNamed(context, SignInScreen.routeName);
-                  
-                },
-               ),
               ],
             ),
           ),

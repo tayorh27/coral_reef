@@ -42,4 +42,7 @@ class MyColors {
   static int avatarColor7 = 0xFF395185;
   static int avatarColor8 = 0xFF3EC643;
 
+  static int dietSliderBgColor = 0xFF7A2876;
+  static int dietSliderTrackColor = 0xFFFB82F5;
+
 }

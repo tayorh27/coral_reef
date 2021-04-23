@@ -25,16 +25,9 @@ class Body extends StatelessWidget {
                 Heading(),
                 SizedBox(height: SizeConfig.screenHeight * 0.05),
                 SignForm(),
-                SizedBox(height: SizeConfig.screenHeight * 0.03),
-                Center(
-                    child: Line()),
-                SizedBox(
-                  height: 10,
-                ),
-                Socials(),
                 SizedBox(height: getProportionateScreenHeight(10)),
                 HaveAccountText(),
-                SizedBox(height: getProportionateScreenHeight(10)),
+                SizedBox(height: SizeConfig.screenHeight * 0.05),
               ],
             ),
           ),
@@ -75,39 +68,6 @@ class HaveAccountText extends StatelessWidget {
   }
 }
 
-class Line extends StatelessWidget {
-  const Line({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(
-            child: Divider(
-          thickness: 0.5,
-          color: Color(MyColors.primaryColor).withAlpha(40),
-        )),
-        SizedBox(
-          width: 5,
-        ),
-        Text('or sign up with', style: Theme.of(context)
-            .textTheme
-            .subtitle1.copyWith(color: Color(MyColors.titleTextColor)),),
-        SizedBox(
-          width: 5,
-        ),
-        Expanded(
-            child: Divider(
-          thickness: 0.5,
-          color: Color(MyColors.primaryColor).withAlpha(40),
-        )),
-      ],
-    );
-  }
-}
 
 class Logo extends StatelessWidget {
   const Logo({
@@ -138,34 +98,6 @@ class Logo extends StatelessWidget {
   }
 }
 
-class Socials extends StatelessWidget {
-  const Socials({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SocialCard(
-          icon: "assets/icons/google.png",
-          press: () {},
-        ),
-        SocialCard(
-          icon: "assets/icons/facebook.png",
-          press: () {},
-        ),
-        (Platform.isIOS)
-            ? SocialCard(
-                icon: "assets/icons/apple.png",
-                press: () {},
-              )
-            : Text(''),
-      ],
-    );
-  }
-}
 
 class Heading extends StatelessWidget {
   const Heading({

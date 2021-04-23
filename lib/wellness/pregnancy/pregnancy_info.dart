@@ -10,6 +10,7 @@ import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/shared_screens/horizontal_progress_slider.dart';
 import 'package:coral_reef/shared_screens/task_completed_screen.dart';
 import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
+import 'package:coral_reef/wellness/period/period_info.dart';
 import 'package:flutter/material.dart';
 
 import '../../size_config.dart';
@@ -193,17 +194,18 @@ class _PregnancyInfo extends State<PregnancyInfo> {
     });
   }
 
-  startTimer() {
-    _showTestDialog(context);
-    Timer(Duration(seconds: 3), () async {
-      //encode the answers from the questions and store in local storage
-      String pregnancyRecord = jsonEncode(answers);
-      await ss.setPrefItem("pregnancyRecord", pregnancyRecord);
-      await ss.setPrefItem(
-          "wellnessSetup", "true"); //don't display wellness.dart again
-      //go to pregnancy dashboard
-      Navigator.pushNamed(context, CoralBottomNavigationBar.routeName);
-    });
+  startTimer() async {
+    // _showTestDialog(context);
+    // Timer(Duration(seconds: 3), () async {
+    //
+    // });
+    //encode the answers from the questions and store in local storage
+    String pregnancyRecord = jsonEncode(answers);
+    await ss.setPrefItem("pregnancyRecord", pregnancyRecord);
+    // await ss.setPrefItem("wellnessSetup", "true"); //don't display wellness.dart again
+    //go to period info
+    Navigator.pushNamed(context, PeriodInfo.routeName);
+    // Navigator.pushNamed(context, CoralBottomNavigationBar.routeName);
   }
 
   void _showTestDialog(context) {

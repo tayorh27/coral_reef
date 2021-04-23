@@ -1,6 +1,7 @@
+import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/wellness/onboarding/component.dart';
-import 'package:coral_reef/wellness/onboarding/height.dart';
+import 'package:coral_reef/wellness/diet_exercise_well_being/height.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:vertical_weight_slider/vertical_weight_slider.dart';
@@ -8,65 +9,76 @@ import 'package:vertical_weight_slider/vertical_weight_slider.dart';
 import '../../constants.dart';
 import '../../size_config.dart';
 
-class RequiredWeightScreen extends StatelessWidget {
-  static String routeName = "/requiredweight";
+class DesiredWeightScreen extends StatefulWidget {
+
+  static String routeName = "/weight";
+  final double currentWeight;
+  final Function(double weight, bool clicked) onPress;
+
+  DesiredWeightScreen(this.currentWeight, {this.onPress});
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text('skip',style: TextStyle(color: Colors.purple),),
-          ],
-        ),
-        leading: Icon(Icons.arrow_back,color: Colors.black,),
-        backgroundColor: Colors.white,elevation: 0.1,),
-      body: Body(),
-    );
+  State<StatefulWidget> createState() => _DesiredWeightScreen();
+}
+
+class _DesiredWeightScreen extends State<DesiredWeightScreen> {
+
+  double weight = 30.0;
+
+  StorageSystem ss = new StorageSystem();
+
+  String metricSelected = "kg";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    weight = (widget.currentWeight == null) ? 30.0 : widget.currentWeight;
+    ss.getItem("weight_metric").then((value) {
+      setState(() {
+        metricSelected = value;
+      });
+    });
   }
-}
-
-class Body extends StatefulWidget {
-  @override
-  _BodyState createState() => _BodyState();
-}
-
-class _BodyState extends State<Body> {
-  double weight = 0.0;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: SizedBox(
+      child: SizedBox(
         width: double.infinity,
         child: Padding(
           padding: EdgeInsets.symmetric(
-          horizontal: getProportionateScreenWidth(20), 
-          vertical: getProportionateScreenWidth(20)),
+              horizontal: getProportionateScreenWidth(20),
+              vertical: getProportionateScreenWidth(20)),
           child: SingleChildScrollView(
-          child: Column(
+            child: Column(
               children: [
-                SizedBox(height: SizeConfig.screenHeight * 0.01),
-                HeadingText2(),
-                SizedBox(height: SizeConfig.screenHeight * 0.05),
-                Buttons(),
+                // SizedBox(height: SizeConfig.screenHeight * 0.01),
+                // HeadingText(),
+                SizedBox(height: SizeConfig.screenHeight * 0.03),
+                metricSwitch(),
                 Container(
-                child: Column(
-                  children: [
+                  child: Column(
+                    children: [
                       Container(
                         height: 100.0,
                         alignment: Alignment.center,
                         child: GestureDetector(
-                        onTap: (){_showTestDialog(context);},
-                        child: Text("$weight kg",
-                        style: TextStyle(color:Colors.purple,fontSize: 40.0, fontWeight: FontWeight.w500),
+                          onTap: () {
+                            _showTestDialog(context);
+                          },
+                          child: Text(
+                            "$weight $metricSelected",
+                            style: TextStyle(
+                                color: Colors.purple,
+                                fontSize: 40.0,
+                                fontWeight: FontWeight.w500),
                           ),
                         ),
                       ),
                       VerticalWeightSlider(
-                        maximumWeight: 200,
-                        initialWeight: 50,
+                        maximumWeight: 2000,
+                        initialWeight: weight,
                         gradationColor: [
                           Colors.purple[500],
                           Colors.purple[300],
@@ -81,18 +93,49 @@ class _BodyState extends State<Body> {
                     ],
                   ),
                 ),
-                SizedBox(height: SizeConfig.screenHeight * 0.05),
+                SizedBox(height: SizeConfig.screenHeight * 0.04),
                 DefaultButton(
-                 text: 'Continue',
-                 press: (){
-                   Navigator.pushNamed(context, HeightScreen.routeName);
-                 }
-               )  
+                    text: 'Continue',
+                    press: () {
+                      widget.onPress(weight, true);
+                    })
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget metricSwitch() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: SwitchButtons(
+              text: 'kg',
+              selected: metricSelected == "kg",
+              press: () async {
+                await ss.setPrefItem("weight_metric", "kg");
+                setState(() {
+                  metricSelected = "kg";
+                });
+              }),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: SwitchButtons(
+              text: 'lbs',
+              selected: metricSelected == "lbs",
+              press: () async {
+                await ss.setPrefItem("weight_metric", "lbs");
+                setState(() {
+                  metricSelected = "lbs";
+                });
+              }),
+        ),
+      ],
     );
   }
 }

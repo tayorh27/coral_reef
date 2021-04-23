@@ -7,6 +7,9 @@ import 'package:coral_reef/g_chat_screen/GChatScreen.dart';
 import 'package:coral_reef/g_chat_screen/gchat_home_screen.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/tracker_screens/tracker_landing.dart';
+import 'package:coral_reef/wallet_screen/wallet_home_screen.dart';
+import 'package:coral_reef/wallet_screen/wallet_setup_screen.dart';
+import 'package:coral_reef/wellness/wellness_tracker_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -22,6 +25,8 @@ class CoralBottomNavigationBar extends StatefulWidget {
 }
 
 class _BottomNavigationBarState extends State<CoralBottomNavigationBar> {
+
+  String wellnessSetup = "", walletSetup = "";
   StorageSystem ss = new StorageSystem();
 
   int currentIndex = 0;
@@ -31,13 +36,13 @@ class _BottomNavigationBarState extends State<CoralBottomNavigationBar> {
   Widget callPage(int current) {
     switch (current) {
       case 0:
-        return TrackerLanding();
+        return (wellnessSetup.isEmpty) ? WellnessTrackerOptions() : TrackerLanding();
       case 1:
         return (hasGChatSetup) ? GChatHomeScreen() : GChatScreen();
       case 2:
-        return TrackerLanding();
+        return (walletSetup.isEmpty) ? WalletSetupScreen() : WalletHomeScreen();
       default:
-        return TrackerLanding();
+        return (wellnessSetup.isEmpty) ? WellnessTrackerOptions() : TrackerLanding();
     }
   }
 
@@ -53,6 +58,18 @@ class _BottomNavigationBarState extends State<CoralBottomNavigationBar> {
         hasGChatSetup = hasGChat;
       });
     }
+    ss.getItem("wellnessSetup").then((value) {
+      String v = value ?? "";
+      setState(() {
+        wellnessSetup = v;
+      });
+    });
+    ss.getItem("walletSetup").then((value) {
+      String v = value ?? "";
+      setState(() {
+        wellnessSetup = v;
+      });
+    });
   }
 
   /// Build BottomNavigationBar Widget

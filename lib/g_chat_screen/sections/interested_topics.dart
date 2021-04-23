@@ -36,6 +36,10 @@ class _InterestedTopics extends State<InterestedTopics> {
 
   List<String> selectedTopics = [];
 
+  bool loading = false;
+
+  TextEditingController _textEditingController = new TextEditingController(text: "");
+
   @override
   void initState() {
     // TODO: implement initState
@@ -78,7 +82,7 @@ class _InterestedTopics extends State<InterestedTopics> {
                 children: [
                   Center(
                       child: Text(
-                          "Add topics you'll be interested in.\nInterest are private to you",
+                          "Add topics you'll be interested in.\nInterest are private to you.",
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.subtitle1.copyWith(
                               color: Colors.grey,
@@ -168,12 +172,19 @@ class _InterestedTopics extends State<InterestedTopics> {
                     ],
                   ),
                   SizedBox(
-                    height: 100.0,
+                    height: 50.0,
+                  ),
+                  YourNameText(),
+                  SizedBox(height: getProportionateScreenHeight(5)),
+                  yourNameField(),
+                  SizedBox(
+                    height: 70.0,
                   ),
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: DefaultButton(
                       text: "Continue",
+                      loading: loading,
                       press: () async {
                         if (selectedTopics.isEmpty) {
                           new GeneralUtils().displayAlertDialog(
@@ -182,11 +193,31 @@ class _InterestedTopics extends State<InterestedTopics> {
                               "Please select at least one topic.");
                           return;
                         }
+                        if(_textEditingController.text.isEmpty) {
+                          new GeneralUtils().displayAlertDialog(
+                              context,
+                              "Info Message",
+                              "Please enter your anonymous username.");
+                          return;
+                        }
+                        setState(() {
+                          loading = true;
+                        });
                         Map<String, dynamic> gTopics = new Map();
                         gTopics["selectedTopics"] = selectedTopics;
+                        gTopics["username"] = _textEditingController.text;
                         await ss.setPrefItem("topics", jsonEncode(gTopics));
                         await ss.setPrefItem("gchatSetup", "true");
                         // Navigator.pushNamed(context, HomeScreen.routeName);
+                        //subscribe to topics
+                        String getUser = await ss.getItem("user");
+                        Map<String, dynamic> userData = jsonDecode(getUser);
+                        selectedTopics.forEach((topic) async {
+                          await new GeneralUtils().subscribeToTopic(topic, userData["msgId"]);
+                        });
+                        setState(() {
+                          loading = false;
+                        });
                         Navigator.of(context).pushReplacement(MaterialPageRoute(
                             builder: (BuildContext context) =>
                                 new CoralBottomNavigationBar(
@@ -228,5 +259,57 @@ class _InterestedTopics extends State<InterestedTopics> {
 
   checkIfExists(String optItem) {
     selectedTopics.contains(optItem);
+  }
+
+  Widget yourNameField() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Color(MyColors.formFillColor),
+        border: Border.all(
+          color: Color(MyColors.primaryColor),
+          width: 0.5,
+        ),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      width: double.infinity,
+      height: getProportionateScreenHeight(56),
+      child: TextFormField(
+        keyboardType: TextInputType.name,
+        obscureText: false,
+        controller: _textEditingController,
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 10,
+            vertical: 15,
+          ),
+          border: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          //hintText: '',
+        ),
+      ),
+    );
+  }
+}
+
+class YourNameText extends StatelessWidget {
+  const YourNameText({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(
+          "Enter your anonymous username",
+          style: Theme.of(context)
+              .textTheme
+              .subtitle1
+              .copyWith(color: Color(MyColors.titleTextColor)),
+        ),
+        Spacer(),
+      ],
+    );
   }
 }

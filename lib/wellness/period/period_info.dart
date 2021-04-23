@@ -10,9 +10,9 @@ import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/shared_screens/horizontal_progress_slider.dart';
 import 'package:coral_reef/shared_screens/task_completed_screen.dart';
 import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
-import 'package:coral_reef/wellness/onboarding/last_period.dart';
-import 'package:coral_reef/wellness/onboarding/period_length.dart';
-import 'package:coral_reef/wellness/onboarding/year.dart';
+import 'package:coral_reef/wellness/period/last_period.dart';
+import 'package:coral_reef/wellness/period/period_length.dart';
+import 'package:coral_reef/wellness/period/year.dart';
 import 'package:flutter/material.dart';
 
 import '../../size_config.dart';

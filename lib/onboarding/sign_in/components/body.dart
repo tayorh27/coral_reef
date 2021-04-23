@@ -3,10 +3,7 @@ import 'dart:io';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/components/no_account_text.dart';
 import 'package:coral_reef/components/socal_card.dart';
-import 'package:coral_reef/services/auth_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../../size_config.dart';
 import 'sign_form.dart';
 
@@ -18,17 +15,10 @@ class Body extends StatefulWidget {
 
 class _Body extends State<Body> {
 
-  AuthService authService;
-  bool appleAvailable = false;
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    authService = new AuthService(onComplete: (user, res, req) {
-      print(user);
-    });
-    SignInWithApple.isAvailable().then((value) => appleAvailable = value);
   }
 
   @override
@@ -48,18 +38,6 @@ class _Body extends State<Body> {
                 Heading(),
                 SizedBox(height: SizeConfig.screenHeight * 0.05),
                 SignForm(),
-                SizedBox(height: SizeConfig.screenHeight * 0.08),
-                Line(),
-                SizedBox(
-                  height: 5,
-                ),
-                Center(child: Text('Sign in with',style: Theme.of(context)
-                    .textTheme
-                    .subtitle1.copyWith(color: Color(MyColors.titleTextColor)))),
-                SizedBox(
-                  height: 20,
-                ),
-                socialButtons(),
                 SizedBox(height: getProportionateScreenHeight(20)),
                 NoAccountText(),
               ],
@@ -69,70 +47,8 @@ class _Body extends State<Body> {
       ),
     );
   }
-
-  Widget socialButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SocialCard(
-          icon: "assets/icons/google.png",
-          press: () async {
-            User user = await authService.googleRequest(context);
-            print(user);
-          },
-        ),
-        SocialCard(
-          icon: "assets/icons/facebook.png",
-          press: () async {
-            await authService.facebookRequest(context);
-          },
-        ),
-        (Platform.isIOS)
-            ? SocialCard(
-          icon: "assets/icons/apple.png",
-          press: () async {
-            await authService.appleRequest(context, appleAvailable);
-          },
-        )
-            : Text(''),
-      ],
-    );
-  }
 }
 
-class Line extends StatelessWidget {
-  const Line({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Expanded(
-            child: Divider(
-          thickness: 0.5,
-          color: Color(MyColors.primaryColor).withAlpha(40),
-        )),
-        SizedBox(
-          width: 5,
-        ),
-        Text('or',style: Theme.of(context)
-            .textTheme
-            .subtitle1.copyWith(color: Color(MyColors.titleTextColor)),),
-        SizedBox(
-          width: 5,
-        ),
-        Expanded(
-            child: Divider(
-          thickness: 0.5,
-          color: Color(MyColors.primaryColor).withAlpha(40),
-        )),
-      ],
-    );
-  }
-}
 
 class Logo extends StatelessWidget {
   const Logo({

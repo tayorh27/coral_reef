@@ -50,7 +50,11 @@ class _LoginSymptoms extends State<LoginSymptoms> {
     "Eggwhite"
   ];
 
-  List<String> selectedOptions = [];
+  List<String> selectedMoods = [];
+  List<String> selectedSymptoms = [];
+  List<String> selectedDischarge = [];
+
+  // List<String> selectedOptions = [];
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +63,12 @@ class _LoginSymptoms extends State<LoginSymptoms> {
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color(MyColors.primaryColor),
-        child: Icon(Icons.check, color: Colors.white, size: 32.0,),
-        onPressed: (){},
+        child: Icon(
+          Icons.check,
+          color: Colors.white,
+          size: 32.0,
+        ),
+        onPressed: () {},
         tooltip: "Save",
       ),
       body: SafeArea(
@@ -99,9 +107,19 @@ class _LoginSymptoms extends State<LoginSymptoms> {
                             title: opt,
                             image:
                                 "assets/symptoms/${opt.toLowerCase().replaceAll(" ", "-")}.svg",
+                            selected:
+                                (selectedMoods.contains(opt)) ? true : false,
                             returnSelected: (_selectedOptions) {
                               print(_selectedOptions);
-                              selectedOptions = _selectedOptions;
+                              if (selectedMoods.contains(opt)) {
+                                setState(() {
+                                  selectedMoods.remove(opt);
+                                });
+                              } else {
+                                setState(() {
+                                  selectedMoods.add(opt);
+                                });
+                              }
                             },
                           ))
                       .toList(),
@@ -130,10 +148,18 @@ class _LoginSymptoms extends State<LoginSymptoms> {
                             title: opt,
                             image:
                                 "assets/symptoms/${opt.toLowerCase().replaceAll(" ", "-")}.svg",
+                            selected:
+                                (selectedSymptoms.contains(opt)) ? true : false,
                             returnSelected: (_selectedOptions) {
-                              print("hello");
-                              print(_selectedOptions);
-                              selectedOptions = _selectedOptions;
+                              if (selectedSymptoms.contains(opt)) {
+                                setState(() {
+                                  selectedSymptoms.remove(opt);
+                                });
+                              } else {
+                                setState(() {
+                                  selectedSymptoms.add(opt);
+                                });
+                              }
                             },
                           ))
                       .toList(),
@@ -161,9 +187,19 @@ class _LoginSymptoms extends State<LoginSymptoms> {
                             title: opt,
                             image:
                                 "assets/symptoms/${opt.toLowerCase().replaceAll(" ", "-")}.svg",
+                            selected: (selectedDischarge.contains(opt))
+                                ? true
+                                : false,
                             returnSelected: (_selectedOptions) {
-                              print(_selectedOptions);
-                              selectedOptions = _selectedOptions;
+                              if (selectedDischarge.contains(opt)) {
+                                setState(() {
+                                  selectedDischarge.remove(opt);
+                                });
+                              } else {
+                                setState(() {
+                                  selectedDischarge.add(opt);
+                                });
+                              }
                             },
                           ))
                       .toList(),
@@ -180,10 +216,26 @@ class _LoginSymptoms extends State<LoginSymptoms> {
                 ),
                 Row(
                   children: [
-                    Text("Log a symptom or make a note",
-                        style: Theme.of(context).textTheme.subtitle1.copyWith(
-                            color: Colors.grey,
-                            fontSize: getProportionateScreenWidth(11)))
+                    Container(
+                      height: 80.0,
+                      width: MediaQuery.of(context).size.width - 100.0,
+                      padding: EdgeInsets.only(top: 10.0),
+                      child: TextFormField(
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 3,
+                        textCapitalization: TextCapitalization.sentences,
+                        decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "Log a symptom or make a note",
+                            hintStyle: Theme.of(context).textTheme.subtitle1.copyWith(
+                                color: Colors.grey
+                            ),
+                            labelStyle: Theme.of(context).textTheme.subtitle1.copyWith(
+                                color: Colors.grey, fontWeight: FontWeight.bold
+                            )
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(height: SizeConfig.screenHeight * 0.08),

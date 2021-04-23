@@ -10,13 +10,16 @@ import '../size_config.dart';
 import 'components/gchat_scrolling_options.dart';
 
 class GChatHomeScreen extends StatefulWidget {
+
   @override
   State<StatefulWidget> createState() => _GChatHomeScreen();
 }
 
 class _GChatHomeScreen extends State<GChatHomeScreen> {
   List<Map<String, dynamic>> screens = [
-    {"screen_name": "G-chat", "screen_class": GChatTimelineScreen()},
+    {"screen_name": "G-chat", "screen_class": GChatTimelineScreen((hideFloat){
+      // print("hiding2 = $hideFloat");
+    })},
     {"screen_name": "Blog post", "screen_class": BlogPostScreen()},
     {
       "screen_name": "Job opportunities",
@@ -24,9 +27,13 @@ class _GChatHomeScreen extends State<GChatHomeScreen> {
     },
   ];
 
-  Widget selectedScreen = GChatTimelineScreen();
+  Widget selectedScreen = GChatTimelineScreen((hideFloat) {
+    // print("hiding = $hideFloat");
+  });
 
   String selectedMenu = "G-chat";
+
+  bool hideFloatingActionButton = false;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +46,7 @@ class _GChatHomeScreen extends State<GChatHomeScreen> {
           onPressed: (){
             Navigator.pushNamed(context, CreateNewGChat.routeName);
           },
-          tooltip: "Create New",
+          tooltip: "Create New Post",
         ): null,
         body: Padding(
           padding:

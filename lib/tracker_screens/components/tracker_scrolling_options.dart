@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import '../../size_config.dart';
 
 class TrackerScrollingOptions extends StatefulWidget {
-  final Function(String selectedMenu, bool hasWellnessRecord) onSelectedMenu;
+  final Function(String selectedMenu, bool hasWellnessRecord, bool hasDewRecord) onSelectedMenu;
 
   TrackerScrollingOptions({this.onSelectedMenu});
 
@@ -21,7 +21,8 @@ class _TrackerScrollingOptions extends State<TrackerScrollingOptions> {
 
   bool isPeriodTracker = false;
   bool isPregnancyTracker = false;
-  bool hasWellnessRecord = false;
+  bool hasWellnessRecord = false; //not used
+  bool hasDewRecord = false; //diet, exercise, well-being
 
   @override
   void initState() {
@@ -49,6 +50,13 @@ class _TrackerScrollingOptions extends State<TrackerScrollingOptions> {
       String value = val ?? "";
       setState(() {
         hasWellnessRecord = value.isNotEmpty;
+      });
+    });
+
+    ss.getItem("dewSetup").then((value) {
+      String v = value ?? "";
+      setState(() {
+        hasDewRecord = v.isNotEmpty;
       });
     });
   }
@@ -92,7 +100,7 @@ class _TrackerScrollingOptions extends State<TrackerScrollingOptions> {
     if (!mounted) return;
     setState(() {
       selectedMenu = menu;
-      widget.onSelectedMenu(selectedMenu, hasWellnessRecord);
+      widget.onSelectedMenu(selectedMenu, hasWellnessRecord, hasDewRecord);
     });
   }
 

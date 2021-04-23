@@ -1,4 +1,5 @@
 import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
+import 'package:coral_reef/onboarding/sign_up/signup_screen.dart';
 import 'package:flutter/material.dart';
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -79,7 +80,7 @@ class _BodyState extends State<Body> {
                      DefaultButton(
                        text: "Get started",
                        press: () {
-                       Navigator.pushNamed(context, SignInScreen.routeName);
+                        Navigator.pushReplacementNamed(context, SignUpScreen.routeName);
                        },
                      ),
                      SizedBox(height: 10,),
