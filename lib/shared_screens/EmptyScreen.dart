@@ -2,19 +2,19 @@ import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:flutter/material.dart';
 
-class EmptyCoffeeShop extends StatelessWidget {
+class EmptyScreen extends StatelessWidget {
   final String text;
+  final Color bgColor;
   // final bool showButton;
 
-  EmptyCoffeeShop(this.text);
+  EmptyScreen(this.text, {this.bgColor = Colors.white});
 
   @override
   Widget build(BuildContext context) {
     MediaQueryData mediaQueryData = MediaQuery.of(context);
     return Container(
       width: 500.0,
-      color: Colors.white,
-      height: 500.0,
+      color: bgColor,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -33,7 +33,8 @@ class EmptyCoffeeShop extends StatelessWidget {
                     color: Color(MyColors.titleTextColor),
                     fontSize: getProportionateScreenWidth(18),
                   ),
-            )
+            ),
+            Padding(padding: EdgeInsets.only(bottom: 10.0)),
           ],
         ),
       ),

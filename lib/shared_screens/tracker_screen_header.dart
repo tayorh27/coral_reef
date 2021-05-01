@@ -1,7 +1,9 @@
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/size_config.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+
 
 class TrackerScreenHeader extends StatefulWidget {
   @override
@@ -12,6 +14,7 @@ class _TrackerScreenHeader extends State<TrackerScreenHeader> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    final user = FirebaseAuth.instance.currentUser;
     final date = DateTime.now();
     final months = ["JAN", "FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
     final days = ["MON","TUE","WED","THU","FRI","SAT","SUN"];
@@ -29,7 +32,10 @@ class _TrackerScreenHeader extends State<TrackerScreenHeader> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(25.0),
             ),
-            child: Image.asset("assets/images/default_avatar.png"),
+            child: (user.photoURL == null) ? Image.asset("assets/images/default_avatar.png") : FadeInImage.assetNetwork(
+              placeholder: 'assets/images/default_avatar.png',
+              image: user.photoURL,
+            ),
           )
         ],
       ),
@@ -53,7 +59,10 @@ class _TrackerScreenHeader extends State<TrackerScreenHeader> {
 }
 
 // class TrackerScreenHeader {
-//
+//FadeInImage.assetNetwork(
+//               placeholder: 'assets/images/default_avatar.png',
+//               image: user.photoURL,
+//             ),
 //   PreferredSizeWidget appBar() {
 //     return AppBar(
 //       backgroundColor: Colors.white,

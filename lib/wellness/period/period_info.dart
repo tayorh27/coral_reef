@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/ListItem/OnboardingQuestions.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
@@ -15,6 +16,7 @@ import 'package:coral_reef/wellness/period/period_length.dart';
 import 'package:coral_reef/wellness/period/year.dart';
 import 'package:flutter/material.dart';
 
+import '../../constants.dart';
 import '../../size_config.dart';
 import 'cycle.dart';
 
@@ -115,39 +117,95 @@ class _PeriodInfo extends State<PeriodInfo> {
                 ))));
   }
 
+  String birthYear = "";
+  String lastPeriod = "";
+  String length = "";
+  String cycle = "";
+
   Widget displayScreen() {
-    if(screenType == ScreenType.year) {
-      return YearScreen(answers["$pageIndex"],onPress: (selectedDate, clicked){
-        print('I clicked $clicked');
-        if(!clicked) return;
-        print('hello $selectedDate');
-        if(selectedDate != null)
-          selectedOption(selectedDate.split("/")[0]);
-      });
+    if (screenType == ScreenType.year) {
+      return YearScreen(answers["$pageIndex"],
+          onPress: (selectedDate, clicked) {
+            print("i was born in" + selectedDate);
+
+            print("birth year value " + birthYear);
+            if (!clicked) return;
+            if (selectedDate != null) selectedOption(selectedDate.split("/")[0]);
+            birthYear = selectedDate.split("/")[0];
+            setState(() {});
+          });
     }
-    if(screenType == ScreenType.last_period){
-      return LastPeriodScreen(answers["$pageIndex"],onPress: (selectedDate, clicked){
-        if(!clicked) return;
-        if(selectedDate != null)
-          selectedOption(selectedDate);
-      });
+    if (screenType == ScreenType.last_period) {
+      return LastPeriodScreen(answers["$pageIndex"],
+          onPress: (selectedDate, clicked) {
+            if (!clicked) return;
+            if (selectedDate != null) selectedOption(selectedDate);
+            // lastPeriod = selectedOption(selectedDate);
+            lastPeriod = selectedDate;
+            setState(() {});
+            print("my last period " + lastPeriod);
+          });
     }
-    if(screenType == ScreenType.period_length){
-      return PeriodLengthScreen(answers["$pageIndex"],onPress: (selectedDate, clicked){
-        if(!clicked) return;
-        if(selectedDate != null)
-          selectedOption(selectedDate.split("/")[2]);
-      });
+
+    if (screenType == ScreenType.period_length) {
+      return PeriodLengthScreen(answers["$pageIndex"],
+          onPress: (selectedDate, clicked) {
+            if (!clicked) return;
+            if (selectedDate != null) selectedOption(selectedDate.split("/")[2]);
+            // length = selectedOption(selectedDate.split("/")[1]);
+            length = selectedDate.split('/')[1];
+            print("bleeding time  " + length);
+          });
     }
-    if(screenType == ScreenType.cycle){
-      return CycleScreen(answers["$pageIndex"],onPress: (selectedDate, clicked){
-        if(!clicked) return;
-        if(selectedDate != null)
-          selectedOption(selectedDate.split("/")[2]);
-      });
+
+    if (screenType == ScreenType.cycle) {
+      return CycleScreen(answers["$pageIndex"],
+          onPress: (selectedDate, clicked) {
+            if (!clicked) return;
+            if (selectedDate != null) selectedOption(selectedDate.split("/")[2]);
+            // cycle = selectedOption(selectedDate.split("/")[2]);
+            cycle = selectedDate.split('/')[2];
+            setState(() {});
+            print("my cycle is   " + cycle);
+          });
     }
     return Text('');
   }
+
+
+  // Widget displayScreen() {
+  //   if(screenType == ScreenType.year) {
+  //     return YearScreen(answers["$pageIndex"],onPress: (selectedDate, clicked){
+  //       print('I clicked $clicked');
+  //       if(!clicked) return;
+  //       print('hello $selectedDate');
+  //       if(selectedDate != null)
+  //         selectedOption(selectedDate.split("/")[0]);
+  //     });
+  //   }
+  //   if(screenType == ScreenType.last_period){
+  //     return LastPeriodScreen(answers["$pageIndex"],onPress: (selectedDate, clicked){
+  //       if(!clicked) return;
+  //       if(selectedDate != null)
+  //         selectedOption(selectedDate);
+  //     });
+  //   }
+  //   if(screenType == ScreenType.period_length){
+  //     return PeriodLengthScreen(answers["$pageIndex"],onPress: (selectedDate, clicked){
+  //       if(!clicked) return;
+  //       if(selectedDate != null)
+  //         selectedOption(selectedDate.split("/")[2]);
+  //     });
+  //   }
+  //   if(screenType == ScreenType.cycle){
+  //     return CycleScreen(answers["$pageIndex"],onPress: (selectedDate, clicked){
+  //       if(!clicked) return;
+  //       if(selectedDate != null)
+  //         selectedOption(selectedDate.split("/")[2]);
+  //     });
+  //   }
+  //   return Text('');
+  // }
 
   /*
   when an option is selected, store the selected option to answers
@@ -186,14 +244,43 @@ class _PeriodInfo extends State<PeriodInfo> {
 
   startTimer() {
     _showTestDialog(context);
-    Timer(Duration(seconds: 3), () async {
+    Timer(Duration(seconds: 1), () async {
+      String key = FirebaseFirestore.instance.collection("users").doc().id;
+
+      Map<String, dynamic> userPeriodDetails = {
+        "birthYear": birthYear,
+        "lastPeriod": lastPeriod,
+        "length": length,
+        "cycle": cycle,
+        "id": key,
+        "timestamp": FieldValue.serverTimestamp(),
+      };
+
+      Map<String, dynamic> userPeriodDetailsLocal = {
+        "birthYear": birthYear,
+        "lastPeriod": lastPeriod,
+        "length": length,
+        "cycle": cycle,
+      };
       //encode the answers from the questions and store in local storage
-      String periodRecord = jsonEncode(answers);
+      String periodRecord = jsonEncode(userPeriodDetailsLocal);
       print(periodRecord);
       await ss.setPrefItem("periodRecord", periodRecord);
       await ss.setPrefItem("wellnessSetup", "true");//don't display wellness.dart again
+      //save to firestore and go to period dashboard
+
+      await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("periods").doc(key).set(userPeriodDetails);
+
       //go to period dashboard
       Navigator.pushNamed(context, CoralBottomNavigationBar.routeName);
+
+      // firestoreinstance
+      //     .collection("perioddetails")
+      //     .doc(user.uid)
+      //     .set(userPeriodDetails)
+      //     .then((value) {
+      //
+      // });
 
     });
   }

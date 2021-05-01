@@ -1,11 +1,16 @@
 import 'dart:ui';
 
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/general.dart';
+import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/default_button.dart';
+import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
 import 'package:coral_reef/wallet_screen/components/pin_input_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import '../../size_config.dart';
+
+enum ScreenType {initial, retype}
 
 class SetupPin extends StatefulWidget {
 
@@ -16,6 +21,12 @@ class SetupPin extends StatefulWidget {
 }
 
 class _SetupPin extends State<SetupPin> {
+
+  ScreenType reTypePin = ScreenType.initial;
+  String userPin = "", retypePin = "";
+
+  StorageSystem ss = new StorageSystem();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,9 +41,9 @@ class _SetupPin extends State<SetupPin> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: SizeConfig.screenHeight * 0.08),
+                  SizedBox(height: SizeConfig.screenHeight * 0.09),
                   Text(
-                    "Create new PIN",
+                    (reTypePin == ScreenType.initial) ? "Create new PIN" : "Retype your PIN",
                     style: Theme.of(context).textTheme.headline2.copyWith(
                       color: Color(MyColors.titleTextColor),
                       fontSize: getProportionateScreenWidth(25)
@@ -50,23 +61,45 @@ class _SetupPin extends State<SetupPin> {
                   //   "+234 567 647 7684",
                   //   style: TextStyle(color: Color(MyColors.primaryColor)),
                   // ),
-                  SetupForm(),
-                  SizedBox(height: SizeConfig.screenHeight * 0.4),
+                  (reTypePin == ScreenType.initial) ? SetupForm1(onFinish: (String pin) {
+                    userPin = pin;
+                    setState(() {
+                      reTypePin = ScreenType.retype;
+                    });
+                  }) : SetupForm2(onFinish: (String pin) {
+                    retypePin = pin;
+                  }),
                   // buildTimer(),
-                  // SizedBox(height: SizeConfig.screenHeight * 0.02),
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     // OTP code resend
-                  //   },
-                  //   child: Text("Call me instead"),
-                  // ),
-                  // SizedBox(height: SizeConfig.screenHeight * 0.4),
-                  DefaultButton(
+                  SizedBox(height: SizeConfig.screenHeight * 0.03),
+                  (reTypePin == ScreenType.retype) ? GestureDetector(
+                    onTap: () {
+                      // setState(() {
+                      //   reTypePin = ScreenType.initial;
+                      // });
+                      Navigator.pushReplacementNamed(context, SetupPin.routeName);
+                    },
+                    child: Text("Reset Pin", textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.subtitle1.copyWith(
+                          color: Color(MyColors.primaryColor),
+                          fontSize: getProportionateScreenWidth(15))),
+                  ) : SizedBox(),
+                  SizedBox(height: SizeConfig.screenHeight * 0.3),
+                  (reTypePin == ScreenType.retype) ? DefaultButton(
                     text: "Continue",
-                    press: () {
+                    press: () async {
+                      if(userPin.isEmpty || retypePin.isEmpty) {
+                        new GeneralUtils().displayAlertDialog(context, "Attention", "Pins do not match.");
+                        return;
+                      }
+                      if(userPin != retypePin) {
+                        new GeneralUtils().displayAlertDialog(context, "Attention", "Pins do not match.");
+                        return;
+                      }
+                      await ss.setPrefItem("userPin", retypePin);
+                      await ss.setPrefItem("walletSetup", "true");
                       _showTestDialog(context);
                     },
-                  )
+                  ) : SizedBox()
                 ],
               ),
             ),
@@ -105,9 +138,12 @@ void _showTestDialog(context) {
 }
 
 class AlertDialogPage extends StatelessWidget {
-  const AlertDialogPage({
+
+  AlertDialogPage({
     Key key,
   }) : super(key: key);
+
+  StorageSystem ss = new StorageSystem();
 
   @override
   Widget build(BuildContext context) {
@@ -152,8 +188,11 @@ class AlertDialogPage extends StatelessWidget {
                   SizedBox(height: SizeConfig.screenHeight * 0.05),
                   DefaultButton(
                     text: "Continue",
-                    press: () {
-                      // Navigator.pushNamed(context, Country.routeName);
+                    press: () async {
+                      String _checkSetup = await ss.getItem("gchatSetup");// check if user has set up gchat settings
+                      bool hasSetup = _checkSetup != null;
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (BuildContext context) => new CoralBottomNavigationBar(isGChat: false, hasGChatSetup: hasSetup, goToWallet: true,)));
                     },
                   )
                 ],

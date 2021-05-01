@@ -9,12 +9,14 @@ class SymptomsGridOptions extends StatefulWidget {
   final String image;
   final Function(String selected) returnSelected;
   final bool selected;
+  final bool marginRight;
   SymptomsGridOptions(
       {this.backgroundColor,
       this.image,
       this.title,
       this.returnSelected,
-      this.selected});
+      this.selected,
+      this.marginRight = false});
 
   @override
   State<StatefulWidget> createState() => _SymptomsGridOptions();
@@ -30,7 +32,7 @@ class _SymptomsGridOptions extends State<SymptomsGridOptions> {
       child: Stack(
         children: [
           Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: (widget.marginRight) ? CrossAxisAlignment.start : CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               InkWell(
@@ -41,6 +43,7 @@ class _SymptomsGridOptions extends State<SymptomsGridOptions> {
                       width: 50.0,
                       height: 50.0,
                       padding: EdgeInsets.all(10.0),
+                      margin: EdgeInsets.only(right: (widget.marginRight) ? 30.0 : 0.0),
                       decoration: BoxDecoration(
                           color: widget.backgroundColor,
                           borderRadius: BorderRadius.circular(25.0)),

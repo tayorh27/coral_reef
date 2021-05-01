@@ -330,8 +330,15 @@ class _SignFormState extends State<SignForm> {
       userData['lastname'] = _lastname;
       userData['msgId'] = [msgId];
       userData['picture'] = _picture;
-      await ss.setPrefItem('loggedin', 'true');
-      await ss.setPrefItem('user', jsonEncode(userData));
+
+      Map<String, dynamic> setupData = new Map();
+      setupData["init"] = true;
+      await FirebaseFirestore.instance.collection("users").doc(firebaseUser.uid).collection("setups").doc("user-data").set(setupData);
+
+
+      await ss.setPrefItem('loggedin', 'true', isStoreOnline: false);
+      await ss.setPrefItem('user', jsonEncode(userData), isStoreOnline: false);
+
       // pd.dismissDialog();
       setState(() {
         _loading = false;

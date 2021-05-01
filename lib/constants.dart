@@ -1,5 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/size_config.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'models/period.dart';
+
+User _user;
+PeriodDetail periodDetail;
 
 const kPrimaryColor = Colors.purple;
 const kPrimaryLightColor = Color(0xFFFFECDF);
@@ -51,3 +58,10 @@ OutlineInputBorder outlineInputBorder() {
     borderSide: BorderSide(color: kTextColor),
   );
 }
+
+
+final firestoreinstance = FirebaseFirestore.instance;
+final user = FirebaseAuth.instance.currentUser;
+final String demodata =
+    "At 17 weeks your baby’s skeleton is now bone as it changed from being a soft cartilage. The placenta is growing steadily as it provides your little one with nutrients and oxygen and also removes wastes. ";
+

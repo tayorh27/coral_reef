@@ -18,7 +18,7 @@ class BorderFilledCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Container(
-        height: 150.0,
+        height: 170.0,
         width: getProportionateScreenWidth(150),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18.0),

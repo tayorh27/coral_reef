@@ -165,7 +165,7 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
                             style: Theme.of(context).textTheme.subtitle1.copyWith(
                                 color: Color(MyColors.titleTextColor),
                                 fontSize: getProportionateScreenWidth(13)))),
-                    (fileType == "image")
+                    (fileType == "image" || fileType == "gif")
                         ? ImageDisplayWidget(postMediaUrl)
                         : (fileType == "video")
                         ? VideoDisplayWidget(postMediaUrl, thumbImage)

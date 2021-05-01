@@ -5,7 +5,14 @@ import 'package:coral_reef/onboarding/forgotpassword/forgotpassword.dart';
 import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/period_tracker_screen.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/sections/login_symptoms.dart';
+import 'package:coral_reef/tracker_screens/pregnancy_tracker/pregnancy_tracker_screen.dart';
+import 'package:coral_reef/tracker_screens/pregnancy_tracker/sections/tips.dart';
+import 'package:coral_reef/tracker_screens/pregnancy_tracker/sections/your_baby.dart';
+import 'package:coral_reef/tracker_screens/pregnancy_tracker/sections/your_body.dart';
+import 'package:coral_reef/tracker_screens/pregnancy_tracker/sections/your_tips.dart';
+import 'package:coral_reef/wallet_screen/sections/receive_token.dart';
 import 'package:coral_reef/wallet_screen/sections/setup_pin.dart';
+import 'package:coral_reef/wallet_screen/sections/transfer_token.dart';
 import 'package:coral_reef/wellness/conceive/conceive_info.dart';
 import 'package:coral_reef/wellness/diet_exercise_well_being/diet_exercise_well_being_info.dart';
 import 'package:coral_reef/wellness/diet_exercise_well_being/height.dart';
@@ -49,4 +56,11 @@ final Map<String, WidgetBuilder> routes = {
   InterestedTopics.routeName: (context) => InterestedTopics(),
   CreateNewGChat.routeName: (context) => CreateNewGChat(),
   SetupPin.routeName: (context) => SetupPin(),
+  ReceiveWallet.routeName: (context) => ReceiveWallet(),
+  TransferToken.routeName: (context) => TransferToken(),
+  PregnancyTrackerScreen.routeName: (context) => PregnancyTrackerScreen(),
+  YourBaby.routeName: (context) => YourBaby(),
+  YourBody.routeName: (context) => YourBody(),
+  TipsScreen.routeName: (context) => TipsScreen(),
+  YourTips.routeName: (context) => YourTips(),
 };

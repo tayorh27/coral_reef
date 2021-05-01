@@ -47,6 +47,8 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
   List<Widget> loadComments() {
     List<Widget> mComments = [];
 
+    // int index = 0;
+
     comments.forEach((com) {
       mComments.add(
           ListTile(
@@ -90,6 +92,7 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
             isThreeLine: true,
           )
       );
+      // index = index + 1;
     });
     return mComments;
   }

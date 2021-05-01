@@ -1,0 +1,113 @@
+
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coral_reef/ListItem/model_transactions.dart';
+import 'package:coral_reef/Utils/storage.dart';
+import 'package:http/http.dart' as http;
+
+class WalletServices {
+  StorageSystem ss;
+
+  WalletServices() {
+    ss = new StorageSystem();
+  }
+
+  /*
+  get the token balance of the user
+  * */
+  Future<String> getTokenBalance(String publicAddress) async {
+
+    Uri _uri = Uri.parse("https://us-central1-coraltrackerapp.cloudfunctions.net/getusertokenbalance?address=$publicAddress");
+
+    http.Response res = await http.get(_uri);
+
+    print(res.body);
+
+    Map<String, dynamic> _body = jsonDecode(res.body);
+
+    return (_body["token_balance"] == null) ? "0" : _body["token_balance"];
+
+  }
+
+  /*
+  get the token balance of the user
+  * */
+  Future<String> getZilBalance(String zilAddress) async {
+    Uri _uri = Uri.parse("https://us-central1-coraltrackerapp.cloudfunctions.net/getzilbalance?address=$zilAddress");
+
+    http.Response res = await http.get(_uri);
+
+    print(res.body);
+
+    Map<String, dynamic> _body = jsonDecode(res.body);
+
+    return (_body["zil_balance"] == null) ? "0" : _body["zil_balance"];
+
+  }
+
+  /*
+  get the user zil and token address
+  * */
+  Future<Map<String, dynamic>> getUserAddresses() async {
+    Map<String, dynamic> address = new Map();
+
+    String user = await ss.getItem("user");
+    dynamic json = jsonDecode(user);
+    String uid = json["uid"];
+
+    DocumentSnapshot query = await FirebaseFirestore.instance.collection("users").doc(uid).get();
+
+    if(!query.exists) {
+      return null;
+    }
+
+    Map<String, dynamic> data = query.data();
+
+    address["public"] = data["public_address"];
+    address["zil"] = data["zil_address"];
+
+    return address;
+  }
+
+  /*
+  get the list of transactions
+  * */
+  Future<List<Transactions>> getTransactions() async {
+    String user = await ss.getItem("user");
+    dynamic json = jsonDecode(user);
+    String uid = json["uid"];
+
+    QuerySnapshot query = await FirebaseFirestore.instance.collection("transactions").where("user_uid", isEqualTo: uid).orderBy("timestamp", descending: true).get();
+
+    if(query.size == 0) {
+      return [];
+    }
+
+    List<Transactions> mTrans = [];
+
+    query.docs.forEach((q) {
+      Transactions tr = Transactions.fromSnapshot(q.data());
+      mTrans.add(tr);
+    });
+
+    return mTrans;
+  }
+
+  Future<Map<String, dynamic>> transferToken(String senderAddress, String recipientAddress, String amount) async {
+    String user = await ss.getItem("user");
+    dynamic json = jsonDecode(user);
+    String uid = json["uid"];
+
+    Uri _uri = Uri.parse("https://us-central1-coraltrackerapp.cloudfunctions.net/transfertoaccount?uid=$uid&recipientAddress=$recipientAddress&sendingAddress=$senderAddress&sendingAmount=$amount");
+
+    http.Response res = await http.get(_uri);
+
+    print(res.body);
+
+    Map<String, dynamic> _body = jsonDecode(res.body);
+
+    return _body;
+
+  }
+}

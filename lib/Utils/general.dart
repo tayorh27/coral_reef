@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -130,15 +131,16 @@ class GeneralUtils {
 
   Future<void> subscribeToTopic(String _topic, List<dynamic> _ids) async {
 
-    http.Response r = await http.post(
-        Uri.parse('https://us-central1-coraltrackerapp.cloudfunctions.net/subtopic?topic=$_topic'),
-      body: jsonEncode(
-        <String, dynamic>{
-          'id': _ids,
-        },
-      ),
-    );
-    print(r.body);
+    await FirebaseMessaging.instance.subscribeToTopic(_topic);
+    // http.Response r = await http.post(
+    //     Uri.parse('https://us-central1-coraltrackerapp.cloudfunctions.net/subtopic?topic=$_topic'),
+    //   body: jsonEncode(
+    //     <String, dynamic>{
+    //       'id': _ids,
+    //     },
+    //   ),
+    // );
+    // print(r.body);
   }
 
   String returnFormattedDate(String createdDate) {

@@ -106,19 +106,19 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
     //
     // });
 
-    _scrollController.addListener(() {
-      if(_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange) {
-        setState(() {
-          isBottom = true;
-          // widget.hideFloatingButton(true);
-        });
-      }else {
-        setState(() {
-          isBottom = false;
-          // widget.hideFloatingButton(false);
-        });
-      }
-    });
+    // _scrollController.addListener(() {
+    //   if(_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange) {
+    //     setState(() {
+    //       isBottom = true;
+    //       // widget.hideFloatingButton(true);
+    //     });
+    //   }else {
+    //     setState(() {
+    //       isBottom = false;
+    //       // widget.hideFloatingButton(false);
+    //     });
+    //   }
+    // });
 
     getAllLikesData();
     // imageNetwork.resolve(new ImageConfiguration()).addListener(
@@ -132,7 +132,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
   }
   
   getGChats() async {
-    gchatsList = FirebaseFirestore.instance.collection("gchats").where("visibility", isEqualTo: "published").orderBy("timestamp", descending: true).limit(100).snapshots().listen((event) async {
+    gchatsList = FirebaseFirestore.instance.collection("gchats").where("visibility", isEqualTo: "published").orderBy("timestamp", descending: true).snapshots().listen((event) async {
       if(!mounted) return;
       
       setState(() {

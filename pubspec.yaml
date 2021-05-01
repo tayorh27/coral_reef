@@ -58,9 +58,19 @@ dependencies:
   step_progress_indicator: ^0.2.5+8
   progress_bars: ^0.0.3
   extended_image: ^3.0.0-non-null-safety
+  chewie: ^1.0.0
   video_player: ^2.1.1
   giphy_picker: ^2.0.0
   apple_sign_in: ^0.1.0
+  syncfusion_flutter_barcodes: ^18.1.42-beta
+  akvelon_flutter_share_plugin: ^1.0.4
+  clipboard: ^0.1.3
+  swipe_refresh: ^1.0.0
+#  flutter_qrcode_scanner: ^0.0.7
+  flutter_plugin_qr_scanner: ^0.0.1
+  flutter_local_notifications: ^5.0.0+3
+  uuid: ^3.0.4
+  provider: ^5.0.0
 #  hexcolor: ^2.0.3
 
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/ListItem/OnboardingQuestions.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
@@ -13,6 +14,7 @@ import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
 import 'package:coral_reef/wellness/period/period_info.dart';
 import 'package:flutter/material.dart';
 
+import '../../constants.dart';
 import '../../size_config.dart';
 
 
@@ -203,7 +205,29 @@ class _ConceiveInfo extends State<ConceiveInfo> {
     //
     // });
     //encode the answers from the questions and store in local storage
-    String conceiveRecord = jsonEncode(answers);
+    String key = FirebaseFirestore.instance.collection("users").doc().id;
+    Map<String, dynamic> userConceiveDetails = {
+      "fertilityCount": answers['0'],
+      "periodReg": answers['1'],
+      "prepregCare": answers['2'],
+      "supliTake": answers['3'],
+      "trackPlan": answers['4'],
+      "tryingLength": answers['5'],
+      "id": key,
+      "timestamp": FieldValue.serverTimestamp(),
+    };
+
+    Map<String, dynamic> userConceiveDetailsLocal = {
+      "fertilityCount": answers['0'],
+      "periodReg": answers['1'],
+      "prepregCare": answers['2'],
+      "supliTake": answers['3'],
+      "trackPlan": answers['4'],
+      "tryingLength": answers['5'],
+    };
+    await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("conceives").doc(key).set(userConceiveDetails);
+
+    String conceiveRecord = jsonEncode(userConceiveDetailsLocal);
     await ss.setPrefItem("conceiveRecord", conceiveRecord);
     //await ss.setPrefItem("wellnessSetup", "true"); //don't display wellness.dart again
     //go to period info

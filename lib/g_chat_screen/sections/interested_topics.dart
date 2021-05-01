@@ -213,7 +213,7 @@ class _InterestedTopics extends State<InterestedTopics> {
                         String getUser = await ss.getItem("user");
                         Map<String, dynamic> userData = jsonDecode(getUser);
                         selectedTopics.forEach((topic) async {
-                          await new GeneralUtils().subscribeToTopic(topic, userData["msgId"]);
+                          await new GeneralUtils().subscribeToTopic(topic.replaceAll(" ", "-"), userData["msgId"]);
                         });
                         setState(() {
                           loading = false;

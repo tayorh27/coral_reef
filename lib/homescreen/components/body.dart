@@ -216,7 +216,7 @@ class Cards extends StatelessWidget {
    * Determine if the wellness set up has been attended to
    */
   Future<void> wellnessTrackerClicked(BuildContext context, String wellnessSetup) async {
-
+    // await ss.setPrefItem("dashboardGoal", "pregnancy");//to be deleted
     if (wellnessSetup.isEmpty) {
       //go to wellness setup screen
       Navigator.pushNamed(context, WellnessTrackerOptions.routeName);

@@ -32,7 +32,7 @@ class CreateNewGChat extends StatefulWidget {
 
 class _CreateNewGChat extends State<CreateNewGChat> {
 
-  bool isVisible = false;
+  bool isVisible = false, published = false;
 
   GChatServices gServices;
 
@@ -92,8 +92,14 @@ class _CreateNewGChat extends State<CreateNewGChat> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    if(_controllerTitle.text.isNotEmpty || _controllerBody.text.isNotEmpty) {
-      gServices.saveDraft(title: _controllerTitle.text, body: _controllerBody.text, file: postFile, fileType: fileType, thumbnail: thumbnail);
+    if(!published) {
+      if (_controllerTitle.text.isNotEmpty || _controllerBody.text.isNotEmpty) {
+        gServices.saveDraft(title: _controllerTitle.text,
+            body: _controllerBody.text,
+            file: postFile,
+            fileType: fileType,
+            thumbnail: thumbnail);
+      }
     }
     _subscription.unsubscribe();
   }
@@ -399,12 +405,14 @@ class _CreateNewGChat extends State<CreateNewGChat> {
         deleteOrigin: false, // It's false by default
       );
 
+      print("media - ${mediaInfo.orientation}");
+
       postFile = mediaInfo.file;
 
       //get thumbnail
       File thumbnailFile = await VideoCompress.getFileThumbnail(
           file.path,
-          quality: 50, // default(100)
+          quality: 70, // default(100)
           position: -1 // default(-1)
       );
 
@@ -433,46 +441,9 @@ class _CreateNewGChat extends State<CreateNewGChat> {
         isVisible = true;
       });
     }
-
-
-
-    // FilePickerResult result = await FilePicker.platform
-    //     .pickFiles(type: FileType.image, allowMultiple: false);
-    // if (result != null) {
-    //   File file = File(result.files.first.path);
-    //
-    //   File croppedFile = await ImageCropper.cropImage(
-    //       sourcePath: file.path,
-    //       aspectRatioPresets: [
-    //         CropAspectRatioPreset.square,
-    //         // CropAspectRatioPreset.ratio3x2,
-    //         // CropAspectRatioPreset.original,
-    //         // CropAspectRatioPreset.ratio4x3,
-    //         // CropAspectRatioPreset.ratio16x9
-    //       ],
-    //       androidUiSettings: AndroidUiSettings(
-    //           toolbarTitle: 'Crop Image',
-    //           toolbarColor: Color(MyColors.primaryColor),
-    //           toolbarWidgetColor: Colors.white,
-    //           initAspectRatio: CropAspectRatioPreset.square,
-    //           lockAspectRatio: false),
-    //       iosUiSettings: IOSUiSettings(
-    //         minimumAspectRatio: 1.0,
-    //       )
-    //   );
-    //
-    //   //compress image
-    //
-    //   postFile = await gServices.compressAndGetFile(croppedFile);
-    //   setState(() {
-    //     isVisible = true;
-    //     fileType = "image";
-    //     thumbnail = postFile;
-    //   });
-    // }
   }
 
-  onDocSelectionPressed() async {
+  onDocSelectionPressed() async { //method not used
     FilePickerResult result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ["pdf", "docx", "xlsx"],
@@ -553,6 +524,7 @@ class _CreateNewGChat extends State<CreateNewGChat> {
 
       setState(() {
         _inAsyncCall = false;
+        published = true;
       });
 
       new GeneralUtils().showToast(context, "Post published.");

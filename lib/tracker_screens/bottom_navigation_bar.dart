@@ -18,7 +18,8 @@ class CoralBottomNavigationBar extends StatefulWidget {
 
   final bool isGChat;
   final bool hasGChatSetup;
-  CoralBottomNavigationBar({this.isGChat, this.hasGChatSetup});
+  final bool goToWallet;
+  CoralBottomNavigationBar({this.isGChat, this.hasGChatSetup, this.goToWallet = false});
 
   @override
   State<StatefulWidget> createState() => _BottomNavigationBarState();
@@ -52,12 +53,6 @@ class _BottomNavigationBarState extends State<CoralBottomNavigationBar> {
     super.initState();
     bool gChat = widget.isGChat ?? false;
     bool hasGChat = widget.hasGChatSetup ?? false;
-    if(gChat) {
-      setState(() {
-        currentIndex = 1;
-        hasGChatSetup = hasGChat;
-      });
-    }
     ss.getItem("wellnessSetup").then((value) {
       String v = value ?? "";
       setState(() {
@@ -67,9 +62,21 @@ class _BottomNavigationBarState extends State<CoralBottomNavigationBar> {
     ss.getItem("walletSetup").then((value) {
       String v = value ?? "";
       setState(() {
-        wellnessSetup = v;
+        walletSetup = v;
       });
     });
+    if(gChat) {
+      setState(() {
+        currentIndex = 1;
+        hasGChatSetup = hasGChat;
+      });
+      return;
+    }
+    if(widget.goToWallet) {
+      setState(() {
+        currentIndex = 2;
+      });
+    }
   }
 
   /// Build BottomNavigationBar Widget

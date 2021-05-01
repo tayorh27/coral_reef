@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/components/coral_back_button.dart';
+import 'package:coral_reef/constants.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/components/close_header.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/components/symptoms_grid_options.dart';
 import 'package:flutter/material.dart';
@@ -54,6 +57,8 @@ class _LoginSymptoms extends State<LoginSymptoms> {
   List<String> selectedSymptoms = [];
   List<String> selectedDischarge = [];
 
+  TextEditingController _textEditingController = new TextEditingController(text: "");
+
   // List<String> selectedOptions = [];
 
   @override
@@ -68,7 +73,7 @@ class _LoginSymptoms extends State<LoginSymptoms> {
           color: Colors.white,
           size: 32.0,
         ),
-        onPressed: () {},
+        onPressed: saveSymptoms,
         tooltip: "Save",
       ),
       body: SafeArea(
@@ -222,6 +227,7 @@ class _LoginSymptoms extends State<LoginSymptoms> {
                       padding: EdgeInsets.only(top: 10.0),
                       child: TextFormField(
                         keyboardType: TextInputType.multiline,
+                        controller: _textEditingController,
                         maxLines: 3,
                         textCapitalization: TextCapitalization.sentences,
                         decoration: InputDecoration(
@@ -245,5 +251,23 @@ class _LoginSymptoms extends State<LoginSymptoms> {
         ),
       ),
     );
+  }
+
+  saveSymptoms() async {
+    new GeneralUtils().showToast(context, "Saving Record...");
+
+    final today = DateTime.now();
+    String _date = "${today.year}-${today.month}-${today.day}";
+
+    Map<String, dynamic> data = new Map();
+    data["moods"] = selectedMoods;
+    data["symptoms"] = selectedSymptoms;
+    data["discharge"] = selectedDischarge;
+    data["note"] = _textEditingController.text;
+
+    await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("period-symptoms").doc(_date).set(data);
+
+    new GeneralUtils().showToast(context, "Record saved.");
+    Navigator.of(context).pop();
   }
 }

@@ -1,5 +1,17 @@
 
+import 'dart:async';
+
+import 'package:coral_reef/ListItem/model_transactions.dart';
+import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/shared_screens/EmptyScreen.dart';
+import 'package:coral_reef/wallet_screen/sections/receive_token.dart';
+import 'package:coral_reef/wallet_screen/sections/transfer_token.dart';
+import 'package:coral_reef/wallet_screen/services/wallet_service.dart';
 import 'package:flutter/material.dart';
+
+import '../size_config.dart';
+import 'components/wallet_buttons.dart';
+import 'package:swipe_refresh/swipe_refresh.dart';
 
 class WalletHomeScreen extends StatefulWidget {
   @override
@@ -7,9 +19,233 @@ class WalletHomeScreen extends StatefulWidget {
 }
 
 class _WalletHomeScreen extends State<WalletHomeScreen> {
+
+  TabController _tabController;
+  WalletServices walletServices;
+  String balance = "0", zilBalance = "0";
+  Map<String, dynamic> addresses;
+
+  bool _loading = false;
+
+  List<Transactions> transactions = [];
+
+  final _controller = StreamController<SwipeRefreshState>.broadcast();
+
+  Stream<SwipeRefreshState> get _stream => _controller.stream;
+
+  @override
+  void initState() {
+    super.initState();
+    walletServices = new WalletServices();
+    _controller.sink.add(SwipeRefreshState.loading);
+    setupInitWallet();
+    // _tabController = TabController(initialIndex: 1, length: 3, vsync: this);
+  }
+
+  setupInitWallet() async {
+    List<Transactions> mTrans = await walletServices.getTransactions();
+    print(mTrans.length);
+    if(!mounted) return;
+    setState(() {
+      transactions = mTrans;
+    });
+    addresses = await walletServices.getUserAddresses();
+    String bal = await walletServices.getTokenBalance(addresses["public"]);
+    String zilBal = await walletServices.getZilBalance(addresses["zil"]);
+    if(!mounted) return;
+    setState(() {
+      balance = bal;
+      zilBalance = zilBal;
+    });
+    _controller.sink.add(SwipeRefreshState.hidden);
+  }
+
+  @override
+  void reassemble() {
+    // TODO: implement reassemble
+    super.reassemble();
+    setupInitWallet();
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Scaffold();
+    return Scaffold(
+      backgroundColor: Color(MyColors.lightBackground),
+      body: SwipeRefresh.material(
+      stateStream: _stream,
+      onRefresh: setupInitWallet,
+      children: [
+        Stack(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: 255.0,
+              decoration: BoxDecoration(
+                color: Color(MyColors.primaryColor),
+                image: DecorationImage(image: AssetImage("assets/images/wallet_bg.png")),
+              ),
+              child: Center(
+                child: Column(
+                  children: [
+                    SizedBox(height: 50.0,),
+                    Text("$balance CRL", style: Theme.of(context).textTheme.headline2.copyWith(
+                      fontSize: getProportionateScreenWidth(28),
+                      color: Colors.white,
+                    ),),
+                    Text("$zilBalance ZIL", style: Theme.of(context).textTheme.headline2.copyWith(
+                      fontSize: getProportionateScreenWidth(10),
+                      color: Colors.white,
+                    ),),
+                    SizedBox(height: 10.0,),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        WalletButton(text: "Receive", icon: "assets/icons/wallet_arrow_up.svg", press: (){
+                          Navigator.pushNamed(context, ReceiveWallet.routeName, arguments: addresses);
+                        },),
+                        WalletButton(text: "Transfer", icon: "assets/icons/wallet_arrow_down.svg", press: (){
+                          addresses["crl"] = balance;
+                          Navigator.pushNamed(context, TransferToken.routeName, arguments: addresses);
+                        },),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+            (transactions.isEmpty) ? Container(
+              margin: EdgeInsets.only(top: 300.0),
+              child: EmptyScreen("No available data!", bgColor: Color(MyColors.lightBackground),),
+            ) :
+            Container(
+              height: MediaQuery.of(context).size.height - 255.0,
+              margin: EdgeInsets.only(left: 30.0, right: 30.0, top: 220.0),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0),
+                  )
+              ),
+              child: DefaultTabController(
+                initialIndex: 0,
+                length: 1,
+                child: SafeArea(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 0.0),
+                            child: Container(
+                              color: Colors.white.withOpacity(1),
+                              child: TabBar(
+                                // controller: _tabController,
+                                labelColor: Color(MyColors.primaryColor),
+                                labelStyle: Theme.of(context).textTheme.headline2.copyWith(
+                                  color: Color(MyColors.primaryColor),
+                                  fontSize: getProportionateScreenWidth(15),
+                                ),
+                                automaticIndicatorColorAdjustment: true,
+                                unselectedLabelColor: Color(MyColors.titleTextColor),
+                                unselectedLabelStyle: Theme.of(context).textTheme.headline2.copyWith(
+                                  color: Color(MyColors.titleTextColor),
+                                  fontSize: getProportionateScreenWidth(15),
+                                ),
+                                indicatorColor: Color(MyColors.primaryColor),
+                                tabs: <Widget>[
+                                  // Tab(text: "Token",
+                                  // ),
+                                  // Tab(text: "Explorer",
+                                  // ),
+                                  Tab(text: "Transactions",
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                            child: Container(
+                              color: Colors.white.withOpacity(1),
+                              height: 500,
+                              child: TabBarView(
+                                // controller: _tabController,
+                                children: <Widget>[
+                                  ListView(
+                                    scrollDirection: Axis.vertical,
+                                    children: buildTransactions(),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        )
+      ],
+      )
+    );
+  }
+
+  List<Widget> buildTransactions() {
+    List<Widget> transWidget = [];
+
+    transactions.forEach((trans) {
+
+      transWidget.add(
+        Column(
+          children: [
+            ListTile(
+              title: Text("${trans.amount} CRL",
+                  style: Theme.of(context).textTheme.headline1.copyWith(
+                      color: Color(MyColors.titleTextColor),
+                      fontSize: getProportionateScreenWidth(15))),
+              subtitle: Column(
+                children: [
+                  Text(trans.reason,
+                    style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Color(MyColors.titleTextColor),
+                      fontSize: getProportionateScreenWidth(13),
+                    ),
+                  ),
+                  Text(trans.created_date,
+                    style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Colors.grey,
+                      fontSize: getProportionateScreenWidth(10),
+                    ),
+                  )
+                ],
+              ),
+              isThreeLine: true,
+            ),
+            Divider(height: 1.0, color: Colors.grey,)
+          ],
+        )
+      );
+
+    });
+
+    return transWidget;
+  }
+
+  @override
+  void dispose() {
+    _controller.close();
+    // TODO: implement dispose
+    super.dispose();
   }
 }
+
+/**
+ *
+ * */

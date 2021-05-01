@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../../constants.dart';
 import '../../size_config.dart';
+import 'components/linear_date_picker_cycle.dart';
 
 class CycleScreen extends StatelessWidget {
   final String currentValue;
@@ -37,7 +38,7 @@ class CycleScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     width: double.infinity,
-                    child: LinearDatePicker(
+                    child: LinearDatePickerForCycle(
                         startDate: "1900/01/01", //yyyy/mm/dd
                         endDate:
                         "${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}",

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/ListItem/OnboardingQuestions.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
@@ -13,6 +14,7 @@ import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
 import 'package:coral_reef/wellness/period/period_info.dart';
 import 'package:flutter/material.dart';
 
+import '../../constants.dart';
 import '../../size_config.dart';
 
 class PregnancyInfo extends StatefulWidget {
@@ -200,8 +202,27 @@ class _PregnancyInfo extends State<PregnancyInfo> {
     //
     // });
     //encode the answers from the questions and store in local storage
-    String pregnancyRecord = jsonEncode(answers);
+    String key = FirebaseFirestore.instance.collection("users").doc().id;
+    Map<String, dynamic> userPregnancyDetails = {
+      "birth": answers['0'],
+      "activity": answers['1'],
+      "stress": answers['2'],
+      "diet": answers['3'],
+      "id": key,
+      "timestamp": FieldValue.serverTimestamp(),
+    };
+
+    Map<String, dynamic> userPregnancyDetailsLocal = {
+      "birth": answers['0'],
+      "activity": answers['1'],
+      "stress": answers['2'],
+      "diet": answers['3'],
+    };
+
+    String pregnancyRecord = jsonEncode(userPregnancyDetailsLocal);
     await ss.setPrefItem("pregnancyRecord", pregnancyRecord);
+    await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("pregnancy").doc(key).set(userPregnancyDetails);
+
     // await ss.setPrefItem("wellnessSetup", "true"); //don't display wellness.dart again
     //go to period info
     Navigator.pushNamed(context, PeriodInfo.routeName);

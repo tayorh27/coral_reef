@@ -10,7 +10,7 @@ import '../size_config.dart';
 class Heading extends StatefulWidget {
 
   const Heading({
-    Key key,this.body
+    Key key,this.body = ""
   }) : super(key: key);
   final String body;
 

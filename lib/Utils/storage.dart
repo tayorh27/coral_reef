@@ -20,7 +20,10 @@ class StorageSystem {
         dynamic json = jsonDecode(user);
         Map<String, dynamic> setupData = new Map();
         setupData[key] = item;
-        await FirebaseFirestore.instance.collection("users").doc(json["uid"]).collection("setups").doc("user-data").set(setupData);
+        if(json["uid"] == null) {
+          return;
+        }
+        await FirebaseFirestore.instance.collection("users").doc(json["uid"]).collection("setups").doc("user-data").update(setupData);
       }
     }
   }

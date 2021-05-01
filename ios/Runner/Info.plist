@@ -54,6 +54,15 @@
     <string>1056235441529263</string>
     <key>FacebookDisplayName</key>
     <string>Coral Reef</string>
+    <key>io.flutter.embedded_views_preview</key>
+    <true/>
+    <key>UIBackgroundModes</key>
+        <array>
+            <string>fetch</string>
+            <string>remote-notification</string>
+        </array>
+    <key>NSCameraUsageDescription</key>
+    <string>Can we access your camera in order to scan barcodes?</string>
     <key>LSApplicationQueriesSchemes</key>
     <array>
       <string>fbapi</string>

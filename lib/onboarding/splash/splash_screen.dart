@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/homescreen/Home.dart';
 import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
@@ -17,16 +19,24 @@ class _SplashScreenState extends State<SplashScreen> {
 
   StorageSystem ss = new StorageSystem();
 
+  bool destroyApp = false;
+
   @override
   void initState() {
 
+    appCheck();
     // FirebaseAuth.instance.signOut().then((value) {print("fodne");});
     // ss.clearPref();
 
-    var d = Duration(seconds: 4);
+    var d = Duration(seconds: 3);
     // delayed 3 seconds to next page
     Future.delayed(d, () async {
       // await ss.clearPref();
+
+      if(destroyApp){
+        new GeneralUtils().displayAlertDialog(context, "Attention", "This app is no longer available for test.");
+        return;
+      }
 
       String logged = await ss.getItem("loggedin") ?? '';
 
@@ -63,6 +73,12 @@ class _SplashScreenState extends State<SplashScreen> {
     });
 
     super.initState();
+  }
+
+  appCheck() async {
+    DocumentSnapshot query = await FirebaseFirestore.instance.collection("db").doc("global-settings").get();
+    Map<String, dynamic> dt = query.data();
+    destroyApp = dt["destroy_app"];
   }
 
   gotoOnBoardingScreen() {
