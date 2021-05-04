@@ -1,5 +1,6 @@
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/shared_screens/tracker_screen_header.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/exercise_tracker_screen.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/period_tracker_screen.dart';
 import 'package:coral_reef/tracker_screens/pregnancy_tracker/pregnancy_tracker_screen.dart';
 import 'package:coral_reef/tracker_screens/well_being_tracker/well_being_tracker_screen.dart';
@@ -22,7 +23,7 @@ class _TrackerLanding extends State<TrackerLanding> {
     {"screen_name": "Period tracker", "screen_route": "period-tracker-screen", "screen_class":PeriodTrackerScreen()},
     {"screen_name": "Pregnancy tracker", "screen_route": "pregnancy-tracker-screen", "screen_class":PregnancyTrackerScreen()},
     {"screen_name": "Diet tracker", "screen_route": "diet-tracker-screen", "screen_class":DietTrackerScreen()},
-    {"screen_name": "Exercise tracker", "screen_route": "exercise-tracker-screen", "screen_class":PeriodTrackerScreen()},
+    {"screen_name": "Exercise tracker", "screen_route": "exercise-tracker-screen", "screen_class":ExerciseTrackerScreen()},
     {"screen_name": "Well-being tracker", "screen_route": "well-being-tracker-screen", "screen_class":WellBeingTrackerScreen()},
   ];
 

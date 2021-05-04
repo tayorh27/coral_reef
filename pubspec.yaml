@@ -63,6 +63,7 @@ dependencies:
   giphy_picker: ^2.0.0
   apple_sign_in: ^0.1.0
   syncfusion_flutter_barcodes: ^18.1.42-beta
+  fl_chart:
   akvelon_flutter_share_plugin: ^1.0.4
   clipboard: ^0.1.3
   swipe_refresh: ^1.0.0
@@ -101,6 +102,7 @@ flutter:
     - assets/symptoms/
     - assets/well_being/
     - assets/diet/
+    - assets/exercise/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
