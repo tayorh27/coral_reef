@@ -4,6 +4,9 @@ import 'package:coral_reef/onboarding/sign_up/signup_screen.dart';
 import 'package:coral_reef/onboarding/forgotpassword/forgotpassword.dart';
 import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/exercise_tracker_screen.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/all_data.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/insight.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/steps.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/period_tracker_screen.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/sections/login_symptoms.dart';
 import 'package:coral_reef/tracker_screens/pregnancy_tracker/pregnancy_tracker_screen.dart';
@@ -64,4 +67,7 @@ final Map<String, WidgetBuilder> routes = {
   YourBody.routeName: (context) => YourBody(),
   TipsScreen.routeName: (context) => TipsScreen(),
   YourTips.routeName: (context) => YourTips(),
+  Steps.routeName: (context) => Steps(),
+  ExerciseInsight.routeName: (context) => ExerciseInsight(),
+AllData.routeName: (context) => AllData(),
 };

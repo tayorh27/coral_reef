@@ -72,6 +72,8 @@ dependencies:
   flutter_local_notifications: ^5.0.0+3
   uuid: ^3.0.4
   provider: ^5.0.0
+  direct_select: ^2.0.0
+  toggle_switch: ^0.1.9
 #  hexcolor: ^2.0.3
 
 

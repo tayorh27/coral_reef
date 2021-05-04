@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/shared_screens/pill_icon.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/insight.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -55,7 +56,7 @@ import '../../../size_config.dart';
     Widget build(BuildContext context) {
       return GestureDetector(
         onTap: () {
-          // Navigator.pushNamed(context, InsightsScreen.routeName);
+           Navigator.pushNamed(context, ExerciseInsight.routeName);
         },
         child: Container(
           decoration: BoxDecoration(

@@ -3,6 +3,7 @@ import 'package:coral_reef/tracker_screens/diet_tracker_screen/components/calori
 import 'package:coral_reef/tracker_screens/diet_tracker_screen/components/diet_summary_card.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/components/exercise_slider.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/components/exercise_summary_card.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/steps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -28,6 +29,8 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
             title4: 'Goal: 10000',
             textColor: Colors.white,
             press: () {
+              //go to well-being setup screen
+              Navigator.pushNamed(context, Steps.routeName);
               // Navigator.pushNamed(context, SleepScreen.routeName);
             },
             color: Color(MyColors.primaryColor),
