@@ -108,6 +108,14 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
+      appBar: AppBar(backgroundColor: Colors.transparent, leading: Container(
+        margin: EdgeInsets.only(left: 15.0, top: 20.0, bottom: 0.0),
+        child: CoralBackButton(icon: Icon(
+          Icons.clear,
+          size: 32.0,
+          color: Color(MyColors.titleTextColor),
+        ),),
+      ),),
       body: Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
@@ -119,14 +127,14 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
                 child: ListView(
                   controller: _scrollController,
                   children: [
-                    Container(
-                      margin: EdgeInsets.only(left: 15.0, top: 30.0, bottom: 20.0),
-                      child: CoralBackButton(icon: Icon(
-                        Icons.clear,
-                        size: 32.0,
-                        color: Color(MyColors.titleTextColor),
-                      ),),
-                    ),
+                    // Container(
+                    //   margin: EdgeInsets.only(left: 15.0, top: 0.0, bottom: 20.0),
+                    //   child: CoralBackButton(icon: Icon(
+                    //     Icons.clear,
+                    //     size: 32.0,
+                    //     color: Color(MyColors.titleTextColor),
+                    //   ),),
+                    // ),
                     ListTile(
                       leading: GChatUserAvatar(
                         40.0,
@@ -222,7 +230,12 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
                     SizedBox(
                       height: 20.0,
                     ),
-                    (comments.isEmpty) ? SizedBox() : SinglePostPostComment(comments),
+                    (comments.isEmpty) ? SizedBox() : Column(
+                      children: [
+                        SinglePostPostComment(comments),
+                        SizedBox(height: 100.0,)
+                      ],
+                    ),
                   ],
                   scrollDirection: Axis.vertical,
                 ),
@@ -231,6 +244,7 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
                 child: Container(
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
+                    color: Colors.white,
                       border: Border(
                           top: BorderSide(color: Colors.grey[300]))),
                   child:
@@ -246,7 +260,7 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
                         });
                   },),
                 ),
-                top: MediaQuery.of(context).size.height - 100.0,
+                top: (MediaQuery.of(context).viewInsets.bottom != 0) ? MediaQuery.of(context).size.height - 510.0 : MediaQuery.of(context).size.height - 185.0,
               ),
             ],
           )

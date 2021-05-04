@@ -116,6 +116,7 @@ class _MyApp extends State<MyApp> {
       RemoteNotification notification = message.notification;
       AndroidNotification android = message.notification?.android;
       if (notification != null && android != null) {
+        // if(message)
         flutterLocalNotificationsPlugin.show(
             notification.hashCode,
             notification.title,
@@ -177,5 +178,18 @@ class _MyApp extends State<MyApp> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+  }
+
+  Future<void> _showDailyAtTime() async {
+    var time = Time(10, 0, 0);
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'morning-referesh',
+        'Morning Referesh',
+        'Instilling inspiring, one qoute a day');
+    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.showDailyAtTime(
+        0, 'Morning Refresh', '', time, platformChannelSpecifics);
   }
 }

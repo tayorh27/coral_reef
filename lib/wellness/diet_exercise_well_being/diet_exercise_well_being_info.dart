@@ -185,7 +185,7 @@ class _DietExerciseWellBeingInfo extends State<DietExerciseWellBeingInfo> {
 
   startTimer() {
     _showTestDialog(context);
-    Timer(Duration(seconds: 3), () async {
+    Timer(Duration(seconds: 2), () async {
       //encode the answers from the questions and store in local storage
       String dewRecord = jsonEncode(answers);
       await ss.setPrefItem("dewRecord", dewRecord);

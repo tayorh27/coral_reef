@@ -19,7 +19,7 @@ class PregListCard extends StatelessWidget {
           children: [
             Text(
               title,
-              style: Theme.of(context).textTheme.headline2.copyWith(
+              style: Theme.of(context).textTheme.bodyText1.copyWith(
                   fontSize: 17.0,
                   color: Color(MyColors.titleTextColor)
               ),
@@ -30,7 +30,7 @@ class PregListCard extends StatelessWidget {
                     title2,
                     style: Theme.of(context).textTheme.subtitle1.copyWith(
                         fontSize: 12.0,
-                        color: Color(MyColors.titleTextColor)
+                        color: Colors.grey
                     )
                 ),
                 Spacer(),

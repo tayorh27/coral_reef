@@ -1,3 +1,4 @@
+import 'package:coral_reef/Utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -70,7 +71,7 @@ class _SymptomsGridOptions extends State<SymptomsGridOptions> {
             ],
           ),
           (widget.selected)
-              ? Icon(Icons.check_circle, size: 15.0, color: Colors.green)
+              ? Icon(Icons.check_circle, size: 15.0, color: Color(MyColors.primaryColor))
               : Text(""),
         ],
       )

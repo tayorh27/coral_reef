@@ -5,6 +5,7 @@ import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/g_chat_screen/GChatScreen.dart';
 import 'package:coral_reef/g_chat_screen/gchat_home_screen.dart';
+import 'package:coral_reef/homescreen/Home.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/tracker_screens/tracker_landing.dart';
 import 'package:coral_reef/wallet_screen/wallet_home_screen.dart';
@@ -30,17 +31,17 @@ class _BottomNavigationBarState extends State<CoralBottomNavigationBar> {
   String wellnessSetup = "", walletSetup = "";
   StorageSystem ss = new StorageSystem();
 
-  int currentIndex = 0;
+  int currentIndex = 1;
   bool hasGChatSetup = false;
 
   /// Set a type current number a layout class
   Widget callPage(int current) {
     switch (current) {
-      case 0:
-        return (wellnessSetup.isEmpty) ? WellnessTrackerOptions() : TrackerLanding();
       case 1:
-        return (hasGChatSetup) ? GChatHomeScreen() : GChatScreen();
+        return (wellnessSetup.isEmpty) ? WellnessTrackerOptions() : TrackerLanding();
       case 2:
+        return (hasGChatSetup) ? GChatHomeScreen() : GChatScreen();
+      case 3:
         return (walletSetup.isEmpty) ? WalletSetupScreen() : WalletHomeScreen();
       default:
         return (wellnessSetup.isEmpty) ? WellnessTrackerOptions() : TrackerLanding();
@@ -67,14 +68,14 @@ class _BottomNavigationBarState extends State<CoralBottomNavigationBar> {
     });
     if(gChat) {
       setState(() {
-        currentIndex = 1;
+        currentIndex = 2;
         hasGChatSetup = hasGChat;
       });
       return;
     }
     if(widget.goToWallet) {
       setState(() {
-        currentIndex = 2;
+        currentIndex = 3;
       });
     }
   }
@@ -83,6 +84,13 @@ class _BottomNavigationBarState extends State<CoralBottomNavigationBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(
+      //   toolbarHeight: 40.0,
+      //   backgroundColor: Colors.white,
+      //   actions: [
+      //     TextButton(onPressed: null, child: Text("Home"))
+      //   ],
+      // ),
       body: callPage(currentIndex),
       bottomNavigationBar: Theme(
           data: Theme.of(context).copyWith(
@@ -95,11 +103,25 @@ class _BottomNavigationBarState extends State<CoralBottomNavigationBar> {
             fixedColor: Color(MyColors.primaryColor),
             selectedLabelStyle: TextStyle(color: Color(MyColors.primaryColor)),
             onTap: (value) {
+              if(value == 0){
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (BuildContext context) => new HomeScreen()));
+                return;
+              }
               setState(() {
                 currentIndex = value;
               });
             },
             items: [
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.home_outlined, color: Color(MyColors.primaryColor), size: 30.0,),
+                  activeIcon: Icon(Icons.home_outlined, color: Color(MyColors.primaryColor), size: 30.0,),
+                  title: Text(
+                    "Home",
+                    style: Theme.of(context).textTheme.subtitle1.copyWith(
+                        letterSpacing: 0.5,
+                        fontSize: getProportionateScreenWidth(12)),
+                  )),
               BottomNavigationBarItem(
                   icon: SvgPicture.asset("assets/icons/dash_home.svg",
                       height: 30.0),

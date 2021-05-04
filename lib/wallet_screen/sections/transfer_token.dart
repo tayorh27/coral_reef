@@ -13,11 +13,14 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:syncfusion_flutter_barcodes/barcodes.dart';
 import 'package:akvelon_flutter_share_plugin/akvelon_flutter_share_plugin.dart';
 import 'package:flutter_plugin_qr_scanner/flutter_plugin_qr_scanner.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../size_config.dart';
 
 class TransferToken extends StatefulWidget {
   static final routeName = "transfer-token";
+  final Map<String, dynamic> argument;
+  TransferToken({this.argument});
   @override
   State<StatefulWidget> createState() => _TransferToken();
 }
@@ -37,6 +40,10 @@ class _TransferToken extends State<TransferToken> {
   bool _inAsyncCall = false;
 
   WalletServices walletServices;
+  
+  bool displayError = false;
+
+  bool isZil = false;
 
   @override
   void initState() {
@@ -49,8 +56,8 @@ class _TransferToken extends State<TransferToken> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    addresses =
-        ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
+    // addresses = ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
+    addresses = widget.argument;
 
     return Scaffold(
       body: ModalProgressHUD(
@@ -80,31 +87,41 @@ class _TransferToken extends State<TransferToken> {
                         ),
                         SizedBox(width: 20.0),
                         Text(
-                          "Transfer Token",
+                          "Send Token",
                           style: Theme.of(context).textTheme.headline2.copyWith(
                                 color: Color(MyColors.titleTextColor),
                                 fontSize: getProportionateScreenWidth(20),
                               ),
-                        )
+                        ),
                       ],
                     ),
+                    SizedBox(height: SizeConfig.screenHeight * 0.05),
+                    tokenSwitch(),
                     Container(
                         margin: EdgeInsets.only(top: 40.0),
                         width: double.infinity,
                         height: getProportionateScreenHeight(460),
                         child: Column(
                           children: [
-                            SizedBox(height: SizeConfig.screenHeight * 0.05),
+
                             YourNameText(title: "Enter recipient address"),
                             SizedBox(height: getProportionateScreenHeight(5)),
                             recipientAddressField(),
                             SizedBox(height: SizeConfig.screenHeight * 0.05),
-                            YourNameText(title: "Enter amount of CRL to send"),
+                            YourNameText(title: "Enter amount",),
                             SizedBox(height: getProportionateScreenHeight(5)),
                             amountField(),
+                            (displayError) ? Row(
+                              children: [
+                                Text("You don't have enough funds", style: Theme.of(context)
+                                    .textTheme
+                                    .headline2
+                                    .copyWith(color: Colors.red, fontSize: getProportionateScreenWidth(11)))
+                              ],
+                            ) : SizedBox(),
+                            YourNameText(title: (isZil) ? "Available balance: ${addresses["zilBal"]}" : "Available balance: ${addresses["crl"]}",),
                           ],
                         )),
-                    SizedBox(height: SizeConfig.screenHeight * 0.1),
                     DefaultButton(
                       text: 'Send',
                       press: () async {
@@ -112,7 +129,7 @@ class _TransferToken extends State<TransferToken> {
                           new GeneralUtils().displayAlertDialog(context, "Attention", "Please fill all fields.");
                           return;
                         }
-                        double accountBal = double.parse(addresses["crl"]);
+                        double accountBal = (isZil) ? double.parse(addresses["zilBal"]) : double.parse(addresses["crl"]);
                         double amountToSend = double.parse(_textEditingControllerAmt.text);
 
                         if(amountToSend == 0) {
@@ -141,8 +158,49 @@ class _TransferToken extends State<TransferToken> {
     );
   }
 
+  Widget tokenSwitch() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: SwitchButtons(
+              text: 'CRL',
+              mWidth: 60,
+              mHeight: 30,
+              textSize: 10,
+              selected: !isZil,
+              press: () async {
+                setState(() {
+                  isZil = false;
+                });
+              }),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: SwitchButtons(
+              text: 'ZIL',
+              mWidth: 60,
+              mHeight: 30,
+              textSize: 10,
+              selected: isZil,
+              press: () async {
+                setState(() {
+                  isZil = true;
+                });
+              }),
+        ),
+      ],
+    );
+  }
+
   initiateTransfer() async {
-    Map<String, dynamic> result = await walletServices.transferToken(addresses["public"], _textEditingController.text, _textEditingControllerAmt.text);
+    Map<String, dynamic> result = new Map();
+    if(isZil) {
+      result = await walletServices.transferZil(addresses["public"], _textEditingController.text, _textEditingControllerAmt.text);
+    }else {
+      result = await walletServices.transferToken(addresses["public"], _textEditingController.text, _textEditingControllerAmt.text);
+    }
     setState(() {
       _inAsyncCall = false;
     });
@@ -153,8 +211,10 @@ class _TransferToken extends State<TransferToken> {
       return;
     }
 
-    new GeneralUtils().showToast(context, "Transfer successful.");
-    Navigator.of(context).pop();
+    await new GeneralUtils().displayAlertDialog(context, "Transaction Sent", result["message"]);
+
+    // new GeneralUtils().showToast(context, "Transfer successful.");
+    Navigator.of(context).pop(true);
   }
 
   bool validateFields() {
@@ -190,22 +250,16 @@ class _TransferToken extends State<TransferToken> {
                 color: Color(MyColors.primaryColor)),
             label: Text(""),
             onPressed: () async {
-              // final results = await Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => QRViewAddressScan()),
-              // );
-              final results = await QrScanner.scan(
-                title: "scanner",
-                laserColor: Colors.white, //default #ffff55ff
-                playBeep: false, //default false
-                promptMessage: "Point the QR code to the frame to complete the scan.",
-                errorMsg: "Oops, something went wrong. You may need to check your permission of camera or restart the device.",
-                permissionDeniedText: "Your privacy settings seem to prevent us from accessing your camera for barcode scanning. You can fix it by doing this, touch the OK button below to open the Settings and then turn the Camera on.",
-                messageConfirmText: "OK",
-                messageCancelText: "Cancel",
-              );
-              if (results != null) {
-                _textEditingController.text = results;
+              var status = await Permission.camera.status;
+              if(status.isGranted) {
+                openQRCode();
+                return;
+              }
+              final allowPermission = await new GeneralUtils().requestPermission(context, "Camera", "Allow Coral Reef to access your camera");
+              if(allowPermission) {
+                if (await Permission.camera.request().isGranted) {
+                  openQRCode();
+                }
               }
             },
           ),
@@ -213,6 +267,22 @@ class _TransferToken extends State<TransferToken> {
         ),
       ),
     );
+  }
+
+  openQRCode() async {
+    final results = await QrScanner.scan(
+      title: "scanner",
+      laserColor: Colors.white, //default #ffff55ff
+      playBeep: false, //default false
+      promptMessage: "Point the QR code to the frame to complete the scan.",
+      errorMsg: "Oops, something went wrong. You may need to check your permission of camera or restart the device.",
+      permissionDeniedText: "Your privacy settings seem to prevent us from accessing your camera for barcode scanning. You can fix it by doing this, touch the OK button below to open the Settings and then turn the Camera on.",
+      messageConfirmText: "OK",
+      messageCancelText: "Cancel",
+    );
+    if (results != null) {
+      _textEditingController.text = results;
+    }
   }
 
   Widget amountField() {
@@ -231,6 +301,17 @@ class _TransferToken extends State<TransferToken> {
         keyboardType: TextInputType.number,
         obscureText: false,
         controller: _textEditingControllerAmt,
+        onChanged: (value) {
+          if(value.isEmpty) {
+            return;
+          }
+          double currentBal = (isZil) ? double.parse(addresses["zilBal"]) : double.parse(addresses["crl"]);
+          double amountToSend = double.parse(value);
+          
+          setState(() {
+            displayError = amountToSend > currentBal;
+          });
+        },
         decoration: InputDecoration(
           contentPadding: EdgeInsets.symmetric(
             horizontal: 10,
@@ -239,6 +320,14 @@ class _TransferToken extends State<TransferToken> {
           border: InputBorder.none,
           focusedBorder: InputBorder.none,
           enabledBorder: InputBorder.none,
+          suffixIcon: TextButton(
+            child: Text("MAX", style: Theme.of(context).textTheme.bodyText1.copyWith(
+              color: Color(MyColors.primaryColor),
+            ),),
+            onPressed: () async {
+              _textEditingControllerAmt.text = (isZil) ? addresses["zilBal"] : addresses["crl"];
+            },
+          ),
           //hintText: '',
         ),
       ),
@@ -247,9 +336,9 @@ class _TransferToken extends State<TransferToken> {
 }
 
 class YourNameText extends StatelessWidget {
-  const YourNameText({Key key, this.title}) : super(key: key);
+  const YourNameText({Key key, this.title, this.amount = ""}) : super(key: key);
 
-  final String title;
+  final String title, amount;
 
   @override
   Widget build(BuildContext context) {

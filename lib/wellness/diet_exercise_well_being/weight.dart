@@ -118,7 +118,7 @@ class _WeightScreen extends State<WeightScreen> {
               text: 'kg',
               selected: metricSelected == "kg",
               press: () async {
-                await ss.setPrefItem("weight_metric", "kg");
+                // await ss.setPrefItem("weight_metric", "kg");
                 setState(() {
                   metricSelected = "kg";
                 });
@@ -130,7 +130,7 @@ class _WeightScreen extends State<WeightScreen> {
               text: 'lbs',
               selected: metricSelected == "lbs",
               press: () async {
-                await ss.setPrefItem("weight_metric", "lbs");
+                // await ss.setPrefItem("weight_metric", "lbs");
                 setState(() {
                   metricSelected = "lbs";
                 });

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/alertdialog.dart';
 import 'package:coral_reef/shared_screens/header_name.dart';
+import 'package:coral_reef/shared_screens/special_offer_card.dart';
 import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
 import 'package:coral_reef/wellness/wellness_tracker_options.dart';
 import 'package:flutter/material.dart';

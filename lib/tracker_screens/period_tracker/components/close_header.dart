@@ -8,9 +8,9 @@ import '../../../size_config.dart';
 
 class CloseHeader extends StatelessWidget {
   
-  final String cycleDay;
+  final String subtitle;
   
-  CloseHeader({this.cycleDay});
+  CloseHeader({this.subtitle});
   
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class CloseHeader extends StatelessWidget {
         Column(
           children: [
             Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -54,10 +54,10 @@ class CloseHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Container(
-                    width: 30.0,
+                    width: 0.0,//initial 30
                   ),
                   Text(
-                    "Cycle day 29",
+                    subtitle,
                     style: Theme.of(context)
                         .textTheme
                         .subtitle1

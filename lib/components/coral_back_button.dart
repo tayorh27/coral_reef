@@ -9,28 +9,31 @@ class CoralBackButton extends StatelessWidget {
     this.onPress
   }) : super(key: key);
 
-  final Icon icon;
+  final Widget icon;
   final Function onPress;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: (onPress == null) ? () {Navigator.of(context).pop();} : onPress,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Container(
-            //margin: EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(5)),
-            //padding: EdgeInsets.all(getProportionateScreenWidth(0)),
-            height: getProportionateScreenHeight(20),
-            width: getProportionateScreenWidth(20),
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              shape: BoxShape.circle,
+    return Container(
+      height: getProportionateScreenHeight(30),
+      width: getProportionateScreenWidth(30),
+      child: InkWell(
+        onTap: (onPress == null) ? () {Navigator.of(context).pop(false);} : onPress,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              //margin: EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(5)),
+              //padding: EdgeInsets.all(getProportionateScreenWidth(0)),
+
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                shape: BoxShape.circle,
+              ),
+              child: (icon == null) ? Icon(Icons.arrow_back_ios) : icon,//Image.asset('assets/images/backbutton.png', width: 22.0, height: 22.0,)
             ),
-            child: (icon == null) ? Image.asset('assets/images/backbutton.png') : icon,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -117,23 +117,28 @@ class SwitchButtons extends StatelessWidget {
     this.text,
     this.press,
     this.selected,
+    this.mWidth = 100,
+    this.mHeight = 50,
+    this.textSize = 18,
   }) : super(key: key);
   final String text;
   final Function press;
   final bool selected;
+  final double mWidth, mHeight;
+  final double textSize;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: getProportionateScreenWidth(100),
-      height: getProportionateScreenHeight(50),
+      width: getProportionateScreenWidth(mWidth),
+      height: getProportionateScreenHeight(mHeight),
       child: FlatButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         color: (selected) ? Color(MyColors.primaryColor) : kPrimaryColor.withOpacity(0.2),
         onPressed: press,
         child: Text(text,
             style: Theme.of(context).textTheme.headline2.copyWith(
-              fontSize: getProportionateScreenWidth(18),
+              fontSize: getProportionateScreenWidth(textSize),
               color: (selected) ? Colors.white : Theme.of(context).primaryColor,
             )),
       ),

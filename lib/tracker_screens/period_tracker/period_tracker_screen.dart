@@ -5,6 +5,7 @@ import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/components/borderless_card.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/sections/login_symptoms.dart';
+import 'package:coral_reef/tracker_screens/period_tracker/sections/period_calendar_date.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/services/period_service.dart';
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,8 @@ class _PeriodTrackerScreen extends State<PeriodTrackerScreen> {
     super.initState();
     periodServices = new PeriodServices();
 
-    resolvePeriodCalculation();
+    // resolvePeriodCalculation();
+    determinePeriod();
 
     getLastPeriodData();
     getSymptoms(DateTime.now());
@@ -58,6 +60,7 @@ class _PeriodTrackerScreen extends State<PeriodTrackerScreen> {
   getSymptoms(DateTime date) async {
     Map<String, dynamic> _get = await periodServices.getSymptomsByDate(date);
     if(_get.isEmpty) {
+      if(!mounted) return;
       setState(() {
         symptomsData = [];
         symptomsDataNote = "";
@@ -69,6 +72,7 @@ class _PeriodTrackerScreen extends State<PeriodTrackerScreen> {
         symptomsData.add("$element");
       });
     });
+    if(!mounted) return;
     setState(() {
       symptomsDataNote = "${_get["note"]}";
     });
@@ -113,6 +117,73 @@ class _PeriodTrackerScreen extends State<PeriodTrackerScreen> {
 
   }
 
+  int lengthPeriod = 0, cyclePeriod = 0;
+
+  bool isOnPeriod = false;
+
+  String menstrualType = "Period";
+
+  int diffTodayAndStartDate = 0;
+  int diffTodayAndEndDate = 0;
+
+  int totalDaysRemaining = 0;
+
+  int diffRemainingDays = 0;
+
+  Future<void> determinePeriod() async {
+    String periodRecord = await ss.getItem("periodRecord");
+    Map<String, dynamic> record = jsonDecode(periodRecord);
+    print(record);
+    // record["lastPeriod"] = "2021/4/24";
+    List<String> lastPeriod = "${record["lastPeriod"]}".split("/");
+    lengthPeriod = int.parse(record["length"]);
+    cyclePeriod = int.parse(record["cycle"]);
+
+    final lastP = DateTime(int.parse(lastPeriod[0]), int.parse(lastPeriod[1]),int.parse(lastPeriod[2])); //convert string to date object of last period date
+
+    final futurePeriodStartDate = lastP.add(Duration(days: cyclePeriod)); //add period cycle days to last period date to get the next period date
+
+    final futurePeriodEndDate = futurePeriodStartDate.add(Duration(days: (lengthPeriod-1))); //add length of period to period start date to get when the period will end
+
+    final today = DateTime.now(); //(2021, 6, 23); //get current date
+
+    diffTodayAndStartDate = today.difference(futurePeriodStartDate).inDays; //get the difference between today and the start date
+    diffTodayAndEndDate = futurePeriodEndDate.difference(today).inDays; // get the difference between the end start and today
+
+    // print(diffTodayAndStartDate);
+    // print(diffTodayAndEndDate);
+
+    if(diffTodayAndStartDate >= 0 && diffTodayAndStartDate < cyclePeriod) { //check if the day is within the period cycle
+      if(!mounted) return;
+      setState(() {
+        menstrualType = "Period Cycle";
+        isOnPeriod = true;
+      });
+      // if(diffTodayAndStartDate >= 0) { //&& diffTodayAndStartDate <= diffTodayAndEndDate
+      //   setState(() {
+      //
+      //   });
+      // }
+      //ovulation
+      if(diffTodayAndStartDate >= 12 && diffTodayAndStartDate <= 17) { //check if current date is within the ovulation period
+        if(!mounted) return;
+        setState(() {
+          isOnPeriod = true;
+          menstrualType = "Ovulation";
+        });
+        print("ovulation");
+      }
+    }else {
+      //waiting for next period cycle
+      if(!mounted) return;
+      setState(() {
+        menstrualType = "";
+        isOnPeriod = false;
+        diffRemainingDays = (diffTodayAndStartDate < 0) ? diffTodayAndStartDate * (-1) : diffTodayAndStartDate; // futurePeriodStartDate.difference(today).inDays;
+      });
+      print("me = $diffRemainingDays");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -288,8 +359,8 @@ class _PeriodTrackerScreen extends State<PeriodTrackerScreen> {
                   color: Color(MyColors.titleTextColor)),
               onDateChange: (date) {
                 // New date selected
-                print("my date is $date");
-                getSymptoms(date);
+                // getSymptoms(date);
+                Navigator.pushNamed(context, PeriodCalendarDate.routeName);
                 setState(() {
                   // _selectedValue = date;
                 });
@@ -309,15 +380,15 @@ class _PeriodTrackerScreen extends State<PeriodTrackerScreen> {
                 BorderlessCard(
                   borderColor: Color(MyColors.stroke1Color),
                   image: "assets/icons/period_card1.svg",
-                  text: "$nextPeriodDays days",
-                  bottomText: "Next Period",
+                  text: (isOnPeriod) ? formatDaysDate((cyclePeriod - diffTodayAndStartDate) - 1) : formatDaysDate(diffRemainingDays),
+                  bottomText: (isOnPeriod) ? "Cycle Left" : "Next Period",
                 ),
                 SizedBox(width: 20.0,),
                 BorderlessCard(
                   borderColor: Color(MyColors.stroke2Color),
                   image: "assets/icons/period_card2.svg",
-                  text: "$nextOvulationDays days",
-                  bottomText: "Next Ovulation",
+                  text: (isOnPeriod) ? formatDaysDate(12 - (diffTodayAndStartDate + 1)) : formatDaysDate(diffRemainingDays + 12),
+                  bottomText: (isOnPeriod) ? "Ovulation Left" : "Next Ovulation",
                 ),
                 SizedBox(width: 20.0,),
                 BorderlessCard(
@@ -331,11 +402,11 @@ class _PeriodTrackerScreen extends State<PeriodTrackerScreen> {
             SizedBox(
               height: 30.0,
             ),
-            CallToAction(
+            (isOnPeriod) ? CallToAction(
               onPress: () {
-                Navigator.pushNamed(context, LoginSymptoms.routeName);
+                Navigator.pushNamed(context, LoginSymptoms.routeName, arguments: (diffTodayAndStartDate + 1));
               },
-            ),
+            ) : SizedBox(),
             SizedBox(
               height: 20.0,
             ),
@@ -437,5 +508,12 @@ class _PeriodTrackerScreen extends State<PeriodTrackerScreen> {
             ),
           ],
         ));
+  }
+
+  String formatDaysDate(int value) {
+    if(value <= 1) {
+      return "$value day";
+    }
+    return "$value days";
   }
 }

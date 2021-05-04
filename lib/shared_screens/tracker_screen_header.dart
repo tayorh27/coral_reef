@@ -1,11 +1,18 @@
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/components/coral_back_button.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+final user = FirebaseAuth.instance.currentUser;
 
 class TrackerScreenHeader extends StatefulWidget {
+
+  final Widget child;
+  final double titleHeight;
+  TrackerScreenHeader({this.child, this.titleHeight = 15});
+
   @override
   State<StatefulWidget> createState() => _TrackerScreenHeader();
 }
@@ -14,29 +21,30 @@ class _TrackerScreenHeader extends State<TrackerScreenHeader> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    final user = FirebaseAuth.instance.currentUser;
     final date = DateTime.now();
     final months = ["JAN", "FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
     final days = ["MON","TUE","WED","THU","FRI","SAT","SUN"];
     return ListTile(
-      title: Container(height: 15.0,),
+      title: Container(height: widget.titleHeight,),
       subtitle: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
+
+          (widget.child == null) ? Container(
             width: 50.0,
             height: 50.0,
             margin: EdgeInsets.only(top: 15.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(25.0),
             ),
-            child: (user.photoURL == null) ? Image.asset("assets/images/default_avatar.png") : FadeInImage.assetNetwork(
+            child: (user.photoURL == null) ? CircleAvatar(child: Image.asset("assets/images/default_avatar.png"),) : FadeInImage.assetNetwork(
               placeholder: 'assets/images/default_avatar.png',
               image: user.photoURL,
             ),
-          )
+          ) : widget.child
+
         ],
       ),
       trailing: Row(

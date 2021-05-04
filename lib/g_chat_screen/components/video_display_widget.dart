@@ -6,8 +6,11 @@ import 'package:video_player/video_player.dart';
 class VideoDisplayWidget extends StatefulWidget {
   final String videoUrl;
   final String thumbImage;
+  final bool showControls;
+  final bool looping;
+  final double aspectRatio;
 
-  VideoDisplayWidget(this.videoUrl, this.thumbImage);
+  VideoDisplayWidget(this.videoUrl, this.thumbImage, {this.showControls = true, this.aspectRatio = 16/9, this.looping = false});
 
   @override
   State<StatefulWidget> createState() => _VideoDisplayWidget();
@@ -45,12 +48,12 @@ class _VideoDisplayWidget extends State<VideoDisplayWidget> {
     super.initState();
     _videoPlayerController = VideoPlayerController.network(widget.videoUrl);
     _chewieController = ChewieController(videoPlayerController: _videoPlayerController,
-      aspectRatio: 16/9,
+      aspectRatio: widget.aspectRatio,
       autoInitialize: true,
       autoPlay: true,
-      looping: false,
+      looping: widget.looping,
       allowMuting: true,
-      showControls: true,
+      showControls: widget.showControls,
       showControlsOnInitialize: false,
       allowedScreenSleep: true,
       errorBuilder: (context, errorMessage) {

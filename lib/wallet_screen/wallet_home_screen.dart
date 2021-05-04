@@ -3,11 +3,13 @@ import 'dart:async';
 
 import 'package:coral_reef/ListItem/model_transactions.dart';
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/shared_screens/EmptyScreen.dart';
 import 'package:coral_reef/wallet_screen/sections/receive_token.dart';
 import 'package:coral_reef/wallet_screen/sections/transfer_token.dart';
 import 'package:coral_reef/wallet_screen/services/wallet_service.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../size_config.dart';
 import 'components/wallet_buttons.dart';
@@ -23,7 +25,7 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
   TabController _tabController;
   WalletServices walletServices;
   String balance = "0", zilBalance = "0";
-  Map<String, dynamic> addresses;
+  Map<String, dynamic> addresses = new Map();
 
   bool _loading = false;
 
@@ -52,6 +54,8 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
     addresses = await walletServices.getUserAddresses();
     String bal = await walletServices.getTokenBalance(addresses["public"]);
     String zilBal = await walletServices.getZilBalance(addresses["zil"]);
+    addresses["crl"] = bal;
+    addresses["zilBal"] = zilBal;
     if(!mounted) return;
     setState(() {
       balance = bal;
@@ -105,9 +109,20 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
                         WalletButton(text: "Receive", icon: "assets/icons/wallet_arrow_up.svg", press: (){
                           Navigator.pushNamed(context, ReceiveWallet.routeName, arguments: addresses);
                         },),
-                        WalletButton(text: "Transfer", icon: "assets/icons/wallet_arrow_down.svg", press: (){
-                          addresses["crl"] = balance;
-                          Navigator.pushNamed(context, TransferToken.routeName, arguments: addresses);
+                        WalletButton(text: "Send", icon: "assets/icons/wallet_arrow_down.svg", press: () async {
+                          if(!addresses.containsKey("crl")) {
+                            new GeneralUtils().showToast(context, "Fetching token balance...please wait");
+                            return;
+                          }
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => TransferToken(argument: addresses)),
+                          );
+                          // if(res != null) {
+                          //   _controller.sink.add(SwipeRefreshState.loading);
+                          //   setupInitWallet();
+                          // }
+                          // Navigator.pushNamed(context, TransferToken.routeName, arguments: addresses);
                         },),
                       ],
                     )
@@ -206,10 +221,23 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
         Column(
           children: [
             ListTile(
-              title: Text("${trans.amount} CRL",
+              title: Row(
+                mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("${trans.amount} ${(trans.reason.toLowerCase().contains("zil")) ? 'ZIL' : 'CRL'}",
                   style: Theme.of(context).textTheme.headline1.copyWith(
                       color: Color(MyColors.titleTextColor),
                       fontSize: getProportionateScreenWidth(15))),
+                    TextButton.icon(onPressed: (){
+                      _launchInWebViewWithDomStorage("https://viewblock.io/zilliqa/tx/${trans.transaction_hash}?network=testnet");
+                    }, icon: Icon(Icons.open_in_new_rounded, color: Color(MyColors.primaryColor), size: 16.0,), label: Text("Viewblock",
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                        color: Color(MyColors.titleTextColor),
+                        fontSize: getProportionateScreenWidth(13),
+                      ),
+                    )),
+              ]),
               subtitle: Column(
                 children: [
                   Text(trans.reason,
@@ -236,6 +264,20 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
     });
 
     return transWidget;
+  }
+
+  Future<void> _launchInWebViewWithDomStorage(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: true,
+        forceWebView: true,
+        enableDomStorage: true,
+        enableJavaScript: true,
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   @override

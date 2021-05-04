@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:permission_handler/permission_handler.dart';
 
 import '../size_config.dart';
 import 'colors.dart';
@@ -144,6 +145,12 @@ class GeneralUtils {
   }
 
   String returnFormattedDate(String createdDate) {
+    print(createdDate);
+    List<String> _dates = createdDate.split(" ")[0].split("-");
+    int year = int.parse(_dates[0]);
+    int month = int.parse(_dates[1]);
+    int day = int.parse(_dates[2]);
+
     var secs = DateTime.now().difference(DateTime.parse(createdDate)).inSeconds;
     if (secs > 60) {
       var mins =
@@ -164,5 +171,57 @@ class GeneralUtils {
     } else {
       return '$secs secs ago';
     }
+  }
+
+  Future<bool> requestPermission(
+      BuildContext context, String _title, String _body) async {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: true, // user must tap button!
+      builder: (BuildContext context) {
+        return new AlertDialog(
+          title: new Text("Permission Request - $_title", textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyText1.copyWith(
+            color: Color(MyColors.titleTextColor),
+            fontSize: getProportionateScreenWidth(20),),),
+          content: new SingleChildScrollView(
+            child: new ListBody(
+              children: <Widget>[
+                Container(
+                  height: getProportionateScreenHeight(50),
+                  width: getProportionateScreenWidth(50),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF5F6F9),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Image.asset('assets/images/logo2.png'),
+                ),
+                Padding(
+                    padding: const EdgeInsets.only(left:30.0, right: 30.0, top: 30.0),
+                    child: new Text(
+                      _body,textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.subtitle1.copyWith(
+                        color: Color(MyColors.titleTextColor),
+                        fontSize: getProportionateScreenWidth(15),),
+                    )),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            new TextButton(
+              child: new Text('DENY', style: TextStyle(color: Colors.redAccent),),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            new TextButton(
+              child: new Text('ALLOW', style: TextStyle(color: Color(MyColors.primaryColor)),),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

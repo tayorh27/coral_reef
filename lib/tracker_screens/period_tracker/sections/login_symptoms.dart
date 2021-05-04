@@ -14,11 +14,19 @@ import '../../../size_config.dart';
 class LoginSymptoms extends StatefulWidget {
   static final routeName = "log-symptoms";
 
+  final String logType;
+  final String weekData;
+
+  LoginSymptoms({this.logType = "period", this.weekData});
+
   @override
   State<StatefulWidget> createState() => _LoginSymptoms();
 }
 
 class _LoginSymptoms extends State<LoginSymptoms> {
+
+  String cycleDay = "";
+
   List<String> moodOptions = [
     "Calm",
     "Happy",
@@ -64,6 +72,7 @@ class _LoginSymptoms extends State<LoginSymptoms> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    cycleDay = ModalRoute.of(context).settings.arguments as String ?? "";
     return Scaffold(
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
@@ -87,7 +96,7 @@ class _LoginSymptoms extends State<LoginSymptoms> {
                 child: Column(
               children: [
                 SizedBox(height: SizeConfig.screenHeight * 0.05),
-                CloseHeader(),
+                CloseHeader(subtitle: (widget.weekData == null) ? "Cycle day $cycleDay" : "Pregnancy Week ${widget.weekData}"),
                 SizedBox(height: SizeConfig.screenHeight * 0.05),
                 Row(
                   children: [
@@ -265,7 +274,15 @@ class _LoginSymptoms extends State<LoginSymptoms> {
     data["discharge"] = selectedDischarge;
     data["note"] = _textEditingController.text;
 
-    await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("period-symptoms").doc(_date).set(data);
+    if(widget.weekData == null) {
+      await FirebaseFirestore.instance.collection("users").doc(user.uid)
+          .collection("period-symptoms").doc(_date)
+          .set(data);
+    }else {
+      await FirebaseFirestore.instance.collection("users").doc(user.uid)
+          .collection("pregnancy-symptoms").doc("week-${widget.weekData}")
+          .set(data);
+    }
 
     new GeneralUtils().showToast(context, "Record saved.");
     Navigator.of(context).pop();

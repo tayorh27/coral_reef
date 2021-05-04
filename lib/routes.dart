@@ -5,6 +5,7 @@ import 'package:coral_reef/onboarding/forgotpassword/forgotpassword.dart';
 import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/period_tracker_screen.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/sections/login_symptoms.dart';
+import 'package:coral_reef/tracker_screens/period_tracker/sections/period_calendar_date.dart';
 import 'package:coral_reef/tracker_screens/pregnancy_tracker/pregnancy_tracker_screen.dart';
 import 'package:coral_reef/tracker_screens/pregnancy_tracker/sections/tips.dart';
 import 'package:coral_reef/tracker_screens/pregnancy_tracker/sections/your_baby.dart';
@@ -63,4 +64,5 @@ final Map<String, WidgetBuilder> routes = {
   YourBody.routeName: (context) => YourBody(),
   TipsScreen.routeName: (context) => TipsScreen(),
   YourTips.routeName: (context) => YourTips(),
+  PeriodCalendarDate.routeName: (context) => PeriodCalendarDate(),
 };

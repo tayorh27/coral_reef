@@ -1,35 +1,68 @@
+import 'package:coral_reef/ListItem/model_baby_body_info.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/constants.dart';
+import 'package:coral_reef/g_chat_screen/components/video_display_widget.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/tracker_screens/pregnancy_tracker/components/list_card.dart';
+import 'package:coral_reef/tracker_screens/pregnancy_tracker/services/pregnancy_services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:readmore/readmore.dart';
 
 class YourBaby extends StatefulWidget {
   static final routeName = "yourbaby";
+  final String week;
+  final int weekNumber;
+  YourBaby({this.week, this.weekNumber});
+
   @override
   _YourBabyState createState() => _YourBabyState();
 }
 
 class _YourBabyState extends State<YourBaby> {
+
+  String week = "";
+
+  PregnancyBBInfo babyInfo;
+
+  PregnancyServices pregnancyServices;
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    pregnancyServices = new PregnancyServices();
+    setState(() {
+      week = widget.week;
+      babyInfo = pregnancyServices.getPregnancyInfoData().firstWhere((element) => element.week == widget.weekNumber);
+    });
+
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
+        leading: Container(
+          margin: EdgeInsets.only(left: 25.0),
+          child: IconButton(
+              icon: Icon(Icons.arrow_back_ios),
+              onPressed: () {
+                Navigator.pop(context);
+              }),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         toolbarHeight: 100,
         title: Center(
-          child: Text("Your Baby", style: Theme.of(context).textTheme.headline2.copyWith(
-    color: Color(MyColors.titleTextColor),
-    fontSize: getProportionateScreenWidth(18),
-    )),
+          child: Text("Your Baby",
+              style: Theme.of(context).textTheme.headline2.copyWith(
+                    color: Color(MyColors.titleTextColor),
+                    fontSize: getProportionateScreenWidth(18),
+                  )),
         ),
       ),
       body: Container(
@@ -39,11 +72,11 @@ class _YourBabyState extends State<YourBaby> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Your Baby at the 17th Week",
+                "Your Baby at the $week Week",
                 style: Theme.of(context).textTheme.headline2.copyWith(
-                  color: Color(MyColors.titleTextColor),
-                  fontSize: getProportionateScreenWidth(16),
-                ),
+                      color: Color(MyColors.titleTextColor),
+                      fontSize: getProportionateScreenWidth(16),
+                    ),
               ),
               SizedBox(
                 height: getProportionateScreenHeight(20),
@@ -51,13 +84,11 @@ class _YourBabyState extends State<YourBaby> {
               Stack(
                 alignment: Alignment.center,
                 children: [
-                  Image.asset(
-                    "assets/images/baby.png",
-                    width: double.infinity,
-                  ),
-                  Center(
+                  InkWell(
+                    onTap: playVideo,
                     child: Image.asset(
-                      "assets/icons/play.png",
+                      "assets/images/your_baby.png",
+                      height: 200.0,
                     ),
                   ),
                 ],
@@ -66,62 +97,94 @@ class _YourBabyState extends State<YourBaby> {
                 height: getProportionateScreenHeight(30),
               ),
               ReadMoreText(
-                demodata,
+                babyInfo.babyText,
                 trimLines: 6,
                 colorClickableText: Color(MyColors.primaryColor),
                 trimMode: TrimMode.Line,
                 trimCollapsedText: 'more',
                 trimExpandedText: 'less',
-                style: Theme.of(context).textTheme.subtitle1.copyWith(fontSize: 14.0, color: Color(MyColors.titleTextColor)),
-                moreStyle: Theme.of(context).textTheme.headline2.copyWith(fontSize: 14.0, color: Color(MyColors.primaryColor)),
-                lessStyle: Theme.of(context).textTheme.headline2.copyWith(fontSize: 14.0, color: Color(MyColors.primaryColor)),
+                style: Theme.of(context).textTheme.subtitle1.copyWith(
+                    fontSize: 14.0, color: Color(MyColors.titleTextColor)),
+                moreStyle: Theme.of(context).textTheme.headline2.copyWith(
+                    fontSize: 14.0, color: Color(MyColors.primaryColor)),
+                lessStyle: Theme.of(context).textTheme.headline2.copyWith(
+                    fontSize: 14.0, color: Color(MyColors.primaryColor)),
               ),
               SizedBox(
                 height: 39,
               ),
-              Divider(
-                thickness: 2,
-              ),
-              PregListCard(
-                title: "Lorem Ipsum",
-                title2: "Some text about something goes here",
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Divider(
-                thickness: 2,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              PregListCard(
-                title: "Lorem Ipsum",
-                title2: "Some text about something goes here",
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Divider(
-                thickness: 2,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              PregListCard(
-                title: "Lorem Ipsum",
-                title2: "Some text about something goes here",
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Divider(
-                thickness: 2,
-              ),
+              // Divider(
+              //   thickness: 2,
+              // ),
+              // PregListCard(
+              //   title: "Lorem Ipsum",
+              //   title2: "Some text about something goes here",
+              // ),
+              // SizedBox(
+              //   height: 10,
+              // ),
+              // Divider(
+              //   thickness: 2,
+              // ),
+              // SizedBox(
+              //   height: 10,
+              // ),
+              // PregListCard(
+              //   title: "Lorem Ipsum",
+              //   title2: "Some text about something goes here",
+              // ),
+              // SizedBox(
+              //   height: 10,
+              // ),
+              // Divider(
+              //   thickness: 2,
+              // ),
+              // SizedBox(
+              //   height: 10,
+              // ),
+              // PregListCard(
+              //   title: "Lorem Ipsum",
+              //   title2: "Some text about something goes here",
+              // ),
+              // SizedBox(
+              //   height: 10,
+              // ),
+              // Divider(
+              //   thickness: 2,
+              // ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> playVideo() {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return new AlertDialog(
+          title: Text("Week ${widget.weekNumber}", textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyText1.copyWith(
+          color: Color(MyColors.titleTextColor),
+          fontSize: getProportionateScreenWidth(20),),),
+          content: new SingleChildScrollView(
+            child: new ListBody(
+              children: <Widget>[
+                VideoDisplayWidget(babyInfo.videoUrl, "https://firebasestorage.googleapis.com/v0/b/coraltrackerapp.appspot.com/o/pregnancy-asset-files%2Fyour_baby.png?alt=media&token=31cb96be-e801-471e-8290-13293f67d0c2", showControls: false, aspectRatio: 4/3, looping: true,)
+              ],
+            ),
+          ),
+          actions: [
+            new TextButton(
+              child: new Text('DONE', style: TextStyle(color: Color(MyColors.primaryColor)),),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

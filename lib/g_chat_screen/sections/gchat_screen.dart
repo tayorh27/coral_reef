@@ -106,19 +106,17 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
     //
     // });
 
-    // _scrollController.addListener(() {
-    //   if(_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange) {
-    //     setState(() {
-    //       isBottom = true;
-    //       // widget.hideFloatingButton(true);
-    //     });
-    //   }else {
-    //     setState(() {
-    //       isBottom = false;
-    //       // widget.hideFloatingButton(false);
-    //     });
-    //   }
-    // });
+    _scrollController.addListener(() {
+      if(_scrollController.hasClients) {
+        if(_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange) {
+          print("bottom");
+          widget.hideFloatingButton(true);
+        }else {
+          print("bottom");
+          widget.hideFloatingButton(false);
+        }
+      }
+    });
 
     getAllLikesData();
     // imageNetwork.resolve(new ImageConfiguration()).addListener(

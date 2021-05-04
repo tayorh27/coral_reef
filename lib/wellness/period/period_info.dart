@@ -34,7 +34,7 @@ class _PeriodInfo extends State<PeriodInfo> {
   StorageSystem ss = new StorageSystem();
   List<OnboardingQuestions> questionsAndScreenType = [
     OnboardingQuestions("What year were you born?", ScreenType.year),
-    OnboardingQuestions("Date of last period?", ScreenType.last_period),
+    OnboardingQuestions("The end date of your last period cycle?", ScreenType.last_period),
     OnboardingQuestions("How long is your period?", ScreenType.period_length),
     OnboardingQuestions("How many days is your cycle?", ScreenType.cycle),
   ];

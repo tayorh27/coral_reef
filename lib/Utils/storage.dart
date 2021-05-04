@@ -13,18 +13,24 @@ class StorageSystem {
   }
 
   Future<void> setPrefItem(String key, String item, {bool isStoreOnline = true}) async {
-    await storage.write(key: key, value: item);
-    if(isStoreOnline) {
-      String user = await getItem("user");
-      if(user != null) {
-        dynamic json = jsonDecode(user);
-        Map<String, dynamic> setupData = new Map();
-        setupData[key] = item;
-        if(json["uid"] == null) {
-          return;
+    try {
+      await storage.write(key: key, value: item);
+      if (isStoreOnline) {
+        String user = await getItem("user");
+        if (user != null) {
+          dynamic json = jsonDecode(user);
+          Map<String, dynamic> setupData = new Map();
+          setupData[key] = item;
+          if (json["uid"] == null) {
+            return;
+          }
+          FirebaseFirestore.instance.collection("users").doc(json["uid"])
+              .collection("setups").doc("user-data")
+              .update(setupData);
         }
-        await FirebaseFirestore.instance.collection("users").doc(json["uid"]).collection("setups").doc("user-data").update(setupData);
       }
+    }catch(e) {
+      print(e);
     }
   }
 

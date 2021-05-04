@@ -56,17 +56,30 @@ class _RecentPostComment extends State<RecentPostComment> {
             ),
             title: Container(
               padding: EdgeInsets.only(top: 10.0),
-              child: Text(com["username"],
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText1
-                      .copyWith(
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(com["username"],
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1
+                          .copyWith(
+                          color: Color(MyColors.titleTextColor),
+                          fontSize: getProportionateScreenWidth(13))),
+                  Text(
+                    new GeneralUtils().returnFormattedDate(com["created_date"]),
+                    style: Theme.of(context).textTheme.subtitle1.copyWith(
                       color: Color(MyColors.titleTextColor),
-                      fontSize: getProportionateScreenWidth(13))),
+                      fontSize: getProportionateScreenWidth(10),
+                    ),
+                  ),
+                ],
+              ),
             ),
             subtitle: ReadMoreText(
               com["message"],
-              trimLines: 1,
+              trimLines: 2,
               colorClickableText: Color(MyColors.primaryColor),
               trimMode: TrimMode.Line,
               trimCollapsedText: 'more',
@@ -74,13 +87,6 @@ class _RecentPostComment extends State<RecentPostComment> {
               style: Theme.of(context).textTheme.subtitle1.copyWith(fontSize: 14.0, color: Color(MyColors.titleTextColor)),
               moreStyle: Theme.of(context).textTheme.headline2.copyWith(fontSize: 14.0, color: Color(MyColors.primaryColor)),
               lessStyle: Theme.of(context).textTheme.headline2.copyWith(fontSize: 14.0, color: Color(MyColors.primaryColor)),
-            ),
-            trailing: Text(
-              new GeneralUtils().returnFormattedDate(com["created_date"]),
-              style: Theme.of(context).textTheme.subtitle1.copyWith(
-                color: Color(MyColors.titleTextColor),
-                fontSize: getProportionateScreenWidth(10),
-              ),
             ),
             isThreeLine: true,
           )

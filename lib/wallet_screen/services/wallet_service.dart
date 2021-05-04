@@ -94,6 +94,22 @@ class WalletServices {
     return mTrans;
   }
 
+  Future<Map<String, dynamic>> transferZil(String senderAddress, String recipientAddress, String amount) async {
+    String user = await ss.getItem("user");
+    dynamic json = jsonDecode(user);
+    String uid = json["uid"];
+
+    Uri _uri = Uri.parse("https://us-central1-coraltrackerapp.cloudfunctions.net/transferzil?uid=$uid&recipientAddress=$recipientAddress&sendingAddress=$senderAddress&sendingAmount=$amount");
+
+    http.Response res = await http.get(_uri);
+
+    print(res.body);
+
+    Map<String, dynamic> _body = jsonDecode(res.body);
+
+    return _body;
+  }
+
   Future<Map<String, dynamic>> transferToken(String senderAddress, String recipientAddress, String amount) async {
     String user = await ss.getItem("user");
     dynamic json = jsonDecode(user);
