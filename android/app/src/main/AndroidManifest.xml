@@ -2,10 +2,13 @@
     package="com.rae.coral_reef">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" /> <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application
         android:label="Coral Reef"
         android:icon="@mipmap/ic_coral_reef_cover">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCRrfbYY6rhh2qfMPo-My7y_gUfsl2eP14"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

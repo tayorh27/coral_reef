@@ -1,22 +1,16 @@
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/constants.dart';
 import 'package:coral_reef/shared_screens/header_name.dart';
-import 'package:coral_reef/tracker_screens/diet_tracker_screen/components/insight_card.dart';
-import 'package:coral_reef/tracker_screens/diet_tracker_screen/components/populate_diet_summary.dart';
-import 'package:coral_reef/tracker_screens/diet_tracker_screen/components/water_card.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/components/challenge_card.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/components/insight_card.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/components/populate_exercise_summary.dart';
 // import 'package:coral_reef/screens/insightscreen/insight.dart';
 import 'package:flutter/material.dart';
 import 'package:coral_reef/size_config.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
 
 // import '../../screens/sleepscreen/sleep.dart';
 // import '../../screens/moodscreen/moodscreen.dart';
 // import '../../screens/vitaminscreen/vitamin.dart';
-
 
 class ExerciseTrackerScreen extends StatefulWidget {
   @override
@@ -24,7 +18,6 @@ class ExerciseTrackerScreen extends StatefulWidget {
 }
 
 class _ExerciseTrackerScreen extends State<ExerciseTrackerScreen> {
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -32,12 +25,14 @@ class _ExerciseTrackerScreen extends State<ExerciseTrackerScreen> {
         width: double.infinity,
         child: Padding(
           padding:
-          EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(10)),
+              EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(10)),
           child: SingleChildScrollView(
             child: Column(
               children: [
                 SizedBox(height: SizeConfig.screenHeight * 0.02),
-                Heading(body: "Select a card to get started.",),
+                Heading(
+                  body: "Select a card to get started.",
+                ),
                 SizedBox(height: SizeConfig.screenHeight * 0.02),
                 PopulateExerciseSummary(),
                 SizedBox(height: SizeConfig.screenHeight * 0.02),
@@ -68,7 +63,9 @@ class Categories extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: getProportionateScreenWidth(0),right: getProportionateScreenWidth(5)),
+      padding: EdgeInsets.only(
+          left: getProportionateScreenWidth(0),
+          right: getProportionateScreenWidth(5)),
       child: GestureDetector(
         onTap: press,
         child: Container(
@@ -80,11 +77,13 @@ class Categories extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(
-            child: Text(category,
+            child: Text(
+              category,
               style: TextStyle(
                 color: color,
                 fontSize: getProportionateScreenWidth(12),
-              ),),
+              ),
+            ),
           ),
         ),
       ),

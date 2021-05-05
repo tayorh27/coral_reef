@@ -23,7 +23,7 @@ class ChallengeCard extends StatelessWidget {
           ),
           width: double.infinity,
           padding: EdgeInsets.all(20.0),
-          height: 200,
+          height:  getProportionateScreenHeight(240),
           child: ClipRRect(
               child: Stack(children: [
                 Container(

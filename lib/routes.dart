@@ -3,10 +3,10 @@ import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
 import 'package:coral_reef/onboarding/sign_up/signup_screen.dart';
 import 'package:coral_reef/onboarding/forgotpassword/forgotpassword.dart';
 import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
-import 'package:coral_reef/tracker_screens/exercise_tracker/exercise_tracker_screen.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/all_data.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/insight.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/steps.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/track_activities.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/period_tracker_screen.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/sections/login_symptoms.dart';
 import 'package:coral_reef/tracker_screens/pregnancy_tracker/pregnancy_tracker_screen.dart';
@@ -19,11 +19,8 @@ import 'package:coral_reef/wallet_screen/sections/setup_pin.dart';
 import 'package:coral_reef/wallet_screen/sections/transfer_token.dart';
 import 'package:coral_reef/wellness/conceive/conceive_info.dart';
 import 'package:coral_reef/wellness/diet_exercise_well_being/diet_exercise_well_being_info.dart';
-import 'package:coral_reef/wellness/diet_exercise_well_being/height.dart';
 import 'package:coral_reef/wellness/period/period_info.dart';
 import 'package:coral_reef/wellness/pregnancy/pregnancy_info.dart';
-import 'package:coral_reef/wellness/diet_exercise_well_being/required_weight.dart';
-import 'package:coral_reef/wellness/diet_exercise_well_being/weight.dart';
 import 'package:coral_reef/wellness/onboarding/wellness.dart';
 import 'package:coral_reef/wellness/wellness_tracker_options.dart';
 import 'package:flutter/widgets.dart';
@@ -70,4 +67,5 @@ final Map<String, WidgetBuilder> routes = {
   Steps.routeName: (context) => Steps(),
   ExerciseInsight.routeName: (context) => ExerciseInsight(),
 AllData.routeName: (context) => AllData(),
+  TrackActivities.routeName: (context) => TrackActivities(),
 };

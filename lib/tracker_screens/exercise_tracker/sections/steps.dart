@@ -1,9 +1,11 @@
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/size_config.dart';
+import 'package:direct_select/direct_select.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
+import 'package:intl/intl.dart';
 
 class Steps extends StatefulWidget {
   static final routeName = "steps";
@@ -12,7 +14,97 @@ class Steps extends StatefulWidget {
 }
 
 class _PageState extends State<Steps> {
-  double steps = 1;
+  double steps = 5000;
+  final elements = [
+    "5000",
+    "8000",
+    "10000",
+    "11000",
+    "12000",
+    "15000",
+    "18000",
+    "20000",
+    "22000",
+    "25000",
+    "28000",
+    "30000",
+    "33000",
+  ];
+
+  var outputFormat = DateFormat('dd MMM yyyy hh:mm a');
+  int selectedIndex = 0;
+  List<Widget> _buildItems1() {
+    return elements
+        .map((val) => MySelectionItem(
+      title: val,
+    ))
+        .toList();
+  }
+  _showGoalDialog() {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title:
+            Column(
+              children: [
+                Text("Set daily step goal", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w200),),
+SizedBox(height: 20,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Date", style: TextStyle(fontSize: 12),),
+                    Text( outputFormat.format(DateTime.now()).toString(), style: TextStyle(fontSize: 12,color:Color(MyColors.primaryColor).withOpacity(0.8)),),
+
+                ],)
+
+              ],
+            ),
+            content:
+                Container(
+                  height: 150,
+                  child:
+            Column(
+              children: [
+
+            DirectSelect(
+                itemExtent: 35.0,
+                selectionColor:  Color(MyColors.primaryColor).withOpacity(0.1),
+                selectedIndex: selectedIndex,
+                child: MySelectionItem(
+                  isForList: false,
+                  title: elements[selectedIndex],
+                ),
+                onSelectedItemChanged: (index) {
+                  setState(() {
+                    selectedIndex = index;
+                   Navigator.pop(context);
+                    Navigator.pop(context);
+                    steps = double.parse(elements[selectedIndex]);
+                    print(selectedIndex);
+                    _showGoalDialog();
+                  });
+                },
+                mode: DirectSelectMode.tap,
+                items: _buildItems1()),
+                SizedBox(height: 40,),
+                Container(
+                  height: 40,
+                  child:
+                DefaultButton(
+                  text: 'Save',
+                  press: () {
+                   Navigator.pop(context);
+                  },
+                ))
+              ],
+            ),),
+            shape: RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(15)),
+          );
+        });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,7 +186,7 @@ class _PageState extends State<Steps> {
                                         CustomSliderWidths(trackWidth: 8.0)),
                                 initialValue: steps,
                                 min: 1,
-                                max: 10000,
+                                max: 33000,
                                 innerWidget: (double value) {
                                   return Column(
                                     crossAxisAlignment:
@@ -135,7 +227,7 @@ class _PageState extends State<Steps> {
                                   );
                                 },
                                 onChange: (double value) {
-                                  print(value);
+                                  //print(value);
                                   setState(() {
                                     steps = value;
                                   });
@@ -153,7 +245,7 @@ class _PageState extends State<Steps> {
                                         "assets/exercise/fire.svg",
                                         height: 40.0,
                                       ),
-                                      Text("406 kcal",
+                                      Text((steps / 63.4).roundToDouble().toString() +"kcal",
                                           style: Theme.of(context)
                                               .textTheme
                                               .subtitle1
@@ -170,7 +262,7 @@ class _PageState extends State<Steps> {
                                       "assets/exercise/location.svg",
                                       height: 40.0,
                                     ),
-                                    Text("1.6 km",
+                                    Text((steps * 0.000762).roundToDouble().toString() + 'km',
                                         style: Theme.of(context)
                                             .textTheme
                                             .subtitle1
@@ -186,7 +278,7 @@ class _PageState extends State<Steps> {
                                       "assets/exercise/time.svg",
                                       height: 40.0,
                                     ),
-                                    Text("45 Min",
+                                    Text((steps / 100).round().toString()  +"Min",
                                         style: Theme.of(context)
                                             .textTheme
                                             .subtitle1
@@ -202,10 +294,55 @@ class _PageState extends State<Steps> {
                           SizedBox(height: 50,),
                           DefaultButton(
                             text: 'Set daily goal',
-                            press: () {},
+                            press: () {
+                              _showGoalDialog();
+                            },
                           )
                         ],
                       )
                     ])));
+  }
+}
+//You can use any Widget
+class MySelectionItem extends StatelessWidget {
+  final String title;
+  final bool isForList;
+
+  const MySelectionItem({Key key, this.title, this.isForList = true}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 60.0,
+      child: isForList
+          ? Padding(
+        child: _buildItem(context),
+        padding: EdgeInsets.all(10.0),
+      )
+          : Card(
+        color: Colors.white,
+        margin: EdgeInsets.symmetric(horizontal: 10.0),
+        child: Stack(
+          children: <Widget>[
+            _buildItem(context),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Icon(Icons.arrow_drop_down),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildItem(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      alignment: Alignment.center,
+      child: FittedBox(
+          child: Text(
+            title,style: TextStyle(color:Color(MyColors.primaryColor).withOpacity(0.8), fontWeight: FontWeight.w500, fontSize: 30),
+          )),
+    );
   }
 }

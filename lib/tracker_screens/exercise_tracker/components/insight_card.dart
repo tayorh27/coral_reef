@@ -64,7 +64,7 @@ import '../../../size_config.dart';
             borderRadius: BorderRadius.circular(10),
           ),
           width: double.infinity,
-          height: 300,
+          height:  getProportionateScreenHeight(320),
           padding: EdgeInsets.all(20.0),
           child: Column(
             children: [

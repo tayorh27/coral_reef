@@ -74,6 +74,8 @@ dependencies:
   provider: ^5.0.0
   direct_select: ^2.0.0
   toggle_switch: ^0.1.9
+  google_maps_flutter: ^2.0.3
+  geolocator:
 #  hexcolor: ^2.0.3
 
 
