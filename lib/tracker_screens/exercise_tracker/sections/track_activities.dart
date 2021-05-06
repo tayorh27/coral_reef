@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/map_utils.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/records_activities.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/save_activities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -431,6 +432,12 @@ class _PageState extends State<TrackActivities> {
                                   )
                                 ],
                               ),
+                              InkWell(
+                                onTap: (){
+                                  Navigator.pushNamed(
+                                      context, RecordsActivities.routeName);
+                                },
+                                child:
                               Column(
                                 children: [
                                   SvgPicture.asset(
@@ -445,7 +452,7 @@ class _PageState extends State<TrackActivities> {
                                     style: TextStyle(fontSize: 10),
                                   )
                                 ],
-                              ),
+                              ) ),
                             ],
                           )
                         : Column(

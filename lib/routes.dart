@@ -5,6 +5,7 @@ import 'package:coral_reef/onboarding/forgotpassword/forgotpassword.dart';
 import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/all_data.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/insight.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/records_activities.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/save_activities.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/steps.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/track_activities.dart';
@@ -70,5 +71,5 @@ final Map<String, WidgetBuilder> routes = {
 AllData.routeName: (context) => AllData(),
   TrackActivities.routeName: (context) => TrackActivities(),
   SaveActivities.routeName: (context) => SaveActivities(),
-
+  RecordsActivities.routeName: (context) => RecordsActivities(),
 };
