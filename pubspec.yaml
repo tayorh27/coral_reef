@@ -76,6 +76,7 @@ dependencies:
   toggle_switch: ^0.1.9
   google_maps_flutter: ^2.0.3
   geolocator:
+  flutter_polyline_points: ^1.0.0
 #  hexcolor: ^2.0.3
 
 
