@@ -3,10 +3,14 @@ import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
 import 'package:coral_reef/onboarding/sign_up/signup_screen.dart';
 import 'package:coral_reef/onboarding/forgotpassword/forgotpassword.dart';
 import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/chal_participants.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/challenge_details.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/coral_rewards.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/create_challenge.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/all_data.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/challenge_page.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/insight.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/past_challenges.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/records_activities.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/save_activities.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/start_community.dart';
@@ -82,6 +86,10 @@ AllData.routeName: (context) => AllData(),
   StartWeekend.routeName: (context) => StartWeekend(),
   StartWeekdays.routeName: (context) => StartWeekdays(),
   StartCommunity.routeName: (context) => StartCommunity(),
+  PastChallenges.routeName: (context) => PastChallenges(),
+  CoralRewards.routeName: (context) => CoralRewards(),
+  ChallengeDetails.routeName: (context) => ChallengeDetails(),
+  ChallengeParticipant.routeName: (context) => ChallengeParticipant(),
 
 
 };

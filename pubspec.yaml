@@ -77,6 +77,7 @@ dependencies:
   google_maps_flutter: ^2.0.3
   geolocator:
   flutter_polyline_points: ^1.0.0
+  percent_indicator: ^3.0.1
 #  hexcolor: ^2.0.3
 
 

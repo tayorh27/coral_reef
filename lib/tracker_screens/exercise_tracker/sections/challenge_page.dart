@@ -1,7 +1,10 @@
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/size_config.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/challenge_details.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/coral_rewards.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/create_challenge.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/past_challenges.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/start_community.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/start_weekdays.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/start_weekend.dart';
@@ -479,6 +482,15 @@ class _PageState extends State<ChallengePage> {
                       Divider(
                         thickness: 2,
                       ),
+                      InkWell(
+                        onTap: (){
+                          Navigator.pushNamed(
+                              context,
+                              ChallengeDetails
+                                  .routeName);
+
+                        },
+                        child:
                       Container(
                           padding: EdgeInsets.all(10),
                           child: Row(
@@ -557,7 +569,7 @@ class _PageState extends State<ChallengePage> {
                                     text: 'Join',
                                   ))
                             ],
-                          )),
+                          ))),
                       Divider(
                         thickness: 2,
                       ),
@@ -795,7 +807,7 @@ class _PageState extends State<ChallengePage> {
                                   width: 80,
                                   height: 30,
                                   child: DefaultButton(
-                                    loading: false,
+                                    press: () {},
                                     text: 'Join',
                                   ))
                             ],
@@ -806,7 +818,7 @@ class _PageState extends State<ChallengePage> {
                       GestureDetector(
                           onTap: () {
                             Navigator.pushNamed(
-                                context, CreateChallengePage.routeName);
+                                context, CoralRewards.routeName);
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -856,7 +868,7 @@ class _PageState extends State<ChallengePage> {
                       GestureDetector(
                           onTap: () {
                             Navigator.pushNamed(
-                                context, ChallengePage.routeName);
+                                context, PastChallenges.routeName);
                           },
                           child: Container(
                             decoration: BoxDecoration(
