@@ -1,5 +1,6 @@
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/shared_screens/pill_icon.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/challenge_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -14,7 +15,7 @@ class ChallengeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          // Navigator.pushNamed(context, VitaminScreen.routeName);
+           Navigator.pushNamed(context, ChallengePage.routeName);
         },
         child: Container(
           decoration: BoxDecoration(

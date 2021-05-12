@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:coral_reef/Utils/colors.dart';
-import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/map_utils.dart';
 import 'package:flutter/material.dart';
@@ -161,9 +159,7 @@ class _PageState extends State<RecordsActivities> {
                       fontSize: getProportionateScreenWidth(15),
                     ),
               ),
-              SvgPicture.asset(
-                  "assets/icons/clarity_notification-outline-badged.svg",
-                  height: 22.0),
+              Text('')
             ],
           ),
         ),
@@ -250,9 +246,11 @@ class _PageState extends State<RecordsActivities> {
                         children: [
                           Row(
                             children: [
-                              SvgPicture.asset(
-                                  "assets/icons/clarity_notification-outline-badged.svg",
-                                  height: 22.0),
+                              SvgPicture.asset("assets/exercise/run.svg",
+                                  height: 13.0),
+                              SizedBox(
+                                width: 5,
+                              ),
                               Text(
                                 '8 February 2021,10:25 AM',
                                 style: TextStyle(
@@ -260,10 +258,188 @@ class _PageState extends State<RecordsActivities> {
                               ),
                             ],
                           ),
+                          SizedBox(
+                            height: 10,
+                          ),
                           Text(
                             '5.54km',
                             style: TextStyle(
                                 fontWeight: FontWeight.w200, fontSize: 20),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '21:12',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w200, fontSize: 12),
+                              ),
+                              Text(
+                                '09:12',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w200, fontSize: 12),
+                              ),
+                              Text(
+                                '07:59',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w200, fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ))
+                ]),
+                SizedBox(
+                  height: 30,
+                ),
+                Row(children: [
+                  Container(
+                      height: MediaQuery.of(context).size.height / 7,
+                      width: MediaQuery.of(context).size.width / 2.3,
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Expanded(
+                                child: Stack(children: <Widget>[
+                              mapToggle
+                                  ? GoogleMap(
+                                      onMapCreated: _onMapCreated,
+                                      initialCameraPosition: CameraPosition(
+                                        zoom: 10,
+                                        target: LatLng(currentLocation.latitude,
+                                            currentLocation.longitude),
+                                      ),
+                                      //markers: _markers,
+                                      polylines:
+                                          Set<Polyline>.of(polylines.values),
+                                    )
+                                  : Center(
+                                      child: Text(
+                                        'Loading...',
+                                        style: TextStyle(fontSize: 28),
+                                      ),
+                                    ),
+                            ])),
+                          ])),
+                  Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              SvgPicture.asset("assets/exercise/run.svg",
+                                  height: 13.0),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                '8 February 2021,10:25 AM',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w200, fontSize: 12),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            '5.54km',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w200, fontSize: 20),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '21:12',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w200, fontSize: 12),
+                              ),
+                              Text(
+                                '09:12',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w200, fontSize: 12),
+                              ),
+                              Text(
+                                '07:59',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w200, fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ))
+                ]),
+                SizedBox(
+                  height: 30,
+                ),
+                Row(children: [
+                  Container(
+                      height: MediaQuery.of(context).size.height / 7,
+                      width: MediaQuery.of(context).size.width / 2.3,
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Expanded(
+                                child: Stack(children: <Widget>[
+                              mapToggle
+                                  ? GoogleMap(
+                                      onMapCreated: _onMapCreated,
+                                      initialCameraPosition: CameraPosition(
+                                        zoom: 10,
+                                        target: LatLng(currentLocation.latitude,
+                                            currentLocation.longitude),
+                                      ),
+                                      //markers: _markers,
+                                      polylines:
+                                          Set<Polyline>.of(polylines.values),
+                                    )
+                                  : Center(
+                                      child: Text(
+                                        'Loading...',
+                                        style: TextStyle(fontSize: 28),
+                                      ),
+                                    ),
+                            ])),
+                          ])),
+                  Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              SvgPicture.asset("assets/exercise/run.svg",
+                                  height: 13.0),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                '8 February 2021,10:25 AM',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w200, fontSize: 12),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            '5.54km',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w200, fontSize: 20),
+                          ),
+                          SizedBox(
+                            height: 10,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,

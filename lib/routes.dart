@@ -3,10 +3,14 @@ import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
 import 'package:coral_reef/onboarding/sign_up/signup_screen.dart';
 import 'package:coral_reef/onboarding/forgotpassword/forgotpassword.dart';
 import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/create_challenge.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/all_data.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/challenge_page.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/insight.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/records_activities.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/save_activities.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/start_community.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/start_weekend.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/steps.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/track_activities.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/period_tracker_screen.dart';
@@ -32,6 +36,7 @@ import 'g_chat_screen/GChatScreen.dart';
 import 'g_chat_screen/sections/avatar_final_section.dart';
 import 'g_chat_screen/sections/create_new_gchat.dart';
 import 'g_chat_screen/sections/interested_topics.dart';
+import 'tracker_screens/exercise_tracker/sections/start_weekdays.dart';
 
 
 
@@ -72,4 +77,11 @@ AllData.routeName: (context) => AllData(),
   TrackActivities.routeName: (context) => TrackActivities(),
   SaveActivities.routeName: (context) => SaveActivities(),
   RecordsActivities.routeName: (context) => RecordsActivities(),
+  ChallengePage.routeName: (context) => ChallengePage(),
+  CreateChallengePage.routeName: (context) => CreateChallengePage(),
+  StartWeekend.routeName: (context) => StartWeekend(),
+  StartWeekdays.routeName: (context) => StartWeekdays(),
+  StartCommunity.routeName: (context) => StartCommunity(),
+
+
 };
