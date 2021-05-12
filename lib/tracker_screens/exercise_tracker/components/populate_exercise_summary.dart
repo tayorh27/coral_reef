@@ -7,6 +7,8 @@ import 'package:coral_reef/tracker_screens/exercise_tracker/sections/steps.dart'
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/track_activities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:pedometer/pedometer.dart';
+import 'dart:async';
 
 import '../../../size_config.dart';
 
@@ -16,6 +18,59 @@ class PopulateExerciseSummary extends StatefulWidget {
 }
 
 class _PopulateDietSummary extends State<PopulateExerciseSummary> {
+  String formatDate(DateTime d) {
+    return d.toString().substring(0, 19);
+  }
+   Stream<StepCount> _stepCountStream;
+   Stream<PedestrianStatus> _pedestrianStatusStream;
+  String _status = '?', _steps = '?';
+
+  @override
+  void initState() {
+    super.initState();
+    initPlatformState();
+  }
+
+  void onStepCount(StepCount event) {
+    print(event);
+    setState(() {
+      _steps = event.steps.toString();
+    });
+  }
+
+  void onPedestrianStatusChanged(PedestrianStatus event) {
+    print(event);
+    setState(() {
+      _status = event.status;
+    });
+  }
+
+  void onPedestrianStatusError(error) {
+    print('onPedestrianStatusError: $error');
+    setState(() {
+      _status = 'Pedestrian Status not available';
+    });
+    print(_status);
+  }
+
+  void onStepCountError(error) {
+    print('onStepCountError: $error');
+    setState(() {
+      _steps = 'Step Count not available';
+    });
+  }
+
+  void initPlatformState() {
+    _pedestrianStatusStream = Pedometer.pedestrianStatusStream;
+    _pedestrianStatusStream
+        .listen(onPedestrianStatusChanged)
+        .onError(onPedestrianStatusError);
+
+    _stepCountStream = Pedometer.stepCountStream;
+    _stepCountStream.listen(onStepCount).onError(onStepCountError);
+
+    if (!mounted) return;
+  }
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -24,7 +79,7 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
           title: 'Steps',
           icon: 'assets/exercise/foot_white.svg',
           title2: '',
-          title3: '6,400',
+          title3: _steps,
           title4: 'Goal: 10000',
           textColor: Colors.white,
           press: () {

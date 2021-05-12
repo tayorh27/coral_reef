@@ -54,6 +54,12 @@
       </array>
       </dict>
     </array>
+    <key>NSMotionUsageDescription</key>
+    <string>This application tracks your steps</string>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>processing</string>
+    </array>
     <key>FacebookAppID</key>
     <string>1056235441529263</string>
     <key>FacebookDisplayName</key>

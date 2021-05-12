@@ -90,6 +90,4 @@ AllData.routeName: (context) => AllData(),
   CoralRewards.routeName: (context) => CoralRewards(),
   ChallengeDetails.routeName: (context) => ChallengeDetails(),
   ChallengeParticipant.routeName: (context) => ChallengeParticipant(),
-
-
 };
