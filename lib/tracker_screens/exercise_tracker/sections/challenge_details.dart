@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/size_config.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/chal_participants.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/map_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -149,6 +150,10 @@ class _PageState extends State<ChallengeDetails> {
                               width: 100,
                               height: 30,
                               child: DefaultButton2(
+                                press: (){
+                                  Navigator.pushNamed(
+                                      context, ChallengeParticipant.routeName);
+                                },
                                 text: 'Details',
                               )),
                         ],
