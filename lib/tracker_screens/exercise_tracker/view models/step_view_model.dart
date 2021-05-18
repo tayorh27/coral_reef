@@ -115,7 +115,8 @@ class StepViewModel extends BaseModel {
       notifyListeners();
       return stepsGoal;
     } else {
-      stepsGoal = 0;
+    var  goal = await _stepService.getSteps();
+      stepsGoal = double.parse(goal);
       notifyListeners();
       return stepsGoal;
     }

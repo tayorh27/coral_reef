@@ -21,7 +21,6 @@ class StepService {
   Stream<StepCount> _stepCountStream;
   Stream<PedestrianStatus> _pedestrianStatusStream;
 
-
   void onStepCount(StepCount event) {
     print(event);
     _steps = event.steps.toString();
@@ -46,9 +45,10 @@ class StepService {
   }
 
   void initPlatformState() {
-
     _pedestrianStatusStream = Pedometer.pedestrianStatusStream;
-    _pedestrianStatusStream.listen(onPedestrianStatusChanged).onError(onPedestrianStatusError);
+    _pedestrianStatusStream
+        .listen(onPedestrianStatusChanged)
+        .onError(onPedestrianStatusError);
     _stepCountStream = Pedometer.stepCountStream;
     _stepCountStream.listen(onStepCount).onError(onStepCountError);
     //if (!mounted) return;
@@ -69,5 +69,27 @@ class StepService {
     });
     print(result);
     return result;
+  }
+
+
+  getSteps() async {
+    final User user = auth.currentUser;
+    DocumentSnapshot doc = await firebaseFirestore
+        .collection("users")
+        .doc(user.uid)
+        .collection("exercise")
+        .doc("steps-data")
+        .get();
+    Map<String, dynamic> goal = doc.data();
+    print(goal["stepGoal"]);
+    print(doc.data());
+    return goal["stepGoal"];
+
+//var dataResult = data['stepGoal'];
+    //   print(dataResult);
+    // return dataResult;
+
+    // print(result);
+    //return result;
   }
 }

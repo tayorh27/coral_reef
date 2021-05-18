@@ -27,10 +27,10 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
     return ViewModelBuilder<StepViewModel>.reactive(
         viewModelBuilder: () => StepViewModel(),
         onModelReady: (viewModel) {
-          viewModel.getStepsGoal();
+          viewModel.currentStep();
         },
         builder: (context, model, child) {
-          model.getStepsGoal();
+          model.currentStep();
           return Row(
             children: [
               ExerciseSummaryCard(
