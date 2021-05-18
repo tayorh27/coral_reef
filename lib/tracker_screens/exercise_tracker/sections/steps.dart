@@ -1,139 +1,145 @@
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/components/default_button.dart';
+import 'package:coral_reef/models/step_goal_model.dart';
 import 'package:coral_reef/size_config.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/view%20models/step_view_model.dart';
 import 'package:direct_select/direct_select.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
-import 'package:intl/intl.dart';
+
+import 'package:stacked/stacked.dart';
 
 class Steps extends StatefulWidget {
-  static final routeName = "steps";
+  static final routeName = "stepsGoal";
   @override
   _PageState createState() => _PageState();
 }
 
 class _PageState extends State<Steps> {
-  double steps = 5000;
-  final elements = [
-    "5000",
-    "8000",
-    "10000",
-    "11000",
-    "12000",
-    "15000",
-    "18000",
-    "20000",
-    "22000",
-    "25000",
-    "28000",
-    "30000",
-    "33000",
-  ];
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
-  var outputFormat = DateFormat('dd MMM yyyy hh:mm a');
-  int selectedIndex = 0;
-  List<Widget> _buildItems1() {
-    return elements
-        .map((val) => MySelectionItem(
-      title: val,
-    ))
-        .toList();
+  @override
+  void initState() {
+    super.initState();
   }
-  _showGoalDialog() {
+
+  _showGoalDialog(StepViewModel model) {
     showDialog(
         context: context,
         barrierDismissible: true,
         builder: (BuildContext context) {
           return AlertDialog(
-            title:
-            Column(
+            title: Column(
               children: [
-                Text("Set daily step goal", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w200),),
-SizedBox(height: 20,),
+                Text(
+                  "Set daily step goal",
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w200),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Date", style: TextStyle(fontSize: 12),),
-                    Text( outputFormat.format(DateTime.now()).toString(), style: TextStyle(fontSize: 12,color:Color(MyColors.primaryColor).withOpacity(0.8)),),
-
-                ],)
-
+                    Text(
+                      "Date",
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    Text(
+                      model.outputFormat.format(DateTime.now()).toString(),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Color(MyColors.primaryColor).withOpacity(0.8)),
+                    ),
+                  ],
+                )
               ],
             ),
-            content:
-                Container(
-                  height: 150,
-                  child:
-            Column(
-              children: [
-
-            DirectSelect(
-                itemExtent: 35.0,
-                selectionColor:  Color(MyColors.primaryColor).withOpacity(0.1),
-                selectedIndex: selectedIndex,
-                child: MySelectionItem(
-                  isForList: false,
-                  title: elements[selectedIndex],
-                ),
-                onSelectedItemChanged: (index) {
-                  setState(() {
-                    selectedIndex = index;
-                   Navigator.pop(context);
-                    Navigator.pop(context);
-                    steps = double.parse(elements[selectedIndex]);
-                    print(selectedIndex);
-                    _showGoalDialog();
-                  });
-                },
-                mode: DirectSelectMode.tap,
-                items: _buildItems1()),
-                SizedBox(height: 40,),
-                Container(
-                  height: 40,
-                  child:
-                DefaultButton(
-                  text: 'Save',
-                  press: () {
-                   Navigator.pop(context);
-                  },
-                ))
-              ],
-            ),),
+            content: Container(
+              height: 150,
+              child: Column(
+                children: [
+                  DirectSelect(
+                      itemExtent: 35.0,
+                      selectionColor:
+                          Color(MyColors.primaryColor).withOpacity(0.1),
+                      selectedIndex: model.selectedIndex,
+                      child: MySelectionItem(
+                        isForList: false,
+                        title: model.stepsGoal.floor().toString(),
+                      ),
+                      onSelectedItemChanged: (index) {
+                        setState(() {
+                          model.selectedIndex = index;
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          model.stepsGoal =
+                              double.parse(model.elements[model.selectedIndex]);
+                          print(model.selectedIndex);
+                          _showGoalDialog(model);
+                        });
+                      },
+                      mode: DirectSelectMode.tap,
+                      items: model.buildItems1()),
+                  SizedBox(
+                    height: 40,
+                  ),
+                  Container(
+                      height: 40,
+                      child: DefaultButton(
+                        text: 'Save',
+                        press: () {
+                          model.setStepGoal(
+                              StepGoalModel(
+                                  stepGoal: model.stepsGoal.floor().toString()),
+                              model.stepsGoal.floor().toString());
+                          Navigator.pop(context);
+                        },
+                      ))
+                ],
+              ),
+            ),
             shape: RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(15)),
           );
         });
   }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
-          elevation: 0,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              InkWell(
-                onTap: (){
-                  Navigator.pop(context);
-                },
-                child:
-              Icon(Icons.arrow_back_ios)),
-              Text(
-                'Steps',
-                style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      fontSize: getProportionateScreenWidth(15),
-                    ),
+    return ViewModelBuilder<StepViewModel>.reactive(
+        viewModelBuilder: () => StepViewModel(),
+        onModelReady: (viewModel) {
+          viewModel.currentStep();
+        },
+        builder: (context, model, child) => Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              backgroundColor: Colors.white,
+              elevation: 0,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.arrow_back_ios)),
+                  Text(
+                    'stepsGoal',
+                    style: Theme.of(context).textTheme.bodyText1.copyWith(
+                          fontSize: getProportionateScreenWidth(15),
+                        ),
+                  ),
+                  SvgPicture.asset(
+                      "assets/icons/clarity_notification-outline-badged.svg",
+                      height: 22.0),
+                ],
               ),
-              SvgPicture.asset(
-                  "assets/icons/clarity_notification-outline-badged.svg",
-                  height: 22.0),
-            ],
-          ),
-        ),
-        body:  Container(
+            ),
+            body: Container(
                 padding: EdgeInsets.all(20),
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -153,7 +159,7 @@ SizedBox(height: 20,),
                           SizedBox(
                             height: 10,
                           ),
-                          Text(steps.round().toString(),
+                          Text(model.stepsGoal.round().toString(),
                               style: Theme.of(context)
                                   .textTheme
                                   .subtitle1
@@ -184,8 +190,8 @@ SizedBox(height: 20,),
                                     ),
                                     customWidths:
                                         CustomSliderWidths(trackWidth: 8.0)),
-                                initialValue: steps,
-                                min: 1,
+                                initialValue: double.parse(model.steps),
+                                min: 0,
                                 max: 33000,
                                 innerWidget: (double value) {
                                   return Column(
@@ -200,7 +206,7 @@ SizedBox(height: 20,),
                                       SizedBox(
                                         height: 10,
                                       ),
-                                      Text(steps.round().toString(),
+                                      Text(model.steps.toString(),
                                           style: Theme.of(context)
                                               .textTheme
                                               .subtitle1
@@ -229,7 +235,7 @@ SizedBox(height: 20,),
                                 onChange: (double value) {
                                   //print(value);
                                   setState(() {
-                                    steps = value;
+                                    model.stepsGoal = value;
                                   });
                                 }),
                           ),
@@ -245,7 +251,11 @@ SizedBox(height: 20,),
                                         "assets/exercise/fire.svg",
                                         height: 40.0,
                                       ),
-                                      Text((steps / 63.4).roundToDouble().toString() +"kcal",
+                                      Text(
+                                          (model.stepsGoal / 63.4)
+                                                  .floor()
+                                                  .toString() +
+                                              "kcal",
                                           style: Theme.of(context)
                                               .textTheme
                                               .subtitle1
@@ -262,7 +272,11 @@ SizedBox(height: 20,),
                                       "assets/exercise/location.svg",
                                       height: 40.0,
                                     ),
-                                    Text((steps * 0.000762).roundToDouble().toString() + 'km',
+                                    Text(
+                                        (model.stepsGoal * 0.000762)
+                                                .roundToDouble()
+                                                .toString() +
+                                            'km',
                                         style: Theme.of(context)
                                             .textTheme
                                             .subtitle1
@@ -278,7 +292,11 @@ SizedBox(height: 20,),
                                       "assets/exercise/time.svg",
                                       height: 40.0,
                                     ),
-                                    Text((steps / 100).round().toString()  +"Min",
+                                    Text(
+                                        (model.stepsGoal / 100)
+                                                .round()
+                                                .toString() +
+                                            "Min",
                                         style: Theme.of(context)
                                             .textTheme
                                             .subtitle1
@@ -291,58 +309,17 @@ SizedBox(height: 20,),
                                   ]),
                                 ],
                               )),
-                          SizedBox(height: 50,),
+                          SizedBox(
+                            height: 50,
+                          ),
                           DefaultButton(
                             text: 'Set daily goal',
                             press: () {
-                              _showGoalDialog();
+                              _showGoalDialog(model);
                             },
                           )
                         ],
                       )
-                    ])));
-  }
-}
-//You can use any Widget
-class MySelectionItem extends StatelessWidget {
-  final String title;
-  final bool isForList;
-
-  const MySelectionItem({Key key, this.title, this.isForList = true}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 60.0,
-      child: isForList
-          ? Padding(
-        child: _buildItem(context),
-        padding: EdgeInsets.all(10.0),
-      )
-          : Card(
-        color: Colors.white,
-        margin: EdgeInsets.symmetric(horizontal: 10.0),
-        child: Stack(
-          children: <Widget>[
-            _buildItem(context),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Icon(Icons.arrow_drop_down),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildItem(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      alignment: Alignment.center,
-      child: FittedBox(
-          child: Text(
-            title,style: TextStyle(color:Color(MyColors.primaryColor).withOpacity(0.8), fontWeight: FontWeight.w500, fontSize: 30),
-          )),
-    );
+                    ]))));
   }
 }

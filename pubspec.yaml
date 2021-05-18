@@ -79,6 +79,8 @@ dependencies:
   flutter_polyline_points: ^1.0.0
   percent_indicator: ^3.0.1
   pedometer: ^3.0.0
+  stacked: ^2.1.5
+  get_it: ^6.0.0
 #  hexcolor: ^2.0.3
 
 

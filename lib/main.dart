@@ -4,7 +4,9 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/Utils/constants.dart';
 import 'package:coral_reef/Utils/storage.dart';
+import 'package:coral_reef/locator.dart';
 import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
+import 'package:coral_reef/services/step_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,7 +25,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
   print('Handling a background message ${message.messageId}');
-  if(message.data.isEmpty) {
+  if (message.data.isEmpty) {
     print("data is null");
     return;
   }
@@ -53,7 +55,7 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 
 /// Initialize the [FlutterLocalNotificationsPlugin] package.
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,7 +70,7 @@ void main() async {
   /// default FCM channel to enable heads up notifications.
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
   /// Update the iOS foreground notification presentation options to allow
@@ -96,9 +98,14 @@ class _MyApp extends State<MyApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    var initializationSettingsAndroid = AndroidInitializationSettings("@mipmap/ic_coral_reef_cover");
-    var initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+    setupLocator().then((value) {
+      final StepService stepService = locator<StepService>();
+      stepService.initPlatformState();
+    });
+    var initializationSettingsAndroid =
+        AndroidInitializationSettings("@mipmap/ic_coral_reef_cover");
+    var initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
 
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
@@ -116,6 +123,7 @@ class _MyApp extends State<MyApp> {
       RemoteNotification notification = message.notification;
       AndroidNotification android = message.notification?.android;
       if (notification != null && android != null) {
+        // if(message)
         flutterLocalNotificationsPlugin.show(
             notification.hashCode,
             notification.title,
@@ -171,11 +179,23 @@ class _MyApp extends State<MyApp> {
     );
   }
 
-
-
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+  }
+
+  Future<void> _showDailyAtTime() async {
+    var time = Time(10, 0, 0);
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'morning-referesh',
+        'Morning Referesh',
+        'Instilling inspiring, one qoute a day');
+    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.showDailyAtTime(
+        0, 'Morning Refresh', '', time, platformChannelSpecifics);
   }
 }

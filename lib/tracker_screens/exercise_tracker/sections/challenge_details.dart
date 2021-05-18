@@ -5,7 +5,6 @@ import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/chal_participants.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/map_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
