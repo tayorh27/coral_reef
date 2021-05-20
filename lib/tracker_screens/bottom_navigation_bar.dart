@@ -143,9 +143,9 @@ class _BottomNavigationBarState extends State<CoralBottomNavigationBar> {
                         fontSize: getProportionateScreenWidth(12)),
                   )),
               BottomNavigationBarItem(
-                  icon: SvgPicture.asset("assets/icons/dash_wallet.svg",
+                  icon: SvgPicture.asset("assets/icons/dash_wallet_new.svg",
                       height: 30.0),
-                  activeIcon: SvgPicture.asset("assets/icons/active_dash_wallet.svg",
+                  activeIcon: SvgPicture.asset("assets/icons/active_dash_wallet_new.svg",
                       height: 30.0),
                   title: Text(
                     "Wallet",

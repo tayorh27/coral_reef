@@ -16,7 +16,7 @@ class WalletServices {
   /*
   get the token balance of the user
   * */
-  Future<String> getTokenBalance(String publicAddress) async {
+  Future<Map<String, dynamic>> getTokenBalance(String publicAddress) async {
 
     Uri _uri = Uri.parse("https://us-central1-coraltrackerapp.cloudfunctions.net/getusertokenbalance?address=$publicAddress");
 
@@ -26,7 +26,19 @@ class WalletServices {
 
     Map<String, dynamic> _body = jsonDecode(res.body);
 
-    return (_body["token_balance"] == null) ? "0" : _body["token_balance"];
+    Map<String, dynamic> resp = new Map();
+
+    resp["crl"] = "0";
+    resp["crlx"] = "0";
+
+    if(_body["token_balance_crl"] != null) {
+      resp["crl"] = _body["token_balance_crl"];
+      resp["crlx"] = _body["token_balance_crlx"];
+    }
+
+    return resp;
+
+    // return (_body["token_balance_crl"] == null) ? "0" : _body["token_balance_crl"];
 
   }
 
@@ -116,6 +128,40 @@ class WalletServices {
     String uid = json["uid"];
 
     Uri _uri = Uri.parse("https://us-central1-coraltrackerapp.cloudfunctions.net/transfertoaccount?uid=$uid&recipientAddress=$recipientAddress&sendingAddress=$senderAddress&sendingAmount=$amount");
+
+    http.Response res = await http.get(_uri);
+
+    print(res.body);
+
+    Map<String, dynamic> _body = jsonDecode(res.body);
+
+    return _body;
+
+  }
+
+  Future<Map<String, dynamic>> transferAdmin(String senderAddress, String transMsg, String amount) async {
+    String user = await ss.getItem("user");
+    dynamic json = jsonDecode(user);
+    String uid = json["uid"];
+
+    Uri _uri = Uri.parse("https://us-central1-coraltrackerapp.cloudfunctions.net/transfercrlxtoadmin?uid=$uid&transMsg=$transMsg&sendingAddress=$senderAddress&sendingAmount=$amount");
+
+    http.Response res = await http.get(_uri);
+
+    print(res.body);
+
+    Map<String, dynamic> _body = jsonDecode(res.body);
+
+    return _body;
+
+  }
+
+  Future<Map<String, dynamic>> convertCRLXToCRL(String senderAddress, String amount) async {
+    String user = await ss.getItem("user");
+    dynamic json = jsonDecode(user);
+    String uid = json["uid"];
+
+    Uri _uri = Uri.parse("https://us-central1-coraltrackerapp.cloudfunctions.net/convertcrlxtocrl?uid=$uid&sendingAddress=$senderAddress&sendingAmount=$amount");
 
     http.Response res = await http.get(_uri);
 

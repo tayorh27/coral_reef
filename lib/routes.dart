@@ -1,8 +1,10 @@
+import 'package:coral_reef/account/profile/sections/Info.dart';
 import 'package:coral_reef/onboarding/splash/Onboard_screen.dart';
 import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
 import 'package:coral_reef/onboarding/sign_up/signup_screen.dart';
 import 'package:coral_reef/onboarding/forgotpassword/forgotpassword.dart';
 import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/community_challenge_details.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/period_tracker_screen.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/sections/login_symptoms.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/sections/period_calendar_date.dart';
@@ -26,10 +28,30 @@ import 'package:coral_reef/wellness/wellness_tracker_options.dart';
 import 'package:flutter/widgets.dart';
 import 'package:coral_reef/homescreen/Home.dart';
 
+import 'account/notifications/notification.dart';
+import 'account/profile/account.dart';
+import 'account/settings/cycle.dart';
 import 'g_chat_screen/GChatScreen.dart';
 import 'g_chat_screen/sections/avatar_final_section.dart';
 import 'g_chat_screen/sections/create_new_gchat.dart';
 import 'g_chat_screen/sections/interested_topics.dart';
+import 'tracker_screens/exercise_tracker/sections/insight.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/chal_participants.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/challenge_details.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/coral_rewards.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/create_challenge.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/all_data.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/challenge_page.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/insight.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/past_challenges.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/records_activities.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/save_activities.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/start_community.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/start_weekend.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/steps.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/track_activities.dart';
+
+import 'tracker_screens/exercise_tracker/sections/start_weekdays.dart';
 
 
 
@@ -65,4 +87,24 @@ final Map<String, WidgetBuilder> routes = {
   TipsScreen.routeName: (context) => TipsScreen(),
   YourTips.routeName: (context) => YourTips(),
   PeriodCalendarDate.routeName: (context) => PeriodCalendarDate(),
+  Notifications.routeName: (context) => Notifications(),
+  Account.routeName: (context) => Account(),
+  ContactInfo.routeName: (context) => ContactInfo(),
+  SettingsCycle.routeName: (context) => SettingsCycle(),
+  Steps.routeName: (context) => Steps(),
+  ExerciseInsight.routeName: (context) => ExerciseInsight(),
+  AllData.routeName: (context) => AllData(),
+  TrackActivities.routeName: (context) => TrackActivities(),
+  SaveActivities.routeName: (context) => SaveActivities(),
+  RecordsActivities.routeName: (context) => RecordsActivities(),
+  ChallengePage.routeName: (context) => ChallengePage(),
+  CreateChallengePage.routeName: (context) => CreateChallengePage(),
+  StartWeekend.routeName: (context) => StartWeekend(),
+  StartWeekdays.routeName: (context) => StartWeekdays(),
+  StartCommunity.routeName: (context) => StartCommunity(),
+  PastChallenges.routeName: (context) => PastChallenges(),
+  CoralRewards.routeName: (context) => CoralRewards(),
+  ChallengeDetails.routeName: (context) => ChallengeDetails(),
+  ChallengeParticipant.routeName: (context) => ChallengeParticipant(),
+  CommunityChallengeDetails.routeName: (context) => CommunityChallengeDetails(),
 };

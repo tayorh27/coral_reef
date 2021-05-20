@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
+import 'package:coral_reef/account/notifications/notification.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -71,7 +72,12 @@ class _GChatHeader extends State<GChatHeader> {
               fontSize: getProportionateScreenWidth(12)
           ),),
           Container(width: 10.0,),
-          SvgPicture.asset("assets/icons/clarity_notification-outline-badged.svg", height: 22.0),
+          InkWell(
+            onTap: (){
+              Navigator.pushNamed(context, Notifications.routeName);
+            },
+            child: SvgPicture.asset("assets/icons/clarity_notification-outline-badged.svg", height: 22.0),
+          )
         ],
       ),
     );

@@ -288,12 +288,6 @@ class _TipsScreenState extends State<TipsScreen> {
           ),
         ));
   }
-
-  shareImage() {
-    AkvelonFlutterSharePlugin.shareSingle("", ShareType.IMAGE,
-        text: "share image title",
-        subject: "share image subject");
-  }
 }
 
 /***

@@ -2,10 +2,16 @@
     package="com.rae.coral_reef">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:label="Coral Reef"
         android:icon="@mipmap/ic_coral_reef_cover">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCRrfbYY6rhh2qfMPo-My7y_gUfsl2eP14"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -65,5 +71,14 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         </activity>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths"/>
+        </provider>
     </application>
 </manifest>

@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coral_reef/ListItem/model_challenge.dart';
+import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/community_challenge_details.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../homescreen/components/body.dart';
@@ -20,11 +23,13 @@ class _HomeScreen extends State<HomeScreen> {
 
   StreamSubscription<DocumentSnapshot> blockListen;
 
+  VirtualChallenge vc;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    getCurrentChallenge();
     listenForBlockedUser();
   }
 
@@ -60,10 +65,29 @@ class _HomeScreen extends State<HomeScreen> {
     }
   }
 
+  getCurrentChallenge() async {
+    String currentCH = await ss.getItem("currentChallenge");
+    if(currentCH == null) return;
+
+    Map<String, dynamic> ch = jsonDecode(currentCH);
+
+    setState(() {
+      vc = VirtualChallenge.fromSnapshot(ch);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       //appBar: AppBar(backgroundColor: Colors.white,elevation: 0.1,),
+      floatingActionButton: (vc == null) ? null : FloatingActionButton(
+        backgroundColor: Color(MyColors.primaryColor),
+        child: Icon(Icons.directions_run_rounded, color: Colors.white, size: 32.0,),
+        onPressed: (){
+          Navigator.pushNamed(context, CommunityChallengeDetails.routeName, arguments: vc); //****
+        },
+        tooltip: "Current Challenge",
+      ),
       body: Body(),
     );
   }

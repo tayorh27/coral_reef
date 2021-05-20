@@ -173,7 +173,7 @@ class Cards extends StatelessWidget {
                 },
               ),
               SpecialOfferCard(
-                image: "assets/images/G-chat.png",
+                image: "assets/images/gchat_card_new.png",
                 title: "G-Chat",
                 title2: 'Chat with us to solve your issues',
                 press: () async {

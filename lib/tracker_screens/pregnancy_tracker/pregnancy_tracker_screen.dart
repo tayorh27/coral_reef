@@ -45,7 +45,7 @@ class _PregnancyTrackerScreen extends State<PregnancyTrackerScreen> {
 
       final calculatorDate = DateTime.parse(value);
 
-      final dueDateInWeeks = calculatorDate.add(Duration(days: 280)); ///adding 40weeks to the last period date
+      final dueDateInWeeks = calculatorDate.add(Duration(days: 252)); ///adding 36weeks to the last period date
 
       final currentDueDateInWeeks = dueDateInWeeks.difference(today).inDays;
 
@@ -55,7 +55,7 @@ class _PregnancyTrackerScreen extends State<PregnancyTrackerScreen> {
         birthDueDate = "${months[dueDateInWeeks.month]} ${dueDateInWeeks.day}, ${dueDateInWeeks.year}";
       });
 
-      int remainder = 280 - currentDueDateInWeeks;
+      int remainder = 252 - currentDueDateInWeeks;
 
       int val = (double.parse("$remainder") / 7.0).ceil();
 

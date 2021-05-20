@@ -47,13 +47,13 @@ class _CircularSlider extends State<CircularSlider> {
 
     final futurePeriodEndDate = futurePeriodStartDate.add(Duration(days: (lengthPeriod-1))); //add length of period to period start date to get when the period will end
 
-    final today = DateTime.now(); //(2021, 6, 19); get current date
+    final today = DateTime.now(); //(2021, 5, 25); //get current date
 
     diffTodayAndStartDate = today.difference(futurePeriodStartDate).inDays; //get the difference between today and the start date
     diffTodayAndEndDate = futurePeriodEndDate.difference(today).inDays; // get the difference between the end start and today
 
-    // print(diffTodayAndStartDate);
-    // print(diffTodayAndEndDate);
+    print(diffTodayAndStartDate);
+    print(diffTodayAndEndDate);
 
 
     if(diffTodayAndStartDate >= 0 && diffTodayAndStartDate < cyclePeriod) { //check if the day is within the period cycle
@@ -84,7 +84,7 @@ class _CircularSlider extends State<CircularSlider> {
         isOnPeriod = false;
         diffRemainingDays = (diffTodayAndStartDate < 0) ? diffTodayAndStartDate * (-1) : diffTodayAndStartDate; // futurePeriodStartDate.difference(today).inDays;
       });
-      print("me = $diffRemainingDays");
+      print("mee = $diffRemainingDays");
     }
   }
 
@@ -121,24 +121,28 @@ class _CircularSlider extends State<CircularSlider> {
                 maximum: double.parse("$cyclePeriod"),
                 ranges: <GaugeRange>[
                   GaugeRange(
-                      startValue: 1,
+                      startValue: 0,
                       endValue: double.parse("$lengthPeriod"),
                       color: Color(MyColors.stroke1Color)),
                   GaugeRange(
-                      startValue: 12,
-                      endValue: 17,
+                      startValue: double.parse("$lengthPeriod"),
+                      endValue: 11,
                       color: Color(MyColors.stroke2Color)),
+                  GaugeRange(
+                      startValue: 11,
+                      endValue: 17,
+                      color: Color(MyColors.stroke3Color)),
                   GaugeRange(
                       startValue: 17,
                       endValue: double.parse("$cyclePeriod"),
-                      color: Color(MyColors.lightBackground)),
+                      color: Color(MyColors.avatarColor8)),
                 ],
                 pointers: <GaugePointer>[
                   NeedlePointer(
                       value: (isOnPeriod) ? double.parse("${(diffTodayAndStartDate + 1)}") : 0,
                       enableAnimation: true,
                       animationDuration: 4500,
-                      needleColor: (diffTodayAndStartDate >= 12 && diffTodayAndStartDate <= 17) ? Color(MyColors.stroke2Color) : Color(MyColors.stroke1Color),
+                      needleColor: ((diffTodayAndStartDate >= 0 && diffTodayAndStartDate <= lengthPeriod) || diffTodayAndStartDate < 0) ? Color(MyColors.stroke1Color) :  (diffTodayAndStartDate > lengthPeriod && diffTodayAndStartDate <= 11) ? Color(MyColors.stroke2Color) : (diffTodayAndStartDate >= 12 && diffTodayAndStartDate <= 17) ? Color(MyColors.stroke3Color) : Color(MyColors.avatarColor8),
                       knobStyle:
                           KnobStyle(color: Color(MyColors.lightBackground)))
                 ],

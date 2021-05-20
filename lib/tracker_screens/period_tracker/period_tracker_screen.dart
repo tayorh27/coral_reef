@@ -37,6 +37,8 @@ class _PeriodTrackerScreen extends State<PeriodTrackerScreen> {
 
   String nextPeriodDays = "", nextOvulationDays = "", periodCurrentDay = "0";
 
+  bool viewPregnancyCard = false;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -45,6 +47,13 @@ class _PeriodTrackerScreen extends State<PeriodTrackerScreen> {
 
     // resolvePeriodCalculation();
     determinePeriod();
+
+    ss.getItem("pregnancy_predict").then((value) {
+      if(value == null) return;
+      setState(() {
+        viewPregnancyCard = value == "true";
+      });
+    });
 
     getLastPeriodData();
     getSymptoms(DateTime.now());
@@ -387,11 +396,11 @@ class _PeriodTrackerScreen extends State<PeriodTrackerScreen> {
                 BorderlessCard(
                   borderColor: Color(MyColors.stroke2Color),
                   image: "assets/icons/period_card2.svg",
-                  text: (isOnPeriod) ? formatDaysDate(12 - (diffTodayAndStartDate + 1)) : formatDaysDate(diffRemainingDays + 12),
-                  bottomText: (isOnPeriod) ? "Ovulation Left" : "Next Ovulation",
+                  text: (isOnPeriod) ? getCurrentCyclePhase() : "None",//? formatDaysDate(12 - (diffTodayAndStartDate + 1)) : formatDaysDate(diffRemainingDays + 12),
+                  bottomText: "Current Phase",
                 ),
                 SizedBox(width: 20.0,),
-                BorderlessCard(
+                (!viewPregnancyCard) ? SizedBox() : BorderlessCard(
                   borderColor: Color(MyColors.stroke3Color),
                   image: "assets/icons/period_card3.svg",
                   text: "Low",
@@ -508,6 +517,23 @@ class _PeriodTrackerScreen extends State<PeriodTrackerScreen> {
             ),
           ],
         ));
+  }
+
+  String getCurrentCyclePhase() {
+    int currentPhase = (diffTodayAndStartDate + 1);
+    if(currentPhase >= 1 && currentPhase <= lengthPeriod) {
+      return "Menstruation";
+    }
+    if(currentPhase > lengthPeriod && currentPhase < 12) {
+      return "Follicular";
+    }
+    if(currentPhase >= 12 && currentPhase <= 17) {
+      return "Ovulation";
+    }
+    if(currentPhase >= 18 && currentPhase <= cyclePeriod) {
+      return "Luteal";
+    }
+    return "None";
   }
 
   String formatDaysDate(int value) {

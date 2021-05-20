@@ -110,7 +110,7 @@ class _GChatHomeScreen extends State<GChatHomeScreen> {
     // TODO: implement build
     return Scaffold(
         backgroundColor: Colors.grey[50],
-        floatingActionButton: (selectedMenu == "G-chat") ? Visibility(visible: !hideFloatingActionButton,child: FloatingActionButton(
+        floatingActionButton: (selectedMenu == "G-chat") ? Visibility(visible: !hideFloatingActionButton, child: FloatingActionButton(
           backgroundColor: Color(MyColors.primaryColor),
           child: Icon(Icons.add, color: Colors.white, size: 32.0,),
           onPressed: (){

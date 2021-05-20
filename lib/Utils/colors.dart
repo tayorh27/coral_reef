@@ -45,4 +45,6 @@ class MyColors {
   static int dietSliderBgColor = 0xFF7A2876;
   static int dietSliderTrackColor = 0xFFFB82F5;
 
+  static int challengeCardTextColor = 0xFF8E6DDB;
+
 }

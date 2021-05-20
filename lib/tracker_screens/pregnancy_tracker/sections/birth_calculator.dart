@@ -77,7 +77,7 @@ class _BirthCalculator extends State<BirthCalculator> {
                     child: Column(
                       children: [
                         dateField(),
-                        YourNameText(title: "Enter the first day your last period and get info about your due date."),
+                        YourNameText(title: "Enter the first day of your last period and get info about your due date."),
                         SizedBox(height: getProportionateScreenHeight(5)),
                       ],
                     )),
@@ -168,7 +168,7 @@ class _BirthCalculator extends State<BirthCalculator> {
 
     final calculatorDate = DateTime.parse(_textEditingController.text);
 
-    final dueDateInWeeks = calculatorDate.add(Duration(days: 280)); ///adding 40weeks to the last period date
+    final dueDateInWeeks = calculatorDate.add(Duration(days: 252)); ///adding 36weeks to the last period date
 
     return "${months[dueDateInWeeks.month]} ${dueDateInWeeks.day}, ${dueDateInWeeks.year}";
   }

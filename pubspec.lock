@@ -141,6 +141,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  direct_select:
+    dependency: "direct main"
+    description:
+      name: direct_select
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   extended_image:
     dependency: "direct main"
     description:
@@ -309,11 +323,25 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  fl_chart:
+    dependency: "direct main"
+    description:
+      name: fl_chart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.36.1"
   flutter:
     dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_countdown_timer:
+    dependency: "direct main"
+    description:
+      name: flutter_countdown_timer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.1.0"
   flutter_image_compress:
     dependency: "direct main"
     description:
@@ -363,6 +391,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.1"
+  flutter_polyline_points:
+    dependency: "direct main"
+    description:
+      name: flutter_polyline_points
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   flutter_secure_storage:
     dependency: "direct main"
     description:
@@ -377,6 +412,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.19.3"
+  flutter_switch:
+    dependency: "direct main"
+    description:
+      name: flutter_switch
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -401,6 +443,34 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "7.1.8"
+  geolocator:
+    dependency: "direct main"
+    description:
+      name: geolocator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "7.0.3"
+  geolocator_platform_interface:
+    dependency: transitive
+    description:
+      name: geolocator_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
+  geolocator_web:
+    dependency: transitive
+    description:
+      name: geolocator_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.3"
+  get_it:
+    dependency: "direct main"
+    description:
+      name: get_it
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "6.1.1"
   giphy_picker:
     dependency: "direct main"
     description:
@@ -408,6 +478,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  google_maps_flutter:
+    dependency: "direct main"
+    description:
+      name: google_maps_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.5"
+  google_maps_flutter_platform_interface:
+    dependency: transitive
+    description:
+      name: google_maps_flutter_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.4"
   google_sign_in:
     dependency: "direct main"
     description:
@@ -435,7 +519,7 @@ packages:
       name: http
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.13.0"
+    version: "0.13.1"
   http_client_helper:
     dependency: transitive
     description:
@@ -569,6 +653,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.11.0"
+  pedometer:
+    dependency: "direct main"
+    description:
+      name: pedometer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
+  percent_indicator:
+    dependency: "direct main"
+    description:
+      name: percent_indicator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1"
   permission_handler:
     dependency: "direct main"
     description:
@@ -660,6 +758,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.2"
+  shot_widget:
+    dependency: "direct main"
+    description:
+      name: shot_widget
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   sign_in_with_apple:
     dependency: "direct main"
     description:
@@ -714,6 +819,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.10.0"
+  stacked:
+    dependency: "direct main"
+    description:
+      name: stacked
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.6"
   step_progress_indicator:
     dependency: "direct main"
     description:
@@ -728,6 +840,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
+  stream_transform:
+    dependency: transitive
+    description:
+      name: stream_transform
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   string_scanner:
     dependency: transitive
     description:
@@ -805,6 +924,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.7.0"
+  toggle_switch:
+    dependency: "direct main"
+    description:
+      name: toggle_switch
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.9"
   truncate:
     dependency: "direct main"
     description:

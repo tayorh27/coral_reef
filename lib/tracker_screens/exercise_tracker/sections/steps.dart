@@ -1,0 +1,374 @@
+import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/components/coral_back_button.dart';
+import 'package:coral_reef/components/default_button.dart';
+import 'package:coral_reef/models/step_goal_model.dart';
+import 'package:coral_reef/size_config.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/view_models/step_view_model.dart';
+import 'package:direct_select/direct_select.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sleek_circular_slider/sleek_circular_slider.dart';
+
+import 'package:stacked/stacked.dart';
+
+class Steps extends StatefulWidget {
+  static final routeName = "stepsGoal";
+  @override
+  _PageState createState() => _PageState();
+}
+
+class _PageState extends State<Steps> {
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  _showGoalDialog(StepViewModel model) {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Column(
+              children: [
+                Text(
+                  "Set daily step goal",
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w200),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Date",
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    Text(
+                      model.outputFormat.format(DateTime.now()).toString(),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Color(MyColors.primaryColor).withOpacity(0.8)),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            content: Container(
+              height: 150,
+              child: Column(
+                children: [
+                  DirectSelect(
+                      itemExtent: 35.0,
+                      // selectedColor: Color(MyColors.primaryColor).withOpacity(0.1),
+                      selectedIndex: model.selectedIndex,
+                      child: MySelectionItem(
+                        isForList: false,
+                        title: model.stepsGoal.floor().toString(),
+                      ),
+                      onSelectedItemChanged: (index) {
+                        setState(() {
+                          model.selectedIndex = index;
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          model.stepsGoal =
+                              double.parse(model.elements[model.selectedIndex]);
+                          print(model.selectedIndex);
+                          _showGoalDialog(model);
+                        });
+                      },
+                      mode: DirectSelectMode.tap,
+                      items: model.buildItems1()),
+                  SizedBox(
+                    height: 40,
+                  ),
+                  Container(
+                      height: 40,
+                      child: DefaultButton(
+                        text: 'Save',
+                        press: () {
+                          model.setStepGoal(
+                              StepGoalModel(
+                                  stepGoal: model.stepsGoal.floor().toString()),
+                              model.stepsGoal.floor().toString());
+                          Navigator.pop(context);
+                        },
+                      ))
+                ],
+              ),
+            ),
+            shape: RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(15)),
+          );
+        });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ViewModelBuilder<StepViewModel>.reactive(
+        viewModelBuilder: () => StepViewModel(),
+        onModelReady: (viewModel) {
+          viewModel.currentStep();
+        },
+        builder: (context, model, child) {
+          if(mounted) {
+            model.currentStep();
+          }
+          model.currentStep();
+          return Scaffold(
+              backgroundColor: Colors.white,
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                backgroundColor: Colors.white,
+                elevation: 0,
+                leading: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Padding(padding: EdgeInsets.only(left: 30.0), child: Icon(Icons.arrow_back_ios)),),
+                title: Text(
+                  'Steps',
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyText1
+                      .copyWith(
+                    fontSize: getProportionateScreenWidth(15),
+                  ),
+                ),
+                centerTitle: true,
+              ),
+              body: SafeArea(
+               child: SingleChildScrollView(
+                 child: Padding(
+                   padding: EdgeInsets.all(30.0),
+                   child: Column(
+                     mainAxisAlignment: MainAxisAlignment.start,
+                     crossAxisAlignment: CrossAxisAlignment.start,
+                     children: [
+                       // Row(
+                       //   mainAxisSize: MainAxisSize.max,
+                       //   mainAxisAlignment: MainAxisAlignment.start,
+                       //   crossAxisAlignment: CrossAxisAlignment.start,
+                       //   children: [
+                       //     CoralBackButton(
+                       //       icon: Icon(
+                       //         Icons.arrow_back_ios,
+                       //         color: Color(MyColors.titleTextColor),
+                       //       ),
+                       //     ),
+                       //     SizedBox(width: 20.0),
+                       //     Text("Steps", style: Theme.of(context).textTheme.headline2.copyWith(
+                       //       color: Color(MyColors.titleTextColor),
+                       //       fontSize: getProportionateScreenWidth(18),
+                       //     ),)
+                       //   ],
+                       // ),
+                       Container(
+                           padding: EdgeInsets.all(20),
+                           child: Column(
+                               crossAxisAlignment: CrossAxisAlignment.center,
+                               mainAxisAlignment: MainAxisAlignment.center,
+                               children: [
+                                 Column(
+                                   crossAxisAlignment: CrossAxisAlignment.center,
+                                   mainAxisAlignment: MainAxisAlignment.center,
+                                   children: [
+                                     Text(
+                                       'Goal',
+                                       style:
+                                       Theme
+                                           .of(context)
+                                           .textTheme
+                                           .bodyText1
+                                           .copyWith(
+                                         fontSize: getProportionateScreenWidth(18),
+                                       ),
+                                     ),
+                                     SizedBox(
+                                       height: 10,
+                                     ),
+                                     Text(model.stepsGoal.round().toString(),
+                                         style: Theme
+                                             .of(context)
+                                             .textTheme
+                                             .subtitle1
+                                             .copyWith(
+                                             color: Color(MyColors.primaryColor),
+                                             fontSize: getProportionateScreenWidth(25),
+                                             fontWeight: FontWeight.bold)),
+                                     SizedBox(
+                                       height: 30,
+                                     ),
+                                     Container(
+                                       width: 200.0,
+                                       height: 200.0,
+                                       decoration: BoxDecoration(
+                                           color: Colors.white,
+                                           borderRadius: BorderRadius.circular(100.0)),
+                                       child: SleekCircularSlider(
+                                           appearance: CircularSliderAppearance(
+                                               angleRange: 360.0,
+                                               customColors: CustomSliderColors(
+                                                 progressBarColors: [
+                                                   Colors.deepPurpleAccent,
+                                                   Color(MyColors.dietSliderTrackColor),
+                                                 ],
+                                                 trackColor:
+                                                 Color(MyColors.dietSliderBgColor),
+                                                 dynamicGradient: true,
+                                               ),
+                                               customWidths:
+                                               CustomSliderWidths(trackWidth: 8.0)),
+                                           initialValue: double.parse(model.steps),
+                                           min: 0,
+                                           max: 40000,
+                                           innerWidget: (double value) {
+                                             return Column(
+                                               crossAxisAlignment:
+                                               CrossAxisAlignment.center,
+                                               mainAxisAlignment: MainAxisAlignment
+                                                   .center,
+                                               children: [
+                                                 SvgPicture.asset(
+                                                   "assets/exercise/purple_foot.svg",
+                                                   height: 40.0,
+                                                 ),
+                                                 SizedBox(
+                                                   height: 10,
+                                                 ),
+                                                 Text(model.steps.toString(),
+                                                     style: Theme
+                                                         .of(context)
+                                                         .textTheme
+                                                         .subtitle1
+                                                         .copyWith(
+                                                         color: Colors.black,
+                                                         fontSize:
+                                                         getProportionateScreenWidth(
+                                                             20),
+                                                         fontWeight: FontWeight.bold)),
+                                                 SizedBox(
+                                                   height: 10,
+                                                 ),
+                                                 Text("Steps",
+                                                     style: Theme
+                                                         .of(context)
+                                                         .textTheme
+                                                         .subtitle1
+                                                         .copyWith(
+                                                         color: Colors.black,
+                                                         fontSize:
+                                                         getProportionateScreenWidth(
+                                                             15),
+                                                         fontWeight: FontWeight.bold)),
+                                               ],
+                                             );
+                                           },
+                                           onChange: (double value) {
+                                             //print(value);
+                                             setState(() {
+                                               model.stepsGoal = value;
+                                             });
+                                           }),
+                                     ),
+                                     Container(
+                                         padding: EdgeInsets.all(20),
+                                         child: Row(
+                                           mainAxisAlignment:
+                                           MainAxisAlignment.spaceBetween,
+                                           children: [
+                                             Column(
+                                               children: [
+                                                 SvgPicture.asset(
+                                                   "assets/exercise/fire.svg",
+                                                   height: 40.0,
+                                                 ),
+                                                 Text(
+                                                     (model.stepsGoal / 63.4)
+                                                         .floor()
+                                                         .toString() +
+                                                         "kcal",
+                                                     style: Theme
+                                                         .of(context)
+                                                         .textTheme
+                                                         .subtitle1
+                                                         .copyWith(
+                                                       color: Colors.black,
+                                                       fontSize:
+                                                       getProportionateScreenWidth(
+                                                           15),
+                                                     )),
+                                               ],
+                                             ),
+                                             Column(children: [
+                                               SvgPicture.asset(
+                                                 "assets/exercise/location.svg",
+                                                 height: 40.0,
+                                               ),
+                                               Text(
+                                                   (model.stepsGoal * 0.000762)
+                                                       .roundToDouble()
+                                                       .toString() +
+                                                       'km',
+                                                   style: Theme
+                                                       .of(context)
+                                                       .textTheme
+                                                       .subtitle1
+                                                       .copyWith(
+                                                     color: Colors.black,
+                                                     fontSize:
+                                                     getProportionateScreenWidth(
+                                                         15),
+                                                   )),
+                                             ]),
+                                             Column(children: [
+                                               SvgPicture.asset(
+                                                 "assets/exercise/time.svg",
+                                                 height: 40.0,
+                                               ),
+                                               Text(
+                                                   (model.stepsGoal / 100)
+                                                       .round()
+                                                       .toString() +
+                                                       "Min",
+                                                   style: Theme
+                                                       .of(context)
+                                                       .textTheme
+                                                       .subtitle1
+                                                       .copyWith(
+                                                     color: Colors.black,
+                                                     fontSize:
+                                                     getProportionateScreenWidth(
+                                                         15),
+                                                   )),
+                                             ]),
+                                           ],
+                                         )),
+                                     SizedBox(
+                                       height: 50,
+                                     ),
+                                     DefaultButton(
+                                       text: 'Set daily goal',
+                                       press: () {
+                                         _showGoalDialog(model);
+                                       },
+                                     )
+                                   ],
+                                 )
+                               ]))
+                     ],
+                   ),
+                 ),
+               ),
+              )
+          );
+        }
+    );
+  }
+}
+

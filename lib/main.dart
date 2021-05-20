@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/Utils/constants.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
+import 'package:coral_reef/services/step_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,7 +17,10 @@ import 'package:coral_reef/routes.dart';
 import 'package:coral_reef/onboarding/splash/splash_screen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import 'ListItem/model_challenge.dart';
 import 'Utils/colors.dart';
+import 'constants.dart';
+import 'locator.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
@@ -92,10 +96,42 @@ class _MyApp extends State<MyApp> {
 
   StorageSystem ss = new StorageSystem();
 
+  checkIfCurrentChallengeHasEnded() async {
+    String currentCH = await ss.getItem("currentChallenge");
+    if(currentCH == null) return;
+
+    Map<String, dynamic> ch = jsonDecode(currentCH);
+
+    VirtualChallenge vc = VirtualChallenge.fromSnapshot(ch);
+
+    bool hasEnded = false;
+
+    DateTime today = DateTime.now();
+    DateTime end = DateTime.parse(vc.end_date);
+
+    int diffEnd = end.difference(today).inMilliseconds;
+
+    hasEnded = diffEnd < 0;
+
+    if(hasEnded) {
+      await ss.deletePref("currentChallenge");
+      await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("setups").doc("user-data").update(
+          {
+            "currentChallenge": FieldValue.delete()
+          });
+
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    checkIfCurrentChallengeHasEnded();
+    setupLocator().then((value) {
+      final StepService stepService = locator<StepService>();
+      stepService.initPlatformState();
+    });
 
     var initializationSettingsAndroid = AndroidInitializationSettings("@mipmap/ic_coral_reef_cover");
     var initializationSettings = InitializationSettings(android: initializationSettingsAndroid);

@@ -65,3 +65,4 @@ final user = FirebaseAuth.instance.currentUser;
 final String demodata =
     "At 17 weeks your baby’s skeleton is now bone as it changed from being a soft cartilage. The placenta is growing steadily as it provides your little one with nutrients and oxygen and also removes wastes. ";
 
+

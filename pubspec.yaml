@@ -64,6 +64,7 @@ dependencies:
   giphy_picker: ^2.0.0
   apple_sign_in: ^0.1.0
   syncfusion_flutter_barcodes: ^19.1.58
+  fl_chart:
   akvelon_flutter_share_plugin: ^1.0.4
   clipboard: ^0.1.3
   swipe_refresh: ^1.0.0
@@ -76,6 +77,18 @@ dependencies:
   permission_handler: ^7.1.0
   datetime_picker_formfield: ^2.0.0
   syncfusion_flutter_maps: ^19.1.58-beta
+  shot_widget: ^1.0.0
+  direct_select: ^1.0.3
+  flutter_switch: ^0.3.1
+  toggle_switch: ^0.1.9
+  google_maps_flutter: ^2.0.3
+  geolocator:
+  flutter_polyline_points: ^1.0.0
+  percent_indicator: ^3.0.1
+  pedometer: ^3.0.0
+  stacked: ^2.1.5
+  get_it: ^6.0.0
+  flutter_countdown_timer: ^4.1.0
 #  share_files_and_screenshot_widgets: ^1.0.3
 #  hexcolor: ^2.0.3
 
@@ -109,6 +122,7 @@ flutter:
     - assets/symptoms/
     - assets/well_being/
     - assets/diet/
+    - assets/exercise/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

@@ -11,10 +11,12 @@ class DefaultButton extends StatelessWidget {
     this.text,
     this.press,
     this.loading = false,
+    this.fontSize = 18,
   }) : super(key: key);
   final String text;
   final Function press;
   final bool loading;
+  final double fontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +42,7 @@ class DefaultButton extends StatelessWidget {
           ),
         ) : Text(text,
             style: Theme.of(context).textTheme.headline2.copyWith(
-                  fontSize: getProportionateScreenWidth(18),
+                  fontSize: getProportionateScreenWidth(fontSize),
                   color: Colors.white,
                 )),
       ),

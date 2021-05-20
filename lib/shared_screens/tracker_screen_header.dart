@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/storage.dart';
+import 'package:coral_reef/account/notifications/notification.dart';
 import 'package:coral_reef/components/coral_back_button.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,6 +22,27 @@ class TrackerScreenHeader extends StatefulWidget {
 }
 
 class _TrackerScreenHeader extends State<TrackerScreenHeader> {
+
+  StorageSystem ss = new StorageSystem();
+
+  String picture = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUerData();
+
+  }
+
+  getUerData() async {
+    String user = await ss.getItem("user");
+    dynamic json = jsonDecode(user);
+    setState(() {
+      picture = json["picture"];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -36,13 +61,14 @@ class _TrackerScreenHeader extends State<TrackerScreenHeader> {
             width: 50.0,
             height: 50.0,
             margin: EdgeInsets.only(top: 15.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(25.0),
-            ),
-            child: (user.photoURL == null) ? CircleAvatar(child: Image.asset("assets/images/default_avatar.png"),) : FadeInImage.assetNetwork(
-              placeholder: 'assets/images/default_avatar.png',
-              image: user.photoURL,
-            ),
+            // decoration: BoxDecoration(
+            //   borderRadius: BorderRadius.circular(25.0),
+            // ),
+            child: (picture == null || picture.isEmpty) ? CircleAvatar(backgroundImage: AssetImage("assets/images/default_avatar.png"),) : CircleAvatar(backgroundImage: NetworkImage(picture),)
+            // FadeInImage.assetNetwork(
+            //   placeholder: 'assets/images/default_avatar.png',
+            //   image: user.photoURL,
+            // ),
           ) : widget.child
 
         ],
@@ -59,7 +85,12 @@ class _TrackerScreenHeader extends State<TrackerScreenHeader> {
             fontSize: getProportionateScreenWidth(12)
           ),),
           Container(width: 10.0,),
-          SvgPicture.asset("assets/icons/clarity_notification-outline-badged.svg", height: 22.0),
+          InkWell(
+            onTap: (){
+              Navigator.pushNamed(context, Notifications.routeName);
+            },
+            child: SvgPicture.asset("assets/icons/clarity_notification-outline-badged.svg", height: 22.0),
+          )
         ],
       ),
     );

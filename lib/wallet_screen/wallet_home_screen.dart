@@ -9,6 +9,7 @@ import 'package:coral_reef/wallet_screen/sections/receive_token.dart';
 import 'package:coral_reef/wallet_screen/sections/transfer_token.dart';
 import 'package:coral_reef/wallet_screen/services/wallet_service.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../size_config.dart';
@@ -24,10 +25,10 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
 
   TabController _tabController;
   WalletServices walletServices;
-  String balance = "0", zilBalance = "0";
+  String balance = "0", crlxBalance = "0", zilBalance = "0";
   Map<String, dynamic> addresses = new Map();
 
-  bool _loading = false;
+  bool _inAsyncCall = false;
 
   List<Transactions> transactions = [];
 
@@ -52,13 +53,15 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
       transactions = mTrans;
     });
     addresses = await walletServices.getUserAddresses();
-    String bal = await walletServices.getTokenBalance(addresses["public"]);
+    Map<String, dynamic> resp = await walletServices.getTokenBalance(addresses["public"]);
     String zilBal = await walletServices.getZilBalance(addresses["zil"]);
-    addresses["crl"] = bal;
+    addresses["crl"] = resp["crl"];
+    addresses["crlx"] = resp["crlx"];
     addresses["zilBal"] = zilBal;
     if(!mounted) return;
     setState(() {
-      balance = bal;
+      balance = resp["crl"];
+      crlxBalance = resp["crlx"];
       zilBalance = zilBal;
     });
     _controller.sink.add(SwipeRefreshState.hidden);
@@ -76,7 +79,12 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
     // TODO: implement build
     return Scaffold(
       backgroundColor: Color(MyColors.lightBackground),
-      body: SwipeRefresh.material(
+      body: ModalProgressHUD(
+      inAsyncCall: _inAsyncCall,
+      opacity: 0.6,
+      progressIndicator: CircularProgressIndicator(),
+      color: Color(MyColors.titleTextColor),
+      child: SwipeRefresh.material(
       stateStream: _stream,
       onRefresh: setupInitWallet,
       children: [
@@ -97,10 +105,10 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
                       fontSize: getProportionateScreenWidth(28),
                       color: Colors.white,
                     ),),
-                    Text("$zilBalance ZIL", style: Theme.of(context).textTheme.headline2.copyWith(
-                      fontSize: getProportionateScreenWidth(10),
-                      color: Colors.white,
-                    ),),
+                    // Text("$zilBalance ZIL", style: Theme.of(context).textTheme.headline2.copyWith(
+                    //   fontSize: getProportionateScreenWidth(10),
+                    //   color: Colors.white,
+                    // ),),
                     SizedBox(height: 10.0,),
                     Row(
                       mainAxisSize: MainAxisSize.min,
@@ -146,7 +154,7 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
               ),
               child: DefaultTabController(
                 initialIndex: 0,
-                length: 1,
+                length: 2,
                 child: SafeArea(
                   child: SizedBox(
                     width: double.infinity,
@@ -172,8 +180,8 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
                                 ),
                                 indicatorColor: Color(MyColors.primaryColor),
                                 tabs: <Widget>[
-                                  // Tab(text: "Token",
-                                  // ),
+                                  Tab(text: "Tokens",
+                                  ),
                                   // Tab(text: "Explorer",
                                   // ),
                                   Tab(text: "Transactions",
@@ -190,6 +198,57 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
                               child: TabBarView(
                                 // controller: _tabController,
                                 children: <Widget>[
+                                  Column(
+                                    children: [
+                                      SizedBox(height: 30,),
+                                      InkWell(
+                                        onTap: () async {
+                                          if(crlxBalance == "0") {
+                                            return;
+                                          }
+                                          setState(() {
+                                            _inAsyncCall = true;
+                                          });
+                                          dynamic result = await walletServices.convertCRLXToCRL(addresses["public"], "100");
+                                          setState(() {
+                                            _inAsyncCall = false;
+                                          });
+                                          bool success = result["status"];
+                                          if(!success) {
+                                            new GeneralUtils().displayAlertDialog(context, "Attention", result["message"]);
+                                            return;
+                                          }
+                                          await new GeneralUtils().displayAlertDialog(context, "Transaction Sent", result["message"]);
+                                        },
+                                        child: Container(
+                                            height: 40.0,
+                                            width: double.infinity,
+                                            padding: EdgeInsets.all(10.0),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(10.0),
+                                              color: Color(MyColors.lightBackground),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.max,
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Text("Convert CRLX Token to CRL", style: Theme.of(context).textTheme.bodyText1.copyWith(
+                                                    color: Color(MyColors.titleTextColor),
+                                                    fontSize: getProportionateScreenWidth(11)
+                                                ),),
+                                                Icon(Icons.arrow_forward_ios_rounded,),
+                                              ],)
+                                        ),
+                                      ),
+                                      SizedBox(height: 10,),
+                                      buildToken("CRL", "Coral", "assets/images/logo2.png", balance),
+                                      Divider(thickness: 2.0,),
+                                      buildToken("ZIL", "Zilliqa", "assets/images/zilliqa-zil-logo.png", zilBalance),
+                                      Divider(thickness: 2.0,),
+                                      buildToken("CRLX", "Coral", "assets/images/logo2.png", crlxBalance),
+                                      Divider(thickness: 2.0,),
+                                    ],
+                                  ),
                                   ListView(
                                     scrollDirection: Axis.vertical,
                                     children: buildTransactions(),
@@ -208,7 +267,25 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
           ],
         )
       ],
-      )
+      ))
+    );
+  }
+
+  Widget buildToken(String tokenSymbol, String tokenName, String logo, String value) {
+    return ListTile(
+      leading: Image.asset(logo, height: 40.0,),
+      title: Text(tokenSymbol, style: Theme.of(context).textTheme.headline2.copyWith(
+        color: Color(MyColors.titleTextColor),
+          fontSize: getProportionateScreenWidth(15)
+      ),),
+      subtitle: Text(tokenName, style: Theme.of(context).textTheme.bodyText1.copyWith(
+          color: Colors.grey,
+        fontSize: getProportionateScreenWidth(12)
+      ),),
+      trailing: Text(value, style: Theme.of(context).textTheme.headline2.copyWith(
+          color: Color(MyColors.titleTextColor),
+          fontSize: getProportionateScreenWidth(15)
+      ),),
     );
   }
 
@@ -225,7 +302,7 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
                 mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("${trans.amount} ${(trans.reason.toLowerCase().contains("zil")) ? 'ZIL' : 'CRL'}",
+                    Text("${trans.amount} ${(trans.reason.toLowerCase().contains("zil")) ? 'ZIL' : (trans.type == "Conversion" || trans.type == "Challenge") ? 'CRLX' : 'CRL'}",
                   style: Theme.of(context).textTheme.headline1.copyWith(
                       color: Color(MyColors.titleTextColor),
                       fontSize: getProportionateScreenWidth(15))),

@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/account/notifications/notification.dart';
+import 'package:coral_reef/account/profile/account.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:coral_reef/size_config.dart';
@@ -18,7 +20,7 @@ class HomeLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Container(
           //margin: EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(5)),
@@ -31,6 +33,16 @@ class HomeLogo extends StatelessWidget {
           ),
           child: Image.asset('assets/images/coral_reef_splash_logo.png'),
         ),
+        Row(
+          children: [
+            IconButton(onPressed: (){
+              Navigator.pushNamed(context, Notifications.routeName);
+            },iconSize: 28.0, color: Color(MyColors.primaryColor), icon: Icon(Icons.notifications),),
+            IconButton(onPressed: (){
+              Navigator.pushNamed(context, Account.routeName);
+            },iconSize: 28.0, color: Color(MyColors.primaryColor), icon: Icon(Icons.settings),),
+          ],
+        )
       ],
     );
   }

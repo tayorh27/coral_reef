@@ -98,6 +98,9 @@ class _TrackerScrollingOptions extends State<TrackerScrollingOptions> {
 
   void changeMenu(String menu, BuildContext context) {
     if (!mounted) return;
+    // if(!hasWellnessRecord && !hasDewRecord) {
+    //   return;
+    // }
     setState(() {
       selectedMenu = menu;
       widget.onSelectedMenu(selectedMenu, hasWellnessRecord, hasDewRecord);

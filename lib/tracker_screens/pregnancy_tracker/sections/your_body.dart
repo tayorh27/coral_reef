@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:akvelon_flutter_share_plugin/akvelon_flutter_share_plugin.dart';
 import 'package:coral_reef/ListItem/model_baby_body_info.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/constants.dart';
@@ -8,6 +11,9 @@ import 'package:coral_reef/tracker_screens/pregnancy_tracker/services/pregnancy_
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:readmore/readmore.dart';
+import 'package:shot_widget/shot_service.dart';
+import 'package:shot_widget/shot_widget.dart';
+import 'package:path_provider/path_provider.dart';
 
 class YourBody extends StatefulWidget {
   static final routeName = "yourbody";
@@ -20,12 +26,14 @@ class YourBody extends StatefulWidget {
 }
 
 class _YourBodyState extends State<YourBody> {
-
   String week = "";
 
   PregnancyServices pregnancyServices;
 
   PregnancyBBInfo bodyInfo;
+
+  GlobalKey key =  GlobalKey();
+  ShotService service =  ShotService();
 
   @override
   void initState() {
@@ -34,13 +42,14 @@ class _YourBodyState extends State<YourBody> {
     pregnancyServices = new PregnancyServices();
     setState(() {
       week = widget.week;
-      bodyInfo = pregnancyServices.getPregnancyInfoData().firstWhere((element) => element.week == widget.weekNumber);
+      bodyInfo = pregnancyServices
+          .getPregnancyInfoData()
+          .firstWhere((element) => element.week == widget.weekNumber);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -82,7 +91,7 @@ class _YourBodyState extends State<YourBody> {
                 alignment: Alignment.center,
                 children: [
                   InkWell(
-                    onTap: playVideo,
+                    onTap: viewImage,
                     child: Image.asset(
                       "assets/images/your_body.png",
                       height: 200.0,
@@ -156,33 +165,78 @@ class _YourBodyState extends State<YourBody> {
     );
   }
 
-  Future<void> playVideo() {
+  Future<void> viewImage() {
+    double minusValue = (widget.weekNumber >= 28) ? 0.0 : 30.0;
+    String imagePath = (widget.weekNumber <= 12) ? "assets/images/share_preg_1_12.png" : (widget.weekNumber > 12 && widget.weekNumber <= 27) ? "assets/images/share_preg_13_27.png" : "assets/images/share_preg_28_40.png";
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: true, // user must tap button!
       builder: (BuildContext context) {
-        return new AlertDialog(
-          title: Text("Week ${widget.weekNumber}", textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyText1.copyWith(
-            color: Color(MyColors.titleTextColor),
-            fontSize: getProportionateScreenWidth(20),),),
-          content: new SingleChildScrollView(
-            child: new ListBody(
-              children: <Widget>[
-                VideoDisplayWidget(bodyInfo.videoUrl, "https://firebasestorage.googleapis.com/v0/b/coraltrackerapp.appspot.com/o/pregnancy-asset-files%2Fyour_body.png?alt=media&token=7829b866-d643-486c-a3bf-47398c24b758", showControls: false, aspectRatio: 4/3, looping: true,)
-              ],
-            ),
+        return  ShotWidget(
+            shotKey: key,
+            child:  Padding(
+          padding: EdgeInsets.only(left: 30.0, right: 30.0),
+          child: Stack(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage(imagePath),
+                        fit: BoxFit.contain)),
+              ),
+              Padding(padding: EdgeInsets.only(bottom:30.0), child: Align(
+                alignment: Alignment.bottomRight,
+                child: TextButton.icon(onPressed: () async {
+                  File file =  await service.takeWidgetShot(key, '${(await getTemporaryDirectory()).path}/${new DateTime.now().toString()}.png', pixelRatio: 16/9);
+                  print(file.path);
+                  shareImage(file.path);
+                }, icon: Icon(Icons.share_rounded, color: Colors.white,), label: Text("SHARE",
+                    style: Theme.of(context).textTheme.headline2.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: getProportionateScreenWidth(15)))),
+              ),),
+              Padding(padding: EdgeInsets.only(bottom:30.0), child: Align(
+                alignment: Alignment.bottomLeft,
+                child: TextButton(onPressed: () async {
+                  Navigator.of(context).pop();
+                }, child: Text("CANCEL",
+                    style: Theme.of(context).textTheme.headline2.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: getProportionateScreenWidth(15)))),
+              ),),
+              Container(
+                margin: EdgeInsets.only(top: (MediaQuery.of(context).size.height / 2) - minusValue),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Text("Pregnancy",
+                          style: Theme.of(context).textTheme.subtitle1.copyWith(
+                              color: Colors.white,
+                              fontSize: getProportionateScreenWidth(15))),
+                      Text(
+                        "Week ${widget.weekNumber}",
+                        style: Theme.of(context).textTheme.headline1.copyWith(
+                            color: Colors.white,
+                            fontSize: getProportionateScreenWidth(20)),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
           ),
-          actions: [
-            new TextButton(
-              child: new Text('DONE', style: TextStyle(color: Color(MyColors.primaryColor)),),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
+        ));
       },
     );
+  }
+
+  shareImage(String path) {
+    AkvelonFlutterSharePlugin.shareSingle(path, ShareType.IMAGE,
+        text: "Hello",
+        subject: "Pregnancy: Week ${widget.weekNumber}");
   }
 }
 

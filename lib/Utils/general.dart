@@ -73,13 +73,65 @@ class GeneralUtils {
     );
   }
 
+  Future<bool> displayReturnedValueAlertDialog(
+      BuildContext context, String _title, String _body) async {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return new AlertDialog(
+          title: new Text(_title, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyText1.copyWith(
+            color: Color(MyColors.titleTextColor),
+            fontSize: getProportionateScreenWidth(20),),),
+          content: new SingleChildScrollView(
+            child: new ListBody(
+              children: <Widget>[
+                Container(
+                  height: getProportionateScreenHeight(50),
+                  width: getProportionateScreenWidth(50),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF5F6F9),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Image.asset('assets/images/logo2.png'),
+                ),
+                Padding(
+                    padding: const EdgeInsets.only(left:30.0, right: 30.0, top: 30.0),
+                    child: new Text(
+                      _body,textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.subtitle1.copyWith(
+                        color: Color(MyColors.titleTextColor),
+                        fontSize: getProportionateScreenWidth(15),),
+                    )),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            new TextButton(
+              child: new Text('CANCEL', style: TextStyle(color: Colors.redAccent),),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            new TextButton(
+              child: new Text('OK', style: TextStyle(color: Color(MyColors.primaryColor)),),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void showToast(BuildContext context, String msg) {
     Fluttertoast.showToast(
         msg: "$msg",
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.CENTER,
         timeInSecForIosWeb: 5,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Color(MyColors.primaryColor),
         textColor: Colors.white,
         fontSize: 16.0);
   }

@@ -35,7 +35,7 @@ class PeriodServices {
   }
 
   Future<Map<String, dynamic>> getLastPeriodData() async {
-    QuerySnapshot query = await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("periods").orderBy("timestamp", descending: true).limit(1).get();
+    QuerySnapshot query = await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("periods").orderBy("timestamp", descending: true).limit(2).get();
     if(query.size > 1) {
       Map<String, dynamic> data = query.docs[1].data();
       return data;
