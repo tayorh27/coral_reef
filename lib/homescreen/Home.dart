@@ -6,6 +6,7 @@ import 'package:coral_reef/ListItem/model_challenge.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/active_challenge/track_challenge_activities.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/community_challenge_details.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -84,7 +85,8 @@ class _HomeScreen extends State<HomeScreen> {
         backgroundColor: Color(MyColors.primaryColor),
         child: Icon(Icons.directions_run_rounded, color: Colors.white, size: 32.0,),
         onPressed: (){
-          Navigator.pushNamed(context, CommunityChallengeDetails.routeName, arguments: vc); //****
+          // Navigator.pushNamed(context, CommunityChallengeDetails.routeName, arguments: vc); //****
+          Navigator.pushNamed(context, TrackChallengeActivities.routeName, arguments: vc); //****
         },
         tooltip: "Current Challenge",
       ),

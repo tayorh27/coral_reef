@@ -6,8 +6,10 @@ import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/size_config.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/active_challenge/track_challenge_activities.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/chal_participants.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/map_utils.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/services/exercise_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_countdown_timer/current_remaining_time.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
@@ -95,9 +97,9 @@ class _PageState extends State<CommunityChallengeDetails> {
   @override
   void initState() {
     super.initState();
-    setCustomMapPin();
-    geolocator = Geolocator();
-    setupCurrentLocation();
+    // setCustomMapPin();
+    // geolocator = Geolocator();
+    // setupCurrentLocation();
   }
 
   setupCurrentLocation() async {
@@ -179,8 +181,22 @@ class _PageState extends State<CommunityChallengeDetails> {
                                     margin: EdgeInsets.only(left: 60.0),
                                     child: CircleAvatar(backgroundImage: NetworkImage(members[2].image)),
                                   ) : SizedBox(),
+                                  (members.length > 3) ? Container(
+                                    margin: EdgeInsets.only(left: (members.length == 1) ? 50.0 : (members.length == 2) ? 80.0 : 110.0, top: 10.0),
+                                    child: Text("+${members.length - 3}",
+                                        style: Theme
+                                            .of(context)
+                                            .textTheme
+                                            .headline1
+                                            .copyWith(
+                                          fontSize:
+                                          getProportionateScreenWidth(
+                                              15),
+                                        )),
+                                  ) : SizedBox(),
                                 ],
                               ),
+                              SizedBox(height: 5.0,),
                               CountdownTimer(
                                 endTime: DateTime.parse(ch.end_date).millisecondsSinceEpoch + 1000 * 30,
                                 widgetBuilder: (_, CurrentRemainingTime time) {
@@ -239,6 +255,21 @@ class _PageState extends State<CommunityChallengeDetails> {
                         height: 20,
                       ),
                       SvgPicture.asset("assets/exercise/track_race.svg"),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                            width: 190,
+                            height: 30,
+                            child: DefaultButton(
+                              press: () {
+                                Navigator.pushNamed(
+                                    context, TrackChallengeActivities.routeName, arguments: ch);
+                              },
+                              loading: false,
+                              fontSize: 12,
+                              text: 'Track Your Challenge',
+                            )),
+                      ),
                       SizedBox(
                         height: 30,
                       ),
@@ -250,7 +281,9 @@ class _PageState extends State<CommunityChallengeDetails> {
   List<Widget> buildMembersLayout() {
     List<Widget> memWidget = [];
 
-    members.sort((a, b) => b.time_taken.compareTo(a.time_taken));
+    members.sort((a, b) => b.km_covered.compareTo(a.km_covered));
+
+    // members.sort((a, b) => b.time_taken.compareTo(a.time_taken));
 
     int index = 1;
 
@@ -262,6 +295,7 @@ class _PageState extends State<CommunityChallengeDetails> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
+
                     children: [
                       Text(
                         '$index.',
@@ -293,15 +327,31 @@ class _PageState extends State<CommunityChallengeDetails> {
                       ),
                     ],
                   ),
-                  Text(
-                    '${mem.km_covered} Km',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyText1
-                        .copyWith(
-                      fontSize: getProportionateScreenWidth(12),
-                    ),
-                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '${mem.km_covered} Km',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyText1
+                            .copyWith(
+                          fontSize: getProportionateScreenWidth(12),
+                        ),
+                      ),
+                      Text(
+                        "in ${ExerciseService.formatTimeCoveredBySeconds(double.parse("${mem.time_taken}"))}",
+                        style: Theme.of(context)
+                            .textTheme
+                            .subtitle1
+                            .copyWith(
+                          fontSize: getProportionateScreenWidth(9),
+                          color: Color(MyColors.titleTextColor)
+                        ),
+                      ),
+                    ],
+                  )
                 ])),
       );
 

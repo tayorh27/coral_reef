@@ -61,10 +61,11 @@
     <key>io.flutter.embedded_views_preview</key>
     <true/>
     <key>UIBackgroundModes</key>
-        <array>
-            <string>fetch</string>
-            <string>remote-notification</string>
-        </array>
+    <array>
+      <string>fetch</string>
+      <string>audio</string>
+      <string>remote-notification</string>
+    </array>
     <key>NSCameraUsageDescription</key>
     <string>Can we access your camera in order to scan barcodes?</string>
     <key>LSApplicationQueriesSchemes</key>

@@ -3,12 +3,12 @@ class VirtualChallenge {
       user_uid, challenge_type,
       title, activity_type, distance, start_date, end_date, description, reward_type, reward_value, created_date, link, status, join_code;
   int max_user = 0, winner_amount;
-  dynamic msgId, timestamp;
+  dynamic msgId, timestamp, km_covered, time_taken;
 
 
 
   VirtualChallenge(this.id, this.user_uid, this.challenge_type,
-      this.title, this.activity_type, this.distance, this.start_date, this.end_date, this.description, this.reward_type, this.reward_value, this.created_date, this.link, this.msgId, this.timestamp, this.max_user, this.status, this.winner_amount, this.join_code);
+      this.title, this.activity_type, this.distance, this.start_date, this.end_date, this.description, this.reward_type, this.reward_value, this.created_date, this.link, this.msgId, this.timestamp, this.max_user, this.status, this.winner_amount, this.join_code, this.time_taken, this.km_covered);
 
   Map<String, dynamic> toJSON() {
     return {
@@ -31,6 +31,8 @@ class VirtualChallenge {
       'winner_amount':winner_amount,
       'status':status,
       'join_code':join_code,
+      "km_covered": km_covered,
+      "time_taken": time_taken,
     };
   }
 
@@ -54,6 +56,8 @@ class VirtualChallenge {
     winner_amount = data['winner_amount'];
     status = data['status'];
     join_code = data['join_code'];
+    km_covered = data["km_covered"];
+    time_taken = data["time_taken"];
   }
 }
 
@@ -94,11 +98,11 @@ class VirtualChallengeMembers {
 
   String id, user_uid, username, image, created_date;
 
-  dynamic msgId, timestamp, km_covered, time_taken;
+  dynamic msgId, timestamp, km_covered, time_taken, least_seconds_time_completion, least_meters_distance_completion;
 
   //rank, km counter, time taken in seconds
 
-  VirtualChallengeMembers(this.id, this.user_uid, this.username, this.image, this.created_date, this.timestamp, this.msgId, this.km_covered, this.time_taken);
+  VirtualChallengeMembers(this.id, this.user_uid, this.username, this.image, this.created_date, this.timestamp, this.msgId, this.km_covered, this.time_taken, this.least_seconds_time_completion, this.least_meters_distance_completion);
 
   Map<String, dynamic> toJSON() {
     return {
@@ -111,6 +115,8 @@ class VirtualChallengeMembers {
       "msgId": msgId,
       "km_covered": km_covered,
       "time_taken": time_taken,
+      "least_seconds_time_completion": least_seconds_time_completion,
+      "least_meters_distance_completion": least_meters_distance_completion,
     };
   }
 
@@ -124,6 +130,8 @@ class VirtualChallengeMembers {
     msgId = data["msgId"];
     km_covered = data["km_covered"];
     time_taken = data["time_taken"];
+    least_seconds_time_completion = data["least_seconds_time_completion"];
+    least_meters_distance_completion = data["least_meters_distance_completion"];
   }
 }
 

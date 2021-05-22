@@ -12,7 +12,6 @@ import 'package:coral_reef/wallet_screen/services/wallet_service.dart';
 import 'package:direct_select/direct_select.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class CreateChallengePage extends StatefulWidget {
   static final routeName = "createChallengePage";
@@ -907,7 +906,7 @@ class _PageState extends State<CreateChallengePage> {
           new DateTime.now().toString(),
           "link",
           json["msgId"],
-          FieldValue.serverTimestamp(), 0, "pending",winnerAmount, id.substring(2,8)
+          FieldValue.serverTimestamp(), 0, "pending",winnerAmount, id.substring(2,8),0,0
       );
       await FirebaseFirestore.instance.collection("challenges").doc(id).set(
           vc.toJSON());

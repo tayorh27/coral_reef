@@ -115,9 +115,21 @@ class _MyApp extends State<MyApp> {
 
     if(hasEnded) {
       await ss.deletePref("currentChallenge");
+      await ss.deletePref("running");
+      await ss.deletePref("statusCH");
+      await ss.deletePref("startPosition");
+      await ss.deletePref("currentPosition");
+      await ss.deletePref("startTime");
+      await ss.deletePref("currentTime");
       await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("setups").doc("user-data").update(
           {
-            "currentChallenge": FieldValue.delete()
+            "currentChallenge": FieldValue.delete(),
+            "running": FieldValue.delete(),
+            "statusCH": FieldValue.delete(),
+            "startPosition": FieldValue.delete(),
+            "currentPosition": FieldValue.delete(),
+            "startTime": FieldValue.delete(),
+            "currentTime": FieldValue.delete(),
           });
 
     }

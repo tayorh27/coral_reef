@@ -9,6 +9,7 @@ import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/constants.dart';
 import 'package:coral_reef/size_config.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/active_challenge/track_challenge_activities.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/challenge_details.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/coral_rewards.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/create_challenge.dart';
@@ -20,6 +21,7 @@ import 'package:coral_reef/wallet_screen/services/wallet_service.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_countdown_timer/current_remaining_time.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -645,7 +647,7 @@ class _PageState extends State<ChallengePage> {
                                   Container(
                                       padding: EdgeInsets.all(20.0),
                                       child: Text(
-                                        "Past challenges",
+                                        "My Recent Challenges",
                                         textAlign: TextAlign.start,
                                         style: Theme.of(context).textTheme.bodyText1.copyWith(
                                           color: Color(MyColors.titleTextColor),
@@ -720,7 +722,7 @@ class _PageState extends State<ChallengePage> {
         chans.add(
             InkWell(
                 onTap: () {
-                  if(!hasJoinedChallenge || !hasStarted) return;
+                  if(!hasStarted) return; //!hasJoinedChallenge ||
                   Navigator.pushNamed(
                       context,
                       CommunityChallengeDetails
@@ -895,7 +897,7 @@ class _PageState extends State<ChallengePage> {
     }
 
     if(ch.challenge_type == "Pool") {
-      bool getResp = await new GeneralUtils().displayReturnedValueAlertDialog(context, "Attention", "_body");
+      bool getResp = await new GeneralUtils().displayReturnedValueAlertDialog(context, "Attention", "${ch.reward_value} CRLX is required to join this challenge. Continue?");
       if(!getResp) return;
 
       double crlx = double.parse(crlxBalance);
@@ -955,7 +957,7 @@ class _PageState extends State<ChallengePage> {
     await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("my-challenges").doc(ch.id).set(ch.toJSON());
 
     //add users to challenge collection
-    VirtualChallengeMembers vcm = new VirtualChallengeMembers(id, user.uid, "${json["firstname"]} ${json["lastname"]}", image, new DateTime.now().toString(), FieldValue.serverTimestamp(), json["msgId"], 0, 0);
+    VirtualChallengeMembers vcm = new VirtualChallengeMembers(id, user.uid, "${json["firstname"]} ${json["lastname"]}", image, new DateTime.now().toString(), FieldValue.serverTimestamp(), json["msgId"], 0, 0,0,0);
     await FirebaseFirestore.instance.collection("challenges").doc(ch.id).collection("joined-users").doc(id).set(vcm.toJSON());
 
     new GeneralUtils().showToast(context, "You have successfully joined the challenge");
@@ -963,10 +965,14 @@ class _PageState extends State<ChallengePage> {
     //save to local storage
     ch.timestamp = "";
     await ss.setPrefItem("currentChallenge", jsonEncode(ch.toJSON()));
+    await ss.setPrefItem("user_ch_id", id);
 
     setState(() {
       _inAsyncCall = false;
     });
+
+    //goto active challenge
+    Navigator.pushNamed(context, TrackChallengeActivities.routeName, arguments: ch);
   }
 }
 

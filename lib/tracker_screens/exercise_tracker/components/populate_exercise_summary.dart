@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coral_reef/ListItem/model_challenge.dart';
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/constants.dart';
 import 'package:coral_reef/services/step_service.dart';
 import 'package:coral_reef/tracker_screens/diet_tracker_screen/components/calories_slider.dart';
 import 'package:coral_reef/tracker_screens/diet_tracker_screen/components/diet_summary_card.dart';
@@ -22,6 +25,36 @@ class PopulateExerciseSummary extends StatefulWidget {
 }
 
 class _PopulateDietSummary extends State<PopulateExerciseSummary> {
+
+  double totalKm = 0.0;
+  int totalChallenge = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getChallenges();
+  }
+
+  getChallenges() async {
+
+    QuerySnapshot query = await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("my-challenges").get();
+    if(query.docs.isEmpty) return;
+
+    if(!mounted) return;
+    setState(() {
+      totalChallenge = query.docs.length;
+    });
+
+    query.docs.forEach((chan) {
+      Map<String, dynamic> ch = chan.data();
+      setState(() {
+        totalKm += (ch["km_covered"] == null) ? 0.0 : ch["km_covered"];
+      });
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<StepViewModel>.reactive(
@@ -55,8 +88,8 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
                 title: 'Track activities',
                 icon: 'assets/exercise/race_track.svg',
                 title2: '',
-                title3: 'Activities: 0',
-                title4: 'Total km: 0.0',
+                title3: 'Activities: $totalChallenge',
+                title4: 'Total km: $totalKm',
                 textColor: Color(MyColors.primaryColor),
                 press: () {
                   Navigator.pushNamed(context, TrackActivities.routeName);
