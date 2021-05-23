@@ -229,7 +229,7 @@ class _CreateNewGChat extends State<CreateNewGChat> {
                               controller: _controllerBody,
                               maxLines: 10,
                               minLines: 3,
-                              maxLength: 200,
+                              maxLength: 600,
                               textCapitalization:
                               TextCapitalization.sentences,
                               maxLengthEnforcement: MaxLengthEnforcement

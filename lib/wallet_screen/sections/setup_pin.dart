@@ -95,6 +95,10 @@ class _SetupPin extends State<SetupPin> {
                         new GeneralUtils().displayAlertDialog(context, "Attention", "Pins do not match.");
                         return;
                       }
+                      if(retypePin == "1234" || retypePin == "4321") {
+                        new GeneralUtils().displayAlertDialog(context, "Attention", "Please use a secured pin.");
+                        return;
+                      }
                       await ss.setPrefItem("userPin", retypePin);
                       await ss.setPrefItem("walletSetup", "true");
                       _showTestDialog(context);

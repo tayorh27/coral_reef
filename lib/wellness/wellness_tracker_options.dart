@@ -37,10 +37,13 @@ class _WellnessTrackerOptions extends State<WellnessTrackerOptions> {
               child: Column(
                 children: [
                   SizedBox(height: SizeConfig.screenHeight * 0.05),
-                  CoralBackButton(onPress: (){
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (BuildContext context) => new HomeScreen()));
-                  },),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [CoralBackButton(onPress: (){
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (BuildContext context) => new HomeScreen()));
+                      },),]),
+
                   SizedBox(height: SizeConfig.screenHeight * 0.09),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,

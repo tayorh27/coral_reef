@@ -229,6 +229,16 @@ class _ConceiveInfo extends State<ConceiveInfo> {
 
     String conceiveRecord = jsonEncode(userConceiveDetailsLocal);
     await ss.setPrefItem("conceiveRecord", conceiveRecord);
+
+    String periodRecord = await ss.getItem("periodRecord");
+    if(periodRecord != null) {
+      _showTestDialog(context);
+      Timer(Duration(seconds: 2), () async {
+        Navigator.pushNamed(context, CoralBottomNavigationBar.routeName);
+      });
+      return;
+    }
+
     //await ss.setPrefItem("wellnessSetup", "true"); //don't display wellness.dart again
     //go to period info
     Navigator.pushNamed(context, PeriodInfo.routeName);

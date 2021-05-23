@@ -1,4 +1,6 @@
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/general.dart';
+import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/shared_screens/tracker_screen_header.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/period_tracker_screen.dart';
 import 'package:coral_reef/tracker_screens/pregnancy_tracker/pregnancy_tracker_screen.dart';
@@ -28,6 +30,8 @@ class _TrackerLanding extends State<TrackerLanding> {
   ];
 
   Widget selectedScreen = DietTrackerScreen();//diet class first
+
+  StorageSystem ss = new StorageSystem();
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +70,7 @@ class _TrackerLanding extends State<TrackerLanding> {
    * get the tracker screen to display once the user selects a tracker item
    * if no wellness record found, user goes to wellness setup screen
    */
-  void getTrackerScreen(String selectedMenu, bool hasWellnessRecord, bool hasDewRecord) {
+  void getTrackerScreen(String selectedMenu, bool hasWellnessRecord, bool hasDewRecord) async {
     print(selectedMenu);
     Map<String, dynamic> findScreen = screens.firstWhere((element) => element["screen_name"] == selectedMenu);
     if(findScreen == null) {
@@ -82,6 +86,25 @@ class _TrackerLanding extends State<TrackerLanding> {
       }
     }
     print("ok");
+    if(selectedMenu == "Period tracker") {
+      String periodRecord = await ss.getItem("periodRecord");
+      if(periodRecord == null) {
+        //go to well-being setup screen
+        new GeneralUtils().showToast(context, "Please setup your period tracker.");
+        Navigator.pushNamed(context, WellnessTrackerOptions.routeName);//change to diet info
+        return;
+      }
+    }
+
+    if(selectedMenu == "Pregnancy tracker") {
+      String pregnancyRecord = await ss.getItem("pregnancyRecord");
+      if(pregnancyRecord == null) {
+        //go to well-being setup screen
+        new GeneralUtils().showToast(context, "Please setup your pregnancy tracker.");
+        Navigator.pushNamed(context, WellnessTrackerOptions.routeName);//change to diet info
+        return;
+      }
+    }
     setState(() {
       selectedScreen = findScreen["screen_class"];
     });

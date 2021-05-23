@@ -163,7 +163,7 @@ class _PageState extends State<CommunityChallengeDetails> {
                           Column(
                             children: [
                               Text(
-                                "${ch.reward_value} CRLX to be won for \n${ch.distance}Km ${ch.activity_type} challenge.\n",
+                                "${ch.reward_value} XCRL to be won for \n${ch.distance}Km ${ch.activity_type} challenge.\n",
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context).textTheme.bodyText1.copyWith(
                                   color: Color(MyColors.primaryColor),

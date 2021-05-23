@@ -223,6 +223,16 @@ class _PregnancyInfo extends State<PregnancyInfo> {
     await ss.setPrefItem("pregnancyRecord", pregnancyRecord);
     await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("pregnancy").doc(key).set(userPregnancyDetails);
 
+
+    String periodRecord = await ss.getItem("periodRecord");
+    if(periodRecord != null) {
+      _showTestDialog(context);
+      Timer(Duration(seconds: 2), () async {
+        Navigator.pushNamed(context, CoralBottomNavigationBar.routeName);
+      });
+      return;
+    }
+
     // await ss.setPrefItem("wellnessSetup", "true"); //don't display wellness.dart again
     //go to period info
     Navigator.pushNamed(context, PeriodInfo.routeName);

@@ -1,3 +1,4 @@
+import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/constants.dart';
@@ -39,6 +40,7 @@ class _WeightScreen extends State<WeightScreen> {
       setState(() {
         metricSelected = v;
       });
+      ss.setPrefItem("weight_metric", metricSelected);
     });
   }
 
@@ -66,14 +68,14 @@ class _WeightScreen extends State<WeightScreen> {
                         alignment: Alignment.center,
                         child: GestureDetector(
                           onTap: () {
-                            _showTestDialog(context);
+                            // _showTestDialog(context);
                           },
                           child: Text(
                             "$weight $metricSelected",
-                            style: TextStyle(
-                                color: Colors.purple,
+                            style: Theme.of(context).textTheme.headline2.copyWith(
                                 fontSize: 40.0,
-                                fontWeight: FontWeight.w500),
+                                color: Color(MyColors.primaryColor)
+                            ),
                           ),
                         ),
                       ),
@@ -118,7 +120,7 @@ class _WeightScreen extends State<WeightScreen> {
               text: 'kg',
               selected: metricSelected == "kg",
               press: () async {
-                // await ss.setPrefItem("weight_metric", "kg");
+                await ss.setPrefItem("weight_metric", "kg");
                 setState(() {
                   metricSelected = "kg";
                 });
@@ -130,7 +132,7 @@ class _WeightScreen extends State<WeightScreen> {
               text: 'lbs',
               selected: metricSelected == "lbs",
               press: () async {
-                // await ss.setPrefItem("weight_metric", "lbs");
+                await ss.setPrefItem("weight_metric", "lbs");
                 setState(() {
                   metricSelected = "lbs";
                 });

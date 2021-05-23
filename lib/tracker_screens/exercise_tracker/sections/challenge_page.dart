@@ -171,7 +171,8 @@ class _PageState extends State<ChallengePage> {
                                         onTap: () {
                                           Navigator.of(context).pop();
                                           Navigator.pushNamed(context,
-                                              CreateChallengePage.routeName, arguments: "Community");
+                                              CreateChallengePage.routeName,
+                                              arguments: "Community");
                                         },
                                         child: Container(
                                             decoration: BoxDecoration(
@@ -214,28 +215,37 @@ class _PageState extends State<ChallengePage> {
                                                       "Open to all in the coral",
                                                       textAlign:
                                                           TextAlign.start,
-                                                      style: Theme.of(context).textTheme.subtitle1.copyWith(
-                                                        color: Color(MyColors.titleTextColor),
-                                                        fontSize: 14.0
-                                                      ),
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .subtitle1
+                                                          .copyWith(
+                                                              color: Color(MyColors
+                                                                  .titleTextColor),
+                                                              fontSize: 14.0),
                                                     ),
                                                     Text(
                                                       "community, unlimited",
                                                       textAlign:
                                                           TextAlign.start,
-                                                      style: Theme.of(context).textTheme.subtitle1.copyWith(
-                                                          color: Color(MyColors.titleTextColor),
-                                                          fontSize: 14.0
-                                                      ),
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .subtitle1
+                                                          .copyWith(
+                                                              color: Color(MyColors
+                                                                  .titleTextColor),
+                                                              fontSize: 14.0),
                                                     ),
                                                     Text(
                                                       "participants",
                                                       textAlign:
                                                           TextAlign.start,
-                                                      style: Theme.of(context).textTheme.subtitle1.copyWith(
-                                                          color: Color(MyColors.titleTextColor),
-                                                          fontSize: 14.0
-                                                      ),
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .subtitle1
+                                                          .copyWith(
+                                                              color: Color(MyColors
+                                                                  .titleTextColor),
+                                                              fontSize: 14.0),
                                                     ),
                                                   ],
                                                 ),
@@ -263,7 +273,8 @@ class _PageState extends State<ChallengePage> {
                                               fontSize:
                                                   getProportionateScreenWidth(
                                                       15),
-                                              color: Color(MyColors.titleTextColor),
+                                              color: Color(
+                                                  MyColors.titleTextColor),
                                               fontWeight: FontWeight.w500),
                                     ),
                                     Text(
@@ -275,7 +286,8 @@ class _PageState extends State<ChallengePage> {
                                               fontSize:
                                                   getProportionateScreenWidth(
                                                       15),
-                                              color: Color(MyColors.titleTextColor),
+                                              color: Color(
+                                                  MyColors.titleTextColor),
                                               fontWeight: FontWeight.w500),
                                     ),
                                     SizedBox(
@@ -288,10 +300,9 @@ class _PageState extends State<ChallengePage> {
                                         InkWell(
                                             onTap: () {
                                               Navigator.of(context).pop();
-                                              Navigator.pushNamed(
-                                                  context,
-                                                  CreateChallengePage
-                                                      .routeName, arguments: "Friends");
+                                              Navigator.pushNamed(context,
+                                                  CreateChallengePage.routeName,
+                                                  arguments: "Friends");
                                             },
                                             child: Column(
                                               children: [
@@ -310,7 +321,8 @@ class _PageState extends State<ChallengePage> {
                                                           fontSize:
                                                               getProportionateScreenWidth(
                                                                   12),
-                                                          color: Color(MyColors.titleTextColor),
+                                                          color: Color(MyColors
+                                                              .titleTextColor),
                                                           fontWeight:
                                                               FontWeight.w500),
                                                 ),
@@ -323,7 +335,8 @@ class _PageState extends State<ChallengePage> {
                                                           fontSize:
                                                               getProportionateScreenWidth(
                                                                   12),
-                                                          color: Color(MyColors.titleTextColor),
+                                                          color: Color(MyColors
+                                                              .titleTextColor),
                                                           fontWeight:
                                                               FontWeight.w500),
                                                 ),
@@ -332,10 +345,9 @@ class _PageState extends State<ChallengePage> {
                                         InkWell(
                                             onTap: () {
                                               Navigator.of(context).pop();
-                                              Navigator.pushNamed(
-                                                  context,
-                                                  CreateChallengePage
-                                                      .routeName, arguments: "Friends");
+                                              Navigator.pushNamed(context,
+                                                  CreateChallengePage.routeName,
+                                                  arguments: "Friends");
                                             },
                                             child: Column(
                                               children: [
@@ -354,7 +366,8 @@ class _PageState extends State<ChallengePage> {
                                                           fontSize:
                                                               getProportionateScreenWidth(
                                                                   12),
-                                                          color: Color(MyColors.titleTextColor),
+                                                          color: Color(MyColors
+                                                              .titleTextColor),
                                                           fontWeight:
                                                               FontWeight.w500),
                                                 ),
@@ -367,7 +380,8 @@ class _PageState extends State<ChallengePage> {
                                                           fontSize:
                                                               getProportionateScreenWidth(
                                                                   12),
-                                                          color: Color(MyColors.titleTextColor),
+                                                          color: Color(MyColors
+                                                              .titleTextColor),
                                                           fontWeight:
                                                               FontWeight.w500),
                                                 ),
@@ -387,7 +401,8 @@ class _PageState extends State<ChallengePage> {
                                               fontSize:
                                                   getProportionateScreenWidth(
                                                       15),
-                                              color: Color(MyColors.titleTextColor),
+                                              color: Color(
+                                                  MyColors.titleTextColor),
                                               fontWeight: FontWeight.w500),
                                     ),
                                     Text(
@@ -399,7 +414,8 @@ class _PageState extends State<ChallengePage> {
                                               fontSize:
                                                   getProportionateScreenWidth(
                                                       15),
-                                              color: Color(MyColors.titleTextColor),
+                                              color: Color(
+                                                  MyColors.titleTextColor),
                                               fontWeight: FontWeight.w500),
                                     ),
                                   ]),
@@ -426,7 +442,7 @@ class _PageState extends State<ChallengePage> {
 
     //get general challenges
     FirebaseFirestore.instance.collection("challenges").get().then((query) {
-      if(query.size == 0) return;
+      if (query.size == 0) return;
       query.docs.forEach((chan) {
         VirtualChallenge vc = VirtualChallenge.fromSnapshot(chan.data());
         setState(() {
@@ -436,8 +452,13 @@ class _PageState extends State<ChallengePage> {
     });
 
     //get user challenges
-    FirebaseFirestore.instance.collection("users").doc(user.uid).collection("my-challenges").get().then((query) {
-      if(query.size == 0) return;
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(user.uid)
+        .collection("my-challenges")
+        .get()
+        .then((query) {
+      if (query.size == 0) return;
       query.docs.forEach((chan) {
         VirtualChallenge vc = VirtualChallenge.fromSnapshot(chan.data());
         setState(() {
@@ -451,7 +472,8 @@ class _PageState extends State<ChallengePage> {
 
   setupInitWallet() async {
     addresses = await walletServices.getUserAddresses();
-    Map<String, dynamic> resp = await walletServices.getTokenBalance(addresses["public"]);
+    Map<String, dynamic> resp =
+        await walletServices.getTokenBalance(addresses["public"]);
     crlxBalance = resp["crlx"];
   }
 
@@ -484,217 +506,233 @@ class _PageState extends State<ChallengePage> {
           ),
         ),
         body: ModalProgressHUD(
-    inAsyncCall: _inAsyncCall,
-    opacity: 0.6,
-    progressIndicator: CircularProgressIndicator(),
-    color: Color(MyColors.titleTextColor),
-    child: SingleChildScrollView(
-            child: Container(
-                padding: EdgeInsets.all(20),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
+            inAsyncCall: _inAsyncCall,
+            opacity: 0.6,
+            progressIndicator: CircularProgressIndicator(),
+            color: Color(MyColors.titleTextColor),
+            child: SingleChildScrollView(
+                child: Container(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                InkWell(
-                                    onTap: () {
-                                      optionDialog();
-                                      //Navigator.pushNamed(context, CreateChallengePage.routeName);
-                                    },
-                                    child: Column(
-                                      children: [
-                                        SvgPicture.asset(
-                                            "assets/exercise/trophy.svg",
-                                            height: 50.0),
-                                        SizedBox(
-                                          height: 10,
+                                Row(
+                                  children: [
+                                    InkWell(
+                                        onTap: () {
+                                          optionDialog();
+                                          //Navigator.pushNamed(context, CreateChallengePage.routeName);
+                                        },
+                                        child: Column(
+                                          children: [
+                                            SvgPicture.asset(
+                                                "assets/exercise/trophy.svg",
+                                                height: 50.0),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text('Create',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyText1
+                                                    .copyWith(
+                                                      fontSize:
+                                                          getProportionateScreenWidth(
+                                                              12),
+                                                    )),
+                                          ],
+                                        )),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    Visibility(
+                                      visible: false,
+                                      child: InkWell(
+                                          onTap: () {
+                                            Navigator.pushNamed(context,
+                                                CreateChallengePage.routeName);
+                                          },
+                                          child: Column(
+                                            children: [
+                                              SvgPicture.asset(
+                                                  "assets/exercise/dp.svg",
+                                                  height: 50.0),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              Text('Weekend ch...',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyText1
+                                                      .copyWith(
+                                                        fontSize:
+                                                            getProportionateScreenWidth(
+                                                                12),
+                                                      )),
+                                            ],
+                                          )),
+                                    )
+                                  ],
+                                )
+                              ]),
+                          SizedBox(height: 50),
+                          Text('Choose your challenge',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline2
+                                  .copyWith(
+                                      fontSize: getProportionateScreenWidth(20),
+                                      color: Color(MyColors.titleTextColor))),
+                          SizedBox(height: 20),
+                          ...buildChallengesList(),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, CoralRewards.routeName);
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color:
+                                      Color(MyColors.other2).withOpacity(0.4),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                width: double.infinity,
+                                //   padding: EdgeInsets.all(20.0),
+                                height: getProportionateScreenHeight(80),
+                                child: ClipRRect(
+                                    child: Stack(children: [
+                                  Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    child: Image.asset(
+                                      "assets/exercise/coral.png",
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Text(
+                                          "My coral rewards",
+                                          textAlign: TextAlign.start,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText2
+                                              .copyWith(
+                                                fontSize:
+                                                    getProportionateScreenWidth(
+                                                        18),
+                                                color: Color(
+                                                    MyColors.titleTextColor),
+                                              ),
                                         ),
-                                        Text('Create',
+                                      )
+                                    ],
+                                  ),
+                                ])),
+                              )),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, PastChallenges.routeName);
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Color(MyColors.primaryColor)
+                                        .withOpacity(0.4),
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: DecorationImage(
+                                      image: AssetImage(
+                                          "assets/exercise/chal.png"),
+                                      fit: BoxFit.contain,
+                                    )),
+                                width: double.infinity,
+                                height: getProportionateScreenHeight(110),
+                                child: ClipRRect(
+                                    child: Stack(children: [
+                                  // Container(
+                                  //   width: MediaQuery.of(context).size.width,
+                                  //   child: Image.asset(
+                                  //     "assets/exercise/chal.png",
+                                  //     fit: BoxFit.cover,
+                                  //   ),
+                                  // ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                          padding: EdgeInsets.all(20.0),
+                                          child: Text(
+                                            "My Recent Challenges",
+                                            textAlign: TextAlign.start,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyText1
                                                 .copyWith(
-                                                  fontSize:
-                                                      getProportionateScreenWidth(
-                                                          12),
-                                                )),
-                                      ],
-                                    )),
-                                SizedBox(
-                                  width: 20,
-                                ),
-                                Visibility(
-                                  visible: false,
-                                  child: InkWell(
-                                      onTap: () {
-                                        Navigator.pushNamed(context,
-                                            CreateChallengePage.routeName);
-                                      },
-                                      child: Column(
+                                                    color: Color(MyColors
+                                                        .titleTextColor),
+                                                    fontSize:
+                                                        getProportionateScreenWidth(
+                                                            18)),
+                                          )),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          SvgPicture.asset(
-                                              "assets/exercise/dp.svg",
-                                              height: 50.0),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          Text('Weekend ch...',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyText1
-                                                  .copyWith(
-                                                fontSize:
-                                                getProportionateScreenWidth(
-                                                    12),
-                                              )),
-                                        ],
-                                      )),
-                                )
-                              ],
-                            )
-                          ]),
-                      SizedBox(height: 50),
-                      Text('Choose your challenge',
-                          style: Theme.of(context).textTheme.headline2.copyWith(
-                              fontSize: getProportionateScreenWidth(20),
-                            color: Color(MyColors.titleTextColor)
-                          )),
-                      SizedBox(height: 20),
-                      ...buildChallengesList(),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, CoralRewards.routeName);
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Color(MyColors.other2).withOpacity(0.4),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            width: double.infinity,
-                            //   padding: EdgeInsets.all(20.0),
-                            height: getProportionateScreenHeight(80),
-                            child: ClipRRect(
-                                child: Stack(children: [
-                              Container(
-                                width: MediaQuery.of(context).size.width,
-                                child: Image.asset(
-                                  "assets/exercise/coral.png",
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.all(10.0),
-                                    child: Text(
-                                      "My coral rewards",
-                                      textAlign: TextAlign.start,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText2
-                                          .copyWith(
-                                              fontSize:
+                                          Text(''),
+                                          Padding(
+                                            padding:
+                                                EdgeInsets.only(right: 2.0),
+                                            child: Container(
+                                              height:
                                                   getProportionateScreenWidth(
-                                                      18),
-                                              color: Color(MyColors.titleTextColor),),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ])),
-                          )),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, PastChallenges.routeName);
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color:
-                                  Color(MyColors.primaryColor).withOpacity(0.4),
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(image: AssetImage("assets/exercise/chal.png"),fit: BoxFit.contain,)
-                            ),
-                            width: double.infinity,
-                            height: getProportionateScreenHeight(110),
-                            child: ClipRRect(
-                                child: Stack(children: [
-                              // Container(
-                              //   width: MediaQuery.of(context).size.width,
-                              //   child: Image.asset(
-                              //     "assets/exercise/chal.png",
-                              //     fit: BoxFit.cover,
-                              //   ),
-                              // ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                      padding: EdgeInsets.all(20.0),
-                                      child: Text(
-                                        "My Recent Challenges",
-                                        textAlign: TextAlign.start,
-                                        style: Theme.of(context).textTheme.bodyText1.copyWith(
-                                          color: Color(MyColors.titleTextColor),
-                                          fontSize: getProportionateScreenWidth(
-                                              18)
-                                        ),
-                                      )),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(''),
-                                      Padding(
-                                        padding: EdgeInsets.only(right: 2.0),
-                                        child: Container(
-                                          height:
-                                              getProportionateScreenWidth(40),
-                                          width:
-                                              getProportionateScreenWidth(40),
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
+                                                      40),
+                                              width:
+                                                  getProportionateScreenWidth(
+                                                      40),
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: SvgPicture.asset(
+                                                "assets/exercise/challenge_cup_2.svg",
+                                              ),
+                                            ),
                                           ),
-                                          child: SvgPicture.asset(
-                                            "assets/exercise/challenge_cup_2.svg",
-                                          ),
-                                        ),
-                                      ),
+                                        ],
+                                      )
                                     ],
-                                  )
-                                ],
-                              ),
-                            ])),
-                          ))
-                    ])))));
+                                  ),
+                                ])),
+                              ))
+                        ])))));
   }
 
   bool checkIfChallengeExist(String chanID) {
-    Iterable<VirtualChallenge> findChan = myChallenges.where((element) => element.id == chanID);
+    Iterable<VirtualChallenge> findChan =
+        myChallenges.where((element) => element.id == chanID);
     return findChan.isNotEmpty;
   }
 
   List<Widget> buildChallengesList() {
-
     List<Widget> chans = [];
 
     challenges.forEach((ch) {
-
       bool hasStarted = false, hasEnded = false;
 
       DateTime today = DateTime.now();
@@ -713,163 +751,157 @@ class _PageState extends State<ChallengePage> {
       // print(hasStarted);
       // print(hasEnded);
 
-      if(!hasEnded) {
+      if (!hasEnded) {
         daysLeftToStart = start.difference(today).inDays;
         daysLeftToEnd = end.difference(today).inDays;
 
         bool hasJoinedChallenge = checkIfChallengeExist(ch.id);
 
-        chans.add(
-            InkWell(
-                onTap: () {
-                  if(!hasStarted) return; //!hasJoinedChallenge ||
-                  Navigator.pushNamed(
-                      context,
-                      CommunityChallengeDetails
-                          .routeName, arguments: ch);
-                },
-                child: ListTile(
-                  leading: SvgPicture.asset("assets/exercise/foot.svg",
-                      height: 50.0),
-                  title: Text(ch.title,
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .bodyText1
-                          .copyWith(
-                        fontSize:
-                        getProportionateScreenWidth(13),
+        chans.add(InkWell(
+            onTap: () {
+              if (!hasJoinedChallenge || !hasStarted) return; //
+              Navigator.pushNamed(context, CommunityChallengeDetails.routeName,
+                  arguments: ch);
+            },
+            child: ListTile(
+              leading:
+                  SvgPicture.asset("assets/exercise/foot.svg", height: 50.0),
+              title: Text(ch.title,
+                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                        fontSize: getProportionateScreenWidth(13),
                       )),
-                  subtitle: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+              subtitle: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ReadMoreText(
+                    ch.description,
+                    trimLines: 1,
+                    colorClickableText: Color(MyColors.primaryColor),
+                    trimMode: TrimMode.Line,
+                    trimCollapsedText: 'more',
+                    trimExpandedText: 'less',
+                    style: Theme.of(context).textTheme.subtitle1.copyWith(
+                        fontSize: 12.0, color: Color(MyColors.titleTextColor)),
+                    moreStyle: Theme.of(context).textTheme.headline2.copyWith(
+                        fontSize: 12.0, color: Color(MyColors.primaryColor)),
+                    lessStyle: Theme.of(context).textTheme.headline2.copyWith(
+                        fontSize: 12.0, color: Color(MyColors.primaryColor)),
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ReadMoreText(
-                        ch.description,
-                        trimLines: 1,
-                        colorClickableText: Color(MyColors.primaryColor),
-                        trimMode: TrimMode.Line,
-                        trimCollapsedText: 'more',
-                        trimExpandedText: 'less',
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .subtitle1
-                            .copyWith(fontSize: 12.0,
-                            color: Color(MyColors.titleTextColor)),
-                        moreStyle: Theme
-                            .of(context)
-                            .textTheme
-                            .headline2
-                            .copyWith(fontSize: 12.0,
-                            color: Color(MyColors.primaryColor)),
-                        lessStyle: Theme
-                            .of(context)
-                            .textTheme
-                            .headline2
-                            .copyWith(fontSize: 12.0,
-                            color: Color(MyColors.primaryColor)),
-                      ),
-                      SizedBox(height: 10.0,),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              SvgPicture.asset(
-                                  "assets/exercise/female.svg",
-                                  height: 12.0),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text("${ch.max_user}",
-                                  style: Theme
-                                      .of(context)
-                                      .textTheme
-                                      .bodyText1
-                                      .copyWith(
-                                    fontSize:
-                                    getProportionateScreenWidth(
-                                        10),
+                          SvgPicture.asset("assets/exercise/female.svg",
+                              height: 12.0),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text("${ch.max_user}",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1
+                                  .copyWith(
+                                    fontSize: getProportionateScreenWidth(10),
                                   )),
-                            ],
-                          ),
-                          SizedBox(
-                            width: 30,
-                          ),
-                          (!hasStarted || !hasEnded) ? (hasStarted) ? CountdownTimer(
-                            endTime: end.millisecondsSinceEpoch + 1000 * 30,
-                            widgetBuilder: (_, CurrentRemainingTime time) {
-                              if (time == null) {
-                                return Text('Finished');
-                              }
-                              return Text('Ending in ${time.days ?? 0}D:${time.hours ?? 0}H:${time.min ?? 0}M:${time.sec ?? 0}S',
-                                  style: Theme
-                                      .of(context)
-                                      .textTheme
-                                      .bodyText1
-                                      .copyWith(
-                                    fontSize:
-                                    getProportionateScreenWidth(
-                                        10),
-                                  ));
-                              // return Text(
-                              //     'days: [ ${time.days} ], hours: [ ${time.hours} ], min: [ ${time.min} ], sec: [ ${time.sec} ]');
-                            },
-                          ) : CountdownTimer(
-                            endTime: start.millisecondsSinceEpoch + 1000 * 30,
-                            widgetBuilder: (_, CurrentRemainingTime time) {
-                              if (time == null) {
-                                return Text('Finished');
-                              }
-                              return Text('Starting in ${time.days ?? 0}D:${time.hours ?? 0}H:${time.min ?? 0}M:${time.sec ?? 0}S',
-                                      style: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .bodyText1
-                                          .copyWith(
-                                        fontSize:
-                                        getProportionateScreenWidth(
-                                            10),
-                                      ));
-                              // return Text(
-                              //     'days: [ ${time.days} ], hours: [ ${time.hours} ], min: [ ${time.min} ], sec: [ ${time.sec} ]');
-                            },
-                          ) : SizedBox(),
-                          SizedBox(
-                            width: 30,
-                          ),
-                          (hasJoinedChallenge) ? Text("Joined", style: Theme
-                              .of(context)
-                              .textTheme
-                              .headline2
-                              .copyWith(fontSize: 10.0,
-                              color: Color(MyColors.primaryColor)),) : SizedBox()
                         ],
-                      )
+                      ),
+                      SizedBox(
+                        width: 30,
+                      ),
+                      (!hasStarted || !hasEnded)
+                          ? (hasStarted)
+                              ? CountdownTimer(
+                                  endTime:
+                                      end.millisecondsSinceEpoch + 1000 * 30,
+                                  widgetBuilder:
+                                      (_, CurrentRemainingTime time) {
+                                    if (time == null) {
+                                      return Text('Finished');
+                                    }
+                                    return Text(
+                                        'Ending in ${time.days ?? 0}D:${time.hours ?? 0}H:${time.min ?? 0}M:${time.sec ?? 0}S',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1
+                                            .copyWith(
+                                              fontSize:
+                                                  getProportionateScreenWidth(
+                                                      10),
+                                            ));
+                                    // return Text(
+                                    //     'days: [ ${time.days} ], hours: [ ${time.hours} ], min: [ ${time.min} ], sec: [ ${time.sec} ]');
+                                  },
+                                )
+                              : CountdownTimer(
+                                  endTime:
+                                      start.millisecondsSinceEpoch + 1000 * 30,
+                                  widgetBuilder:
+                                      (_, CurrentRemainingTime time) {
+                                    if (time == null) {
+                                      return Text('Finished');
+                                    }
+                                    return Text(
+                                        'Starting in ${time.days ?? 0}D:${time.hours ?? 0}H:${time.min ?? 0}M:${time.sec ?? 0}S',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1
+                                            .copyWith(
+                                              fontSize:
+                                                  getProportionateScreenWidth(
+                                                      10),
+                                            ));
+                                    // return Text(
+                                    //     'days: [ ${time.days} ], hours: [ ${time.hours} ], min: [ ${time.min} ], sec: [ ${time.sec} ]');
+                                  },
+                                )
+                          : SizedBox(),
+                      SizedBox(
+                        width: 30,
+                      ),
+                      (hasJoinedChallenge)
+                          ? Text(
+                              "Joined",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline2
+                                  .copyWith(
+                                      fontSize: 10.0,
+                                      color: Color(MyColors.primaryColor)),
+                            )
+                          : SizedBox()
                     ],
-                  ),
-                  isThreeLine: true,
-                ))
-        );
+                  )
+                ],
+              ),
+              isThreeLine: true,
+            )));
         chans.add(
-          (hasStarted && !hasEnded) ? (!hasJoinedChallenge) ? Align(
-            alignment: Alignment.centerRight,
-            child: Container(
-                width: 80,
-                height: 30,
-                child: DefaultButton(
-                  press: () {
-                    // Navigator.pushNamed(
-                    //     context, StartWeekend.routeName);
-                    joinChallenge(ch);
-                  },
-                  loading: false,
-                  fontSize: 14,
-                  text: 'Join',
-                )),
-          ) : SizedBox() : SizedBox(),
+          (hasStarted && !hasEnded)
+              ? (!hasJoinedChallenge)
+                  ? Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                          width: 80,
+                          height: 30,
+                          child: DefaultButton(
+                            press: () {
+                              // Navigator.pushNamed(
+                              //     context, StartWeekend.routeName);
+                              joinChallenge(ch);
+                            },
+                            loading: false,
+                            fontSize: 14,
+                            text: 'Join',
+                          )),
+                    )
+                  : SizedBox()
+              : SizedBox(),
         );
         chans.add(
           Divider(
@@ -884,27 +916,33 @@ class _PageState extends State<ChallengePage> {
 
   Future<void> joinChallenge(VirtualChallenge ch) async {
     //check max
-    if(ch.max_user >= 50) {
-      new GeneralUtils().displayAlertDialog(context, "Attention", "Sorry the maximum number of users to join this challenge has been reached.");
+    if (ch.max_user >= 50) {
+      new GeneralUtils().displayAlertDialog(context, "Attention",
+          "Sorry the maximum number of users to join this challenge has been reached.");
       return;
     }
 
     String currentCH = await ss.getItem("currentChallenge");
 
-    if(currentCH != null) {
-      new GeneralUtils().displayAlertDialog(context, "Attention", "Please complete your current challenge before joining another.");
+    if (currentCH != null) {
+      new GeneralUtils().displayAlertDialog(context, "Attention",
+          "Please complete your current challenge before joining another.");
       return;
     }
 
-    if(ch.challenge_type == "Pool") {
-      bool getResp = await new GeneralUtils().displayReturnedValueAlertDialog(context, "Attention", "${ch.reward_value} CRLX is required to join this challenge. Continue?");
-      if(!getResp) return;
+    if (ch.challenge_type == "Pool") {
+      bool getResp = await new GeneralUtils().displayReturnedValueAlertDialog(
+          context,
+          "Attention",
+          "${ch.reward_value} CRLX is required to join this challenge. Continue?");
+      if (!getResp) return;
 
       double crlx = double.parse(crlxBalance);
       double chanValue = double.parse(ch.reward_value);
 
-      if(crlxBalance == "0" || crlx < chanValue) {
-        new GeneralUtils().displayAlertDialog(context, "Attention", "Sorry, you do not have enough CRLX to join this challenge.");
+      if (crlxBalance == "0" || crlx < chanValue) {
+        new GeneralUtils().displayAlertDialog(context, "Attention",
+            "Sorry, you do not have enough CRLX to join this challenge.");
         return;
       }
 
@@ -913,10 +951,16 @@ class _PageState extends State<ChallengePage> {
       });
 
       //deduct and join challenge
-      await walletServices.transferAdmin(addresses["public"], "${ch.reward_value} CRLX has been deducted from your wallet for being a sponsor.", ch.reward_value);
+      await walletServices.transferAdmin(
+          addresses["public"],
+          "${ch.reward_value} CRLX has been deducted from your wallet for being a sponsor.",
+          ch.reward_value);
 
       //update challenge data
-      await FirebaseFirestore.instance.collection("challenges").doc(ch.id).update({
+      await FirebaseFirestore.instance
+          .collection("challenges")
+          .doc(ch.id)
+          .update({
         "max_user": FieldValue.increment(1),
         "winner_amount": FieldValue.increment(chanValue)
       });
@@ -930,7 +974,10 @@ class _PageState extends State<ChallengePage> {
     });
 
     //update challenge data
-    await FirebaseFirestore.instance.collection("challenges").doc(ch.id).update({
+    await FirebaseFirestore.instance
+        .collection("challenges")
+        .doc(ch.id)
+        .update({
       "max_user": FieldValue.increment(1),
     });
 
@@ -945,22 +992,59 @@ class _PageState extends State<ChallengePage> {
     String localUser = await ss.getItem('user');
     Map<String, dynamic> json = jsonDecode(localUser);
 
-    String image = (json["picture"] == "") ? "https://firebasestorage.googleapis.com/v0/b/coraltrackerapp.appspot.com/o/default_avatar.png?alt=media&token=f7fcf422-1853-4c7c-9b3a-bb5204c3a94f" : json["picture"];
+    String image = (json["picture"] == "")
+        ? "https://firebasestorage.googleapis.com/v0/b/coraltrackerapp.appspot.com/o/default_avatar.png?alt=media&token=f7fcf422-1853-4c7c-9b3a-bb5204c3a94f"
+        : json["picture"];
 
-    VirtualChallengeActivities vca = new VirtualChallengeActivities(id, user.uid, "joined", "${json["firstname"]} ${json["lastname"]} has joined this challenge.", image, new DateTime.now().toString(), FieldValue.serverTimestamp(), ch.msgId);
-    await FirebaseFirestore.instance.collection("challenges").doc(ch.id).collection("activities").doc(id).set(vca.toJSON());
+    VirtualChallengeActivities vca = new VirtualChallengeActivities(
+        id,
+        user.uid,
+        "joined",
+        "${json["firstname"]} ${json["lastname"]} has joined this challenge.",
+        image,
+        new DateTime.now().toString(),
+        FieldValue.serverTimestamp(),
+        ch.msgId);
+    await FirebaseFirestore.instance
+        .collection("challenges")
+        .doc(ch.id)
+        .collection("activities")
+        .doc(id)
+        .set(vca.toJSON());
 
     //subscribe to topic
     await new GeneralUtils().subscribeToTopic(ch.id, json["msgId"]);
 
     //add to user joined challenges
-    await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("my-challenges").doc(ch.id).set(ch.toJSON());
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user.uid)
+        .collection("my-challenges")
+        .doc(ch.id)
+        .set(ch.toJSON());
 
     //add users to challenge collection
-    VirtualChallengeMembers vcm = new VirtualChallengeMembers(id, user.uid, "${json["firstname"]} ${json["lastname"]}", image, new DateTime.now().toString(), FieldValue.serverTimestamp(), json["msgId"], 0, 0,0,0);
-    await FirebaseFirestore.instance.collection("challenges").doc(ch.id).collection("joined-users").doc(id).set(vcm.toJSON());
+    VirtualChallengeMembers vcm = new VirtualChallengeMembers(
+        id,
+        user.uid,
+        "${json["firstname"]} ${json["lastname"]}",
+        image,
+        new DateTime.now().toString(),
+        FieldValue.serverTimestamp(),
+        json["msgId"],
+        0,
+        0,
+        0,
+        0);
+    await FirebaseFirestore.instance
+        .collection("challenges")
+        .doc(ch.id)
+        .collection("joined-users")
+        .doc(id)
+        .set(vcm.toJSON());
 
-    new GeneralUtils().showToast(context, "You have successfully joined the challenge");
+    new GeneralUtils()
+        .showToast(context, "You have successfully joined the challenge");
 
     //save to local storage
     ch.timestamp = "";
@@ -972,7 +1056,8 @@ class _PageState extends State<ChallengePage> {
     });
 
     //goto active challenge
-    Navigator.pushNamed(context, TrackChallengeActivities.routeName, arguments: ch);
+    Navigator.pushNamed(context, TrackChallengeActivities.routeName,
+        arguments: ch);
   }
 }
 

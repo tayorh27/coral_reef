@@ -9,6 +9,7 @@ import 'package:coral_reef/wallet_screen/sections/receive_token.dart';
 import 'package:coral_reef/wallet_screen/sections/transfer_token.dart';
 import 'package:coral_reef/wallet_screen/services/wallet_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -138,10 +139,6 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
                 ),
               ),
             ),
-            (transactions.isEmpty) ? Container(
-              margin: EdgeInsets.only(top: 300.0),
-              child: EmptyScreen("No available data!", bgColor: Color(MyColors.lightBackground),),
-            ) :
             Container(
               height: MediaQuery.of(context).size.height - 255.0,
               margin: EdgeInsets.only(left: 30.0, right: 30.0, top: 220.0),
@@ -232,7 +229,7 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
                                               mainAxisSize: MainAxisSize.max,
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                Text("Convert CRLX Token to CRL", style: Theme.of(context).textTheme.bodyText1.copyWith(
+                                                Text("Convert XCRL Token to CRL", style: Theme.of(context).textTheme.bodyText1.copyWith(
                                                     color: Color(MyColors.titleTextColor),
                                                     fontSize: getProportionateScreenWidth(11)
                                                 ),),
@@ -241,15 +238,18 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
                                         ),
                                       ),
                                       SizedBox(height: 10,),
-                                      buildToken("CRL", "Coral", "assets/images/logo2.png", balance),
+                                      buildToken("CRL", "Coral", "assets/images/seashell-crl.svg", balance),
                                       Divider(thickness: 2.0,),
                                       buildToken("ZIL", "Zilliqa", "assets/images/zilliqa-zil-logo.png", zilBalance),
                                       Divider(thickness: 2.0,),
-                                      buildToken("CRLX", "Coral", "assets/images/logo2.png", crlxBalance),
+                                      buildToken("XCRL", "Coral", "assets/images/logo2.png", crlxBalance),
                                       Divider(thickness: 2.0,),
                                     ],
                                   ),
-                                  ListView(
+                                  (transactions.isEmpty) ? Container(
+                                    margin: EdgeInsets.only(top: 0.0),
+                                    child: EmptyScreen("No available data!", bgColor: Colors.white,),
+                                  ) : ListView(
                                     scrollDirection: Axis.vertical,
                                     children: buildTransactions(),
                                   )
@@ -273,7 +273,7 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
 
   Widget buildToken(String tokenSymbol, String tokenName, String logo, String value) {
     return ListTile(
-      leading: Image.asset(logo, height: 40.0,),
+      leading: (!logo.contains(".svg")) ? Image.asset(logo, height: 40.0,) : SvgPicture.asset(logo, height: 40.0,),
       title: Text(tokenSymbol, style: Theme.of(context).textTheme.headline2.copyWith(
         color: Color(MyColors.titleTextColor),
           fontSize: getProportionateScreenWidth(15)

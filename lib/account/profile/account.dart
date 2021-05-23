@@ -145,7 +145,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                   text: "Graphs and reports",
                   icon: Icon(Icons.analytics_outlined, color: Color(MyColors.titleTextColor),),
                   press: () {
-                    Navigator.pushNamed(context, Notifications.routeName);
+                    // Navigator.pushNamed(context, Notifications.routeName);
                   },
                 ),
                 AccountProfileMenu(

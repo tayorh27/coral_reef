@@ -1,3 +1,4 @@
+import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/wellness/onboarding/component.dart';
@@ -35,6 +36,7 @@ class _DesiredWeightScreen extends State<DesiredWeightScreen> {
     super.initState();
     weight = (widget.currentWeight == null) ? 30.0 : widget.currentWeight;
     ss.getItem("weight_metric").then((value) {
+      if(value == null) return;
       setState(() {
         metricSelected = value;
       });
@@ -55,8 +57,15 @@ class _DesiredWeightScreen extends State<DesiredWeightScreen> {
               children: [
                 // SizedBox(height: SizeConfig.screenHeight * 0.01),
                 // HeadingText(),
-                SizedBox(height: SizeConfig.screenHeight * 0.03),
-                metricSwitch(),
+                SizedBox(height: SizeConfig.screenHeight * 0.0),
+                Text(
+                  "Metric selected: $metricSelected",
+                  style: Theme.of(context).textTheme.subtitle1.copyWith(
+                      fontSize: 20.0,
+                      color: Color(MyColors.primaryColor)
+                  ),
+                ),
+                // metricSwitch(),
                 Container(
                   child: Column(
                     children: [
@@ -65,14 +74,14 @@ class _DesiredWeightScreen extends State<DesiredWeightScreen> {
                         alignment: Alignment.center,
                         child: GestureDetector(
                           onTap: () {
-                            _showTestDialog(context);
+                            // _showTestDialog(context);
                           },
                           child: Text(
                             "$weight $metricSelected",
-                            style: TextStyle(
-                                color: Colors.purple,
+                            style: Theme.of(context).textTheme.headline2.copyWith(
                                 fontSize: 40.0,
-                                fontWeight: FontWeight.w500),
+                                color: Color(MyColors.primaryColor)
+                            ),
                           ),
                         ),
                       ),

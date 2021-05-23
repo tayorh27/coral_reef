@@ -23,7 +23,7 @@ class HeightScreen extends StatefulWidget {
 
 class _HeightScreen extends State<HeightScreen> {
 
-  double height = 30.0;
+  double height = 7.0;
 
   StorageSystem ss = new StorageSystem();
 
@@ -33,7 +33,7 @@ class _HeightScreen extends State<HeightScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    height = (widget.currentHeight == null) ? 30.0 : widget.currentHeight;
+    height = (widget.currentHeight == null) ? 7.0 : widget.currentHeight;
     ss.getItem("height_metric").then((value) {
       String v = value ?? "ft";
       setState(() {
@@ -66,14 +66,14 @@ class _HeightScreen extends State<HeightScreen> {
                         alignment: Alignment.center,
                         child: GestureDetector(
                           onTap: () {
-                            _showTestDialog(context);
+                            // _showTestDialog(context);
                           },
                           child: Text(
                             "$height $metricSelected",
-                            style: TextStyle(
-                                color: Colors.purple,
-                                fontSize: 40.0,
-                                fontWeight: FontWeight.w500),
+                            style: Theme.of(context).textTheme.headline2.copyWith(
+                              fontSize: 40.0,
+                              color: Color(MyColors.primaryColor)
+                            ),
                           ),
                         ),
                       ),

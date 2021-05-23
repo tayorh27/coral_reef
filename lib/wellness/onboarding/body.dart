@@ -29,7 +29,9 @@ class _BodyState extends State<Body> {
             child: Column(
               children: [
                 SizedBox(height: SizeConfig.screenHeight * 0.05),
-                CoralBackButton(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [CoralBackButton()]),
                 SizedBox(height: SizeConfig.screenHeight * 0.09),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -85,7 +87,7 @@ class _BodyState extends State<Body> {
    * Determine if the period set up has been attended to
    */
   Future<void> trackPeriodPress() async {
-    String periodRecord = await ss.getItem("periodRecord") ?? "";
+    // String periodRecord = await ss.getItem("periodRecord") ?? "";
 
     await ss.setPrefItem("dashboardGoal", "period"); //set user dashboard goal
 
@@ -101,9 +103,9 @@ class _BodyState extends State<Body> {
    * Determine if the conceive set up has been attended to
    */
   Future<void> trackConceivePress() async {
-    String conceiveRecord = await ss.getItem("conceiveRecord") ?? "";
+    // String conceiveRecord = await ss.getItem("conceiveRecord") ?? "";
 
-    await ss.setPrefItem("dashboardGoal", "conceive"); //set user dashboard goal
+    await ss.setPrefItem("dashboardGoal", "pregnancy"); //"conceive"); //set user dashboard goal
 
     // if(conceiveRecord.isNotEmpty) {
     //   return;
@@ -117,7 +119,7 @@ class _BodyState extends State<Body> {
    * Determine if the pregnancy set up has been attended to
    */
   Future<void> trackPregnancyPress() async {
-    String pregnancyRecord = await ss.getItem("pregnancyRecord") ?? "";
+    // String pregnancyRecord = await ss.getItem("pregnancyRecord") ?? "";
 
     await ss.setPrefItem(
         "dashboardGoal", "pregnancy"); //set user dashboard goal

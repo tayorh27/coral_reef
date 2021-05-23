@@ -71,7 +71,7 @@ class _ReceiveWallet extends State<ReceiveWallet> {
                     ),
                     margin: EdgeInsets.only(top: 40.0),
                     width: double.infinity,
-                    height: getProportionateScreenHeight(460),
+                    height: (isZil) ? getProportionateScreenHeight(500) : getProportionateScreenHeight(460),
                     child: Column(
                       children: [
                         SizedBox(height: SizeConfig.screenHeight * 0.05),

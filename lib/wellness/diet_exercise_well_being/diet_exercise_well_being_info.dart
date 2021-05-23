@@ -190,6 +190,7 @@ class _DietExerciseWellBeingInfo extends State<DietExerciseWellBeingInfo> {
       String dewRecord = jsonEncode(answers);
       await ss.setPrefItem("dewRecord", dewRecord);
       await ss.setPrefItem("dewSetup", "true");//don't display wellness.dart again
+      await ss.setPrefItem("wellnessSetup", "true");
       //go to period dashboard
       Navigator.pushNamed(context, CoralBottomNavigationBar.routeName);
 

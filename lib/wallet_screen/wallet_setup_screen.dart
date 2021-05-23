@@ -43,7 +43,7 @@ class _WalletSetupScreen extends State<WalletSetupScreen> {
                   SizedBox(height: SizeConfig.screenHeight * 0.01),
                   Text(
                     'One way to keep your account safe is to set up a security pin for your transactions.',
-                    textAlign: TextAlign.left,
+                    textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.subtitle1.copyWith(
                         color: Color(MyColors.titleTextColor),
                         fontSize: getProportionateScreenWidth(15)),

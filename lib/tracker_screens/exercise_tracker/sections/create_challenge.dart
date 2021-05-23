@@ -676,7 +676,7 @@ class _PageState extends State<CreateChallengePage> {
                       barrierDismissible: false,
                       //context: _scaffoldKey.currentContext,
                       builder: (context) {
-                        return AlertDialogPage(title: "Select Reward type", options: ["Sponsor", "Pool"], description: "Sponsor: This means the winner of this challenge gets to be rewarded from your CRLX wallet.\nPool: This means everyone gets to pay a certain amount to join this challenge. Winner takes all.", onOptionSelected: (val){
+                        return AlertDialogPage(title: "Select Reward type", options: ["Sponsor", "Pool"], description: "Sponsor: This means the winner of this challenge gets to be rewarded from your XCRL wallet.\nPool: This means everyone gets to pay a certain amount to join this challenge. Winner takes all.", onOptionSelected: (val){
                           if(!mounted) return;
                           setState(() {
                             challengeRewardType = val;
@@ -777,7 +777,7 @@ class _PageState extends State<CreateChallengePage> {
                                     padding: EdgeInsets.only(right: 20),
                                     child: Row(
                                       children: [
-                                        Text((challengeRewardValue.isEmpty) ? 'Reward amount' : '$challengeRewardValue CRLX',
+                                        Text((challengeRewardValue.isEmpty) ? 'Reward amount' : '$challengeRewardValue XCRL',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyText1
@@ -866,7 +866,7 @@ class _PageState extends State<CreateChallengePage> {
       double chanValue = double.parse(challengeRewardValue);
 
       if(crlxBalance == "0" || crlx < chanValue) {
-        new GeneralUtils().displayAlertDialog(context, "Attention", "Sorry, you do not have enough CRLX to sponsor this challenge. You can select the Pool reward type instead.");
+        new GeneralUtils().displayAlertDialog(context, "Attention", "Sorry, you do not have enough XCRL to sponsor this challenge. You can select the Pool reward type instead.");
         return;
       }
 
@@ -879,7 +879,7 @@ class _PageState extends State<CreateChallengePage> {
 
     if(allowDebitForSponsor) {
       //debit user crlx account
-      await walletServices.transferAdmin(addresses["public"], "$challengeRewardValue CRLX has been deducted from your wallet for being a sponsor.", challengeRewardValue);
+      await walletServices.transferAdmin(addresses["public"], "$challengeRewardValue XCRL has been deducted from your wallet for being a sponsor.", challengeRewardValue);
     }
 
     String id = FirebaseDatabase.instance.reference().push().key;
