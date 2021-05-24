@@ -1,6 +1,8 @@
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/components/default_button.dart';
+import 'package:coral_reef/locator.dart';
 import 'package:coral_reef/models/step_goal_model.dart';
+import 'package:coral_reef/services/step_service.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/view%20models/step_view_model.dart';
 import 'package:direct_select/direct_select.dart';
@@ -19,7 +21,7 @@ class Steps extends StatefulWidget {
 
 class _PageState extends State<Steps> {
   final FirebaseAuth auth = FirebaseAuth.instance;
-
+  final StepService _stepService = locator<StepService>();
   @override
   void initState() {
     super.initState();
@@ -95,6 +97,7 @@ class _PageState extends State<Steps> {
                               StepGoalModel(
                                   stepGoal: model.stepsGoal.floor().toString()),
                               model.stepsGoal.floor().toString());
+                          _stepService.getSteps();
                           Navigator.pop(context);
                         },
                       ))
@@ -115,7 +118,7 @@ class _PageState extends State<Steps> {
           viewModel.currentStep();
         },
         builder: (context, model, child) {
-          model.currentStep();
+          //model.currentStep();
 
           return Scaffold(
               appBar: AppBar(
@@ -131,7 +134,7 @@ class _PageState extends State<Steps> {
                         },
                         child: Icon(Icons.arrow_back_ios)),
                     Text(
-                      'stepsGoal',
+                      'Steps Goal',
                       style: Theme
                           .of(context)
                           .textTheme
@@ -170,7 +173,7 @@ class _PageState extends State<Steps> {
                             SizedBox(
                               height: 10,
                             ),
-                            Text(model.stepsGoal.round().toString(),
+                            Text(  model.stepsGoal.round().toString(),
                                 style: Theme
                                     .of(context)
                                     .textTheme
@@ -219,7 +222,7 @@ class _PageState extends State<Steps> {
                                         SizedBox(
                                           height: 10,
                                         ),
-                                        Text(model.steps.toString(),
+                                        Text(_stepService.steps.toString(),
                                             style: Theme
                                                 .of(context)
                                                 .textTheme
@@ -250,7 +253,7 @@ class _PageState extends State<Steps> {
                                   onChange: (double value) {
                                     //print(value);
                                     setState(() {
-                                      model.stepsGoal = value;
+                                      //_stepService.stepsGoal = value;
                                     });
                                   }),
                             ),
@@ -267,7 +270,7 @@ class _PageState extends State<Steps> {
                                           height: 40.0,
                                         ),
                                         Text(
-                                            (model.stepsGoal / 63.4)
+                                            (int.parse( _stepService.steps) / 63.4)
                                                 .floor()
                                                 .toString() +
                                                 "kcal",
@@ -289,7 +292,7 @@ class _PageState extends State<Steps> {
                                         height: 40.0,
                                       ),
                                       Text(
-                                          (model.stepsGoal * 0.000762)
+                                          (int.parse( _stepService.steps)  * 0.000762)
                                               .roundToDouble()
                                               .toString() +
                                               'km',
@@ -310,7 +313,7 @@ class _PageState extends State<Steps> {
                                         height: 40.0,
                                       ),
                                       Text(
-                                          (model.stepsGoal / 100)
+                                          (int.parse( _stepService.steps)  / 100)
                                               .round()
                                               .toString() +
                                               "Min",

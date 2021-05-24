@@ -14,7 +14,7 @@ class StepViewModel extends BaseModel {
   final StepService _stepService = locator<StepService>();
 
   double stepsGoal = 0;
-  String steps = '0';
+  String steps;
   var status;
   int selectedIndex = 0;
   StorageSystem ss = new StorageSystem();
@@ -62,20 +62,20 @@ class StepViewModel extends BaseModel {
   }
 
   void onStepCount(StepCount event) {
-    print(event);
+    print(event.steps.toString());
     steps = event.steps.toString();
     notifyListeners();
   }
 
   currentStep() {
-    getStepsGoal();
+
     _pedestrianStatusStream = Pedometer.pedestrianStatusStream;
     _pedestrianStatusStream
         .listen(onPedestrianStatusChanged)
         .onError(onPedestrianStatusError);
     _stepCountStream = Pedometer.stepCountStream;
     _stepCountStream.listen(onStepCount).onError(onStepCountError);
-    notifyListeners();
+
   }
 
   var outputFormat = DateFormat('dd MMM yyyy hh:mm a');
@@ -118,6 +118,7 @@ class StepViewModel extends BaseModel {
     var goal = await _stepService.getSteps();
     if(goal != null){
       stepsGoal = double.parse(goal);
+      notifyListeners();
     }else{
       stepsGoal = 0;
     }

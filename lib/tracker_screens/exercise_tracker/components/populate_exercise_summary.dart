@@ -22,22 +22,27 @@ class PopulateExerciseSummary extends StatefulWidget {
 }
 
 class _PopulateDietSummary extends State<PopulateExerciseSummary> {
+  final StepService _stepService = locator<StepService>();
+
+
+
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<StepViewModel>.reactive(
         viewModelBuilder: () => StepViewModel(),
         onModelReady: (viewModel) {
           viewModel.currentStep();
+         // model.currentStep();
         },
         builder: (context, model, child) {
-          model.currentStep();
+         // model.currentStep();
           return Row(
             children: [
               ExerciseSummaryCard(
                 title: 'Steps',
                 icon: 'assets/exercise/foot_white.svg',
                 title2: '',
-                title3: model.steps,
+                title3: _stepService.steps == null ? '0':_stepService.steps ,
                 title4: model.stepsGoal.floor().toString(),
                 textColor: Colors.white,
                 press: () {

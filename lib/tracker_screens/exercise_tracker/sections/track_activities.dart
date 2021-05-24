@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/locator.dart';
+import 'package:coral_reef/services/step_service.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/map_utils.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/records_activities.dart';
@@ -19,10 +21,7 @@ class TrackActivities extends StatefulWidget {
 class _PageState extends State<TrackActivities> {
   String selected = 'walk';
   GoogleMapController mapController;
-  Geolocator geolocator;
-  Position currentLocation;
   BitmapDescriptor sourceIcon;
-  bool mapToggle = false;
   bool clientsToggle = false;
   String url;
   BitmapDescriptor pinLocationIcon;
@@ -31,8 +30,9 @@ class _PageState extends State<TrackActivities> {
   String actionButton = 'go';
   bool counting = false;
   final interval = const Duration(seconds: 1);
+  final StepService stepService = locator<StepService>();
 
-  final int timerMaxSeconds = 6;
+  final int timerMaxSeconds = 3;
 
   int currentSeconds = 0;
 
@@ -57,24 +57,13 @@ class _PageState extends State<TrackActivities> {
         'assets/exercise/my_location.png');
   }
 
-  Future<Position> getCurrentLocation() async {
-    final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
 
-    return position;
-  }
 
   @override
   void initState() {
     super.initState();
     setCustomMapPin();
-    geolocator = Geolocator();
-    getCurrentLocation().then((newLocation) {
-      setState(() {
-        currentLocation = newLocation;
-        mapToggle = true;
-      });
-    });
+
   }
 
   void onMapCreated(GoogleMapController controller) async {}
@@ -120,7 +109,7 @@ class _PageState extends State<TrackActivities> {
                                   child: Text(
                                 '$timerText',
                                 style: TextStyle(
-                                    fontSize: 50,
+                                    fontSize: 100,
                                     color: Color(MyColors.primaryColor),
                                     fontWeight: FontWeight.bold),
                               )),
@@ -342,8 +331,7 @@ class _PageState extends State<TrackActivities> {
                             children: <Widget>[
                               Expanded(
                                   child: Stack(children: <Widget>[
-                                mapToggle
-                                    ? GoogleMap(
+                              GoogleMap(
                                         onMapCreated:
                                             (GoogleMapController controller) {
                                           controller
@@ -353,25 +341,25 @@ class _PageState extends State<TrackActivities> {
                                             _markers.add(Marker(
                                                 markerId: MarkerId('100'),
                                                 position: LatLng(
-                                                    currentLocation.latitude,
-                                                    currentLocation.longitude),
+                                                    stepService.currentLocation.latitude,
+                                                    stepService.currentLocation.longitude),
                                                 icon: pinLocationIcon));
                                           });
                                         },
                                         initialCameraPosition: CameraPosition(
                                           zoom: 10,
                                           target: LatLng(
-                                              currentLocation.latitude,
-                                              currentLocation.longitude),
+                                              stepService.currentLocation.latitude,
+                                              stepService.currentLocation.longitude),
                                         ),
                                         markers: _markers,
-                                      )
-                                    : Center(
-                                        child: Text(
-                                          'Loading...',
-                                          style: TextStyle(fontSize: 28),
-                                        ),
                                       ),
+                                    // : Center(
+                                    //     child: Text(
+                                    //       'Loading...',
+                                    //       style: TextStyle(fontSize: 28),
+                                    //     ),
+                                    //   ),
                                 Align(
                                     alignment: Alignment.centerRight,
                                     child: Column(
