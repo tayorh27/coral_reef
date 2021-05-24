@@ -143,8 +143,8 @@ class _PageState extends State<TrackChallengeActivities> {
   }
 
   setupPhysicalActivityTracking() async {
-    String startTime = await ss.getItem("startTime");
-    DateTime st = DateTime.parse(startTime);
+    // String startTime = await ss.getItem("startTime");
+    // DateTime st = DateTime.parse(startTime);
 
     if (await ph.Permission.activityRecognition.request().isGranted) {
       _physicalActivityEnabled = true;
