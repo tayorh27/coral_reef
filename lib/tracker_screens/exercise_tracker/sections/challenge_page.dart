@@ -759,7 +759,7 @@ class _PageState extends State<ChallengePage> {
 
         chans.add(InkWell(
             onTap: () {
-              if (!hasJoinedChallenge || !hasStarted) return; //
+              if (!hasJoinedChallenge || !hasStarted) return;
               Navigator.pushNamed(context, CommunityChallengeDetails.routeName,
                   arguments: ch);
             },
@@ -1027,7 +1027,7 @@ class _PageState extends State<ChallengePage> {
     VirtualChallengeMembers vcm = new VirtualChallengeMembers(
         id,
         user.uid,
-        "${json["firstname"]} ${json["lastname"]}",
+        "${json["lastname"]}", //${json["firstname"]}
         image,
         new DateTime.now().toString(),
         FieldValue.serverTimestamp(),

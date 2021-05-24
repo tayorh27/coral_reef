@@ -281,7 +281,10 @@ class _PageState extends State<CommunityChallengeDetails> {
   List<Widget> buildMembersLayout() {
     List<Widget> memWidget = [];
 
-    members.sort((a, b) => b.km_covered.compareTo(a.km_covered));
+
+
+
+
 
     // members.sort((a, b) => b.time_taken.compareTo(a.time_taken));
 
@@ -414,8 +417,39 @@ class _PageState extends State<CommunityChallengeDetails> {
           members.add(vcm);
         });
       });
+
+      sortMembers();
     });
 
+  }
+
+  sortMembers() {
+    List<VirtualChallengeMembers> buildMembers = members;
+
+    buildMembers.sort((a, b) => b.km_covered.compareTo(a.km_covered));
+
+    List<VirtualChallengeMembers> topMembers = members.where((element) => double.parse("${element.km_covered}") >= double.parse(ch.distance)).toList(); // get the top members that have completed the challenge
+
+    if(topMembers.isNotEmpty) {
+      topMembers.sort((a, b) =>
+          a.time_taken.compareTo(b
+              .time_taken)); // sort by the time. user with a lower time tops this list
+
+      topMembers.forEach((tm) {
+        buildMembers.removeWhere((element) => element.user_uid == tm.user_uid);
+      });
+    }
+
+    List<VirtualChallengeMembers> newMembersList = [];
+
+    // print("top = ${topMembers.length}");
+
+    if(topMembers.isNotEmpty) {
+      newMembersList.addAll(topMembers);
+    }
+    newMembersList.addAll(buildMembers);
+
+    members = newMembersList;
   }
 
   getChallengeActivities() async {

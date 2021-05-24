@@ -29,7 +29,7 @@ class ExerciseService {
    static double ONE_MONTH = ONE_WEEK * 4;
    static double ONE_YEAR = ONE_MONTH * 12;
 
-  updateUserChallengeData(VirtualChallenge ch, double km, int time) async {
+  updateUserChallengeData(VirtualChallenge ch, double km) async {
     String user_ch_id = await ss.getItem("user_ch_id") ?? "-MaB74f3xFrYfQk1w-ep";
 
     //update personal user record
@@ -40,7 +40,6 @@ class ExerciseService {
         .doc(ch.id)
         .update({
       "km_covered": km,
-      "time_taken": time,
     });
 
     //update general record for public view
@@ -51,6 +50,29 @@ class ExerciseService {
         .doc(user_ch_id)
         .update({
       "km_covered": km,
+    });
+  }
+
+  updateUserChallengeDataTime(VirtualChallenge ch, int time) async {
+    String user_ch_id = await ss.getItem("user_ch_id") ?? "-MaB74f3xFrYfQk1w-ep";
+
+    //update personal user record
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user.uid)
+        .collection("my-challenges")
+        .doc(ch.id)
+        .update({
+      "time_taken": time,
+    });
+
+    //update general record for public view
+    await FirebaseFirestore.instance
+        .collection("challenges")
+        .doc(ch.id)
+        .collection("joined-users")
+        .doc(user_ch_id)
+        .update({
       "time_taken": time,
     });
   }
@@ -132,7 +154,7 @@ class ExerciseService {
 
   getRequiredTime(LocationData startLocation, VirtualChallenge ch) async { //least_seconds_time_completion
 
-    String user_ch_id = await ss.getItem("user_ch_id") ?? "-MaB74f3xFrYfQk1w-ep";
+    String user_ch_id = await ss.getItem("user_ch_id");// ?? "-MaB74f3xFrYfQk1w-ep";
 
     double distanceInMeters = double.parse(ch.distance) * 1000;
     double earth = 6371;  //radius of the earth in kilometer
@@ -171,16 +193,16 @@ class ExerciseService {
         "least_meters_distance_completion": distance,
       });
 
-      //update general record for public view
-      await FirebaseFirestore.instance
-          .collection("challenges")
-          .doc(ch.id)
-          .collection("joined-users")
-          .doc(user_ch_id)
-          .update({
-        "least_seconds_time_completion": duration,
-        "least_meters_distance_completion": distance,
-      });
+      // //update general record for public view
+      // await FirebaseFirestore.instance
+      //     .collection("challenges")
+      //     .doc(ch.id)
+      //     .collection("joined-users")
+      //     .doc(user_ch_id)
+      //     .update({
+      //   "least_seconds_time_completion": duration,
+      //   "least_meters_distance_completion": distance,
+      // });
 
     }
 

@@ -28,6 +28,8 @@
     <string>This app needs access to location when open.</string>
     <key>NSLocationAlwaysUsageDescription</key>
     <string>This app needs access to location when in the background.</string>
+    <key>NSMotionUsageDescription</key>
+    <string>This application tracks your steps</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
@@ -65,6 +67,7 @@
       <string>fetch</string>
       <string>audio</string>
       <string>remote-notification</string>
+      <string>processing</string>
     </array>
     <key>NSCameraUsageDescription</key>
     <string>Can we access your camera in order to scan barcodes?</string>

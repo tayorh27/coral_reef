@@ -8,6 +8,7 @@ import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/homescreen/Home.dart';
+import 'package:coral_reef/services/challenge_step_service.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/community_challenge_details.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/map_utils.dart';
@@ -63,7 +64,7 @@ class _PageState extends State<TrackChallengeActivities> {
   int _polylineIdCounter = 1;
   PolylineId selectedPolyline;
 
-  bool _serviceEnabled;
+  bool _serviceEnabled = false, _physicalActivityEnabled = false;
   PermissionStatus _permissionGranted;
 
   /////////////////////////////////////////////////////////////
@@ -91,6 +92,8 @@ class _PageState extends State<TrackChallengeActivities> {
   StorageSystem ss = new StorageSystem();
 
   ExerciseService exerciseService;
+
+  ChallengeStepService challengeStepService;
 
   String get timerText => (timerMaxSeconds - currentSeconds).toString();
 
@@ -136,24 +139,41 @@ class _PageState extends State<TrackChallengeActivities> {
     // geolocator = Geolocator();
     // setupCurrentLocation();
     initPlatformState();
-    _locationSubscription =
-        mLocation.onLocationChanged.listen((LocationData result) {
-          double lat = result.latitude;
-          double lng = result.longitude;
+    setupPhysicalActivityTracking();
+  }
 
-          _userLat = result.latitude;
-          _userLng = result.longitude;
+  setupPhysicalActivityTracking() async {
+    String startTime = await ss.getItem("startTime");
+    DateTime st = DateTime.parse(startTime);
 
-          user_location = LatLng(_userLat, _userLng);
-          if(!mounted) return;
+    if (await ph.Permission.activityRecognition.request().isGranted) {
+      _physicalActivityEnabled = true;
+      challengeStepService = new ChallengeStepService(
+          context, onStepChange: (steps, distance, timestamp) async {
+        String running = await ss.getItem("running");
+        if(running == null) return;
+        if (steps != null || distance != null || timestamp != null) {
+          // if(!mounted) return;
           setState(() {
-            if (mapController != null) {
-              updateMapCamera(lat, lng);
-            }
-            _currentLocation = result;
+            distanceCovered = distance;
           });
-          updateChallengeForegroundData(result);
-        });
+          // new GeneralUtils().showToast(context, "Step number: $steps");
+          if(ch == null) return;
+
+          await exerciseService.updateUserChallengeData(ch, distance);
+
+          if(distance == double.parse(ch.distance) / 2) {
+            String activityText = "has completed ${double.parse(ch.distance) / 2} km.";
+            await exerciseService.logActivity(ch, activityText);
+          }
+
+          if(distance >= double.parse(ch.distance)) {
+            currentChallengeEnded(true);
+          }
+        }
+      });
+      challengeStepService.pauseCounting();
+    }
   }
 
   double distanceCovered = 0.0;
@@ -162,13 +182,13 @@ class _PageState extends State<TrackChallengeActivities> {
   updateChallengeForegroundData(LocationData result) async {
     String running = await ss.getItem("running");
     if(running == null) return;
-    String startPosition = await ss.getItem("startPosition");
-    Map<String, dynamic> sp = jsonDecode(startPosition);
+    // String startPosition = await ss.getItem("startPosition");
+    // Map<String, dynamic> sp = jsonDecode(startPosition);
 
-    double lat = sp["latitude"];
-    double lng = sp["longitude"];
+    // double lat = sp["latitude"];
+    // double lng = sp["longitude"];
 
-    double distance = ExerciseService.distance(lat, result.latitude, lng, result.longitude);
+    // double distance = ExerciseService.distance(lat, result.latitude, lng, result.longitude); later
 
     // Map<String, dynamic> userLocation = new Map();
     // userLocation["latitude"] = result.latitude;
@@ -188,22 +208,22 @@ class _PageState extends State<TrackChallengeActivities> {
 
 
     setState(() {
-      distanceCovered = distance;
+      // distanceCovered = distance;
       timeCovered = ExerciseService.formatTimeCovered(st, ct.add(Duration(seconds: 1)));
     });
 
     if(ch == null) return;
 
-    await exerciseService.updateUserChallengeData(ch, distance, diff);
-
-    if(distance == double.parse(ch.distance) / 2) {
-      String activityText = "has completed ${double.parse(ch.distance) / 2} km.";
-      await exerciseService.logActivity(ch, activityText);
-    }
-
-    if(distance >= double.parse(ch.distance)) {
-      currentChallengeEnded(true);
-    }
+    await exerciseService.updateUserChallengeDataTime(ch, diff);
+    //
+    // if(distance == double.parse(ch.distance) / 2) {
+    //   String activityText = "has completed ${double.parse(ch.distance) / 2} km.";
+    //   await exerciseService.logActivity(ch, activityText);
+    // }
+    //
+    // if(distance >= double.parse(ch.distance)) {
+    //   currentChallengeEnded(true);
+    // }
 
   }
 
@@ -229,6 +249,26 @@ class _PageState extends State<TrackChallengeActivities> {
       mapToggle = true;
       _startLocation = location;
     });
+
+    //start listening to change is location
+    _locationSubscription =
+        mLocation.onLocationChanged.listen((LocationData result) {
+          double lat = result.latitude;
+          double lng = result.longitude;
+
+          _userLat = result.latitude;
+          _userLng = result.longitude;
+
+          user_location = LatLng(_userLat, _userLng);
+          if(!mounted) return;
+          setState(() {
+            if (mapController != null) {
+              updateMapCamera(lat, lng);
+            }
+            _currentLocation = result;
+          });
+          updateChallengeForegroundData(result);
+        });
   }
 
   void updateMapCamera(double lat, double lng) {
@@ -292,6 +332,7 @@ class _PageState extends State<TrackChallengeActivities> {
     userLocation["longitude"] = _currentLocation.longitude;
     await ss.setPrefItem("currentPosition", jsonEncode(userLocation));
     if(_locationSubscription != null) _locationSubscription.cancel();
+    if(challengeStepService != null) challengeStepService.stopCounting();
     if(await Screen.isKeptOn) await Screen.keepOn(false);
   }
 
@@ -589,6 +630,14 @@ class _PageState extends State<TrackChallengeActivities> {
                 actionButton == 'go'
                     ? InkWell(
                     onTap: () {
+                      if(!_serviceEnabled) {
+                        initPlatformState();
+                        return;
+                      }
+                      if(!_physicalActivityEnabled) {
+                        setupPhysicalActivityTracking();
+                        return;
+                      }
                       setState(() {
                         counting = true;
                         startTimeout();
@@ -611,6 +660,7 @@ class _PageState extends State<TrackChallengeActivities> {
                               bool res = await new GeneralUtils().displayReturnedValueAlertDialog(context, "Attention", "Are you sure you want to end this challenge?");
                               if(!res) return;
                               if(_locationSubscription != null) _locationSubscription.cancel();
+                              if(challengeStepService != null) challengeStepService.stopCounting();
                               currentChallengeEnded(false);
                               // Navigator.pushNamed(
                               //     context, SaveActivities.routeName);
@@ -626,6 +676,7 @@ class _PageState extends State<TrackChallengeActivities> {
                             onTap: () async {
                               await ss.setPrefItem("statusCH", "play");
                               if(_locationSubscription != null) _locationSubscription.resume();
+                              if(challengeStepService != null) challengeStepService.resumeCounting();
                               setState(() {
                                 actionButton = 'play';
                               });
@@ -640,6 +691,7 @@ class _PageState extends State<TrackChallengeActivities> {
                     onTap: () async {
                       await ss.setPrefItem("statusCH", "pause");
                       if(_locationSubscription != null) _locationSubscription.pause();
+                      if(challengeStepService != null) challengeStepService.pauseCounting();
                       setState(() {
                         actionButton = 'pause';
                       });
@@ -702,6 +754,11 @@ class _PageState extends State<TrackChallengeActivities> {
 
     if(actionButton == "pause") {
       if(_locationSubscription != null) _locationSubscription.pause();
+      if(challengeStepService != null) challengeStepService.pauseCounting();
+    }
+
+    if(actionButton == "play") {
+      if(challengeStepService != null) challengeStepService.resumeCounting();
     }
 
     Screen.keepOn(true);
@@ -723,6 +780,8 @@ class _PageState extends State<TrackChallengeActivities> {
     await ss.setPrefItem("currentTime", DateTime.now().toString());
 
     await exerciseService.getRequiredTime(_currentLocation, ch);
+
+    challengeStepService.resumeCounting();
 
     // FlutterBackgroundService.initialize(onStart);
   }
@@ -850,7 +909,7 @@ void onStart() async{
 
   if(ch == null) return;
 
-  await new ExerciseService().updateUserChallengeData(ch, distance, diff);
+  // await new ExerciseService().updateUserChallengeData(ch, distance, diff);
 
   if(distance >= double.parse(ch.distance)) {
     await ss.deletePref("currentChallenge");
