@@ -78,7 +78,7 @@ dependencies:
   datetime_picker_formfield: ^2.0.0
   syncfusion_flutter_maps: ^19.1.58-beta
   shot_widget: ^1.0.0
-  direct_select: ^1.0.3
+  direct_select: ^2.0.0
   flutter_switch: ^0.3.1
   toggle_switch: ^0.1.9
   google_maps_flutter: ^2.0.3

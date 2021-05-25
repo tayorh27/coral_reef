@@ -6,6 +6,7 @@ import 'package:coral_reef/onboarding/forgotpassword/forgotpassword.dart';
 import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/active_challenge/track_challenge_activities.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/community_challenge_details.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/track_a.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/period_tracker_screen.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/sections/login_symptoms.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/sections/period_calendar_date.dart';
@@ -109,4 +110,6 @@ final Map<String, WidgetBuilder> routes = {
   ChallengeParticipant.routeName: (context) => ChallengeParticipant(),
   CommunityChallengeDetails.routeName: (context) => CommunityChallengeDetails(),
   TrackChallengeActivities.routeName: (context) => TrackChallengeActivities(),
+  TrackActivity.routeName: (context) => TrackActivity(),
+
 };

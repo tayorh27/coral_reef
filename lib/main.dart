@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/Utils/constants.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
+import 'package:coral_reef/services/location_service.dart';
 import 'package:coral_reef/services/step_service.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
@@ -141,6 +142,8 @@ class _MyApp extends State<MyApp> {
     super.initState();
     checkIfCurrentChallengeHasEnded();
     setupLocator().then((value) {
+      final LocationService locationService = locator<LocationService>();
+      locationService.initPlatformState();
       final StepService stepService = locator<StepService>();
       stepService.initPlatformState();
     });

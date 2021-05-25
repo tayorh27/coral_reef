@@ -1,35 +1,28 @@
-import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:coral_reef/Utils/general.dart';
+import 'package:coral_reef/Utils/storage.dart';
+import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart';
 
-import '../Utils/storage.dart';
+class TrackStepService {
 
-class StepService {
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-  String _status = '0';
-  String get status => _status;
-  String _steps = '0';
-  String get steps => _steps;
-  StorageSystem ss = new StorageSystem();
-
-  //final User user = auth.currentUser;
-  String formatDate(DateTime d) {
-    return d.toString().substring(0, 19);
-  }
-
+  BuildContext context;
   Stream<StepCount> _stepCountStream;
   Stream<PedestrianStatus> _pedestrianStatusStream;
 
   StreamSubscription<StepCount> stepStreamSubscription;
   StreamSubscription<PedestrianStatus> statusStreamSubscription;
 
-  //final Function(int stepCount, double km, DateTime timeStamp) onStepChange;
+  final Function(int stepCount, double km, DateTime timeStamp) onStepChange;
 
-  StepService() {
+  StorageSystem ss;
+
+  TrackStepService(BuildContext context, {this.onStepChange}) {
     ss = new StorageSystem();
+    this.context = context;
     initPlatformState();
   }
 
@@ -51,8 +44,6 @@ class StepService {
   void onStepCount(StepCount event) {
     /// Handle step count changed
     int steps = event.steps;
-
-    _steps = event.steps.toString();
     DateTime timeStamp = event.timeStamp;
 
     // print("onStep number: $steps");
@@ -60,7 +51,7 @@ class StepService {
     //calculate km based on steps
     double distance = double.parse(((steps.toDouble() * 78) / 100000).toStringAsFixed(2));
 
-    //onStepChange(steps, distance, timeStamp);
+    onStepChange(steps, distance, timeStamp);
   }
 
   void onPedestrianStatusChanged(PedestrianStatus event) {
@@ -95,45 +86,28 @@ class StepService {
     statusStreamSubscription.onError(onPedestrianStatusError);
   }
 
-  saveSteps(Map<dynamic, dynamic> payload) async {
-    final User user = auth.currentUser;
-    final result = await firebaseFirestore
-        .collection("users")
-        .doc(user.uid)
-        .collection("exercise")
-        .doc("steps-data")
-        .set(payload)
-        .then((value) {
-      return true;
-    }).catchError((err) {
-      return false;
-    });
-    print(result);
-    return result;
-  }
+  Future<String> calculateDistance(int steps) async {
+    String dewRecord = await ss.getItem("dewRecord");
+    String heightMetric = await ss.getItem("height_metric");
 
+    double heightValue = (heightMetric == "ft") ? 0.3937007871 : 1.0;
 
-  getSteps() async {
-    final User user = auth.currentUser;
-    DocumentSnapshot doc = await firebaseFirestore
-        .collection("users")
-        .doc(user.uid)
-        .collection("exercise")
-        .doc("steps-data")
-        .get();
-    if(!doc.exists) {
-      return "0";
+    Map<String, dynamic> json = jsonDecode(dewRecord);
+    double height = json["3"];
+    print("height is $height");
+
+    double heightCalc = height / heightValue;
+
+    double heightCalcFinal = 0;
+
+    if(heightCalc < 120) {
+      heightCalcFinal = heightCalc;
     }
-    Map<String, dynamic> goal = doc.data();
-    print(goal["stepGoal"]);
-    print(doc.data());
-    return goal["stepGoal"];
+    if(heightCalc >= 120) {
+      heightCalcFinal = heightCalc * 0.414;
+    }
 
-//var dataResult = data['stepGoal'];
-    //   print(dataResult);
-    // return dataResult;
-
-    // print(result);
-    //return result;
+    // double distance = steps.toDouble() *;
+    return "";
   }
 }

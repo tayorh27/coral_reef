@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coral_reef/Utils/helpers.dart';
 import 'package:coral_reef/baseModel.dart';
 import 'package:coral_reef/locator.dart';
@@ -9,6 +11,7 @@ import 'package:pedometer/pedometer.dart';
 
 import '../../../Utils/colors.dart';
 import '../../../Utils/storage.dart';
+import '../../../services/step_service.dart';
 
 class StepViewModel extends BaseModel {
   final StepService _stepService = locator<StepService>();
@@ -22,22 +25,6 @@ class StepViewModel extends BaseModel {
   //final User user = auth.currentUser;
   String formatDate(DateTime d) {
     return d.toString().substring(0, 19);
-  }
-
-  Stream<StepCount> _stepCountStream;
-  Stream<PedestrianStatus> _pedestrianStatusStream;
-
-  void onPedestrianStatusError(error) {
-    print('onPedestrianStatusError: $error');
-
-    status = 'Pedestrian Status not available';
-
-    print(status);
-  }
-
-  void onPedestrianStatusChanged(PedestrianStatus event) {
-    print(event);
-    status = event.status;
   }
 
   final elements = [
@@ -67,15 +54,87 @@ class StepViewModel extends BaseModel {
     "40000",
   ];
 
-  void onStepCountError(error) {
-    print('onStepCountError: $error');
-    steps = '0';
+  Stream<StepCount> _stepCountStream;
+  Stream<PedestrianStatus> _pedestrianStatusStream;
+
+  StreamSubscription<StepCount> stepStreamSubscription;
+  StreamSubscription<PedestrianStatus> statusStreamSubscription;
+
+  //final Function(int stepCount, double km, DateTime timeStamp) onStepChange;
+
+  void stopCounting() {
+    stepStreamSubscription.cancel();
+    statusStreamSubscription.cancel();
   }
 
-  void onStepCount(StepCount event) {
-    print(event);
+  void pauseCounting() {
+    stepStreamSubscription.pause();
+    statusStreamSubscription.pause();
+  }
+
+  void resumeCounting() {
+    stepStreamSubscription.resume();
+    statusStreamSubscription.resume();
+  }
+
+  onStepCount(StepCount event) {
+    /// Handle step count changed
+    //int steps = event.steps;
+
     steps = event.steps.toString();
-    //notifyListeners();
+    DateTime timeStamp = event.timeStamp;
+
+    // print("onStep number: $steps");
+    // new GeneralUtils().showToast(context, "onStep number: $steps");
+    //calculate km based on steps
+    double distance =
+        double.parse(((double.parse(steps) * 78) / 100000).toStringAsFixed(2));
+
+    //onStepChange(steps, distance, timeStamp);
+    return event;
+  }
+
+  getSt(){
+    _stepService.initPlatformState();
+ steps =   _stepService.steps;
+ print('PRINT:::::::::::::::::::::::::::::::::::::::');
+ print(steps);
+ notifyListeners();
+ return steps;
+  }
+
+  void onPedestrianStatusChanged(PedestrianStatus event) {
+    /// Handle status changed
+    String status = event.status;
+    DateTime timeStamp = event.timeStamp;
+
+    print("onPedestrianStatusChanged status: $status");
+  }
+
+  void onPedestrianStatusError(error) {
+    /// Handle the error
+    print("status error: $error");
+  }
+
+  void onStepCountError(error) {
+    /// Handle the error
+    print("step count error: $error");
+  }
+
+  void initPlatformState() {
+    print("initPlatformState for steps");
+
+    /// Init streams
+    _pedestrianStatusStream = Pedometer.pedestrianStatusStream;
+    _stepCountStream = Pedometer.stepCountStream;
+
+    /// Listen to streams and handle errors
+    stepStreamSubscription = _stepCountStream.listen(onStepCount);
+    stepStreamSubscription.onError(onStepCountError);
+
+    statusStreamSubscription =
+        _pedestrianStatusStream.listen(onPedestrianStatusChanged);
+    statusStreamSubscription.onError(onPedestrianStatusError);
   }
 
   currentStep() {
@@ -91,7 +150,6 @@ class StepViewModel extends BaseModel {
   }
 
   var outputFormat = DateFormat('dd MMM yyyy hh:mm a');
-
 
   List<Widget> buildItems1() {
     return elements
@@ -124,16 +182,17 @@ class StepViewModel extends BaseModel {
     var stepStorage = await ss.getItem('stepGoal');
     if (stepStorage != null) {
       stepsGoal = double.parse(stepStorage);
-      //notifyListeners();
+      notifyListeners();
       return stepsGoal;
     } else {
-    var goal = await _stepService.getSteps();
-    if(goal != null){
-      stepsGoal = double.parse(goal);
-    }else{
-      stepsGoal = 0;
-    }
-      //notifyListeners();
+      var goal = await _stepService.getSteps();
+      if (goal != null) {
+        stepsGoal = double.parse(goal);
+      } else {
+        stepsGoal = 0;
+        notifyListeners();
+      }
+      //
       return stepsGoal;
     }
   }

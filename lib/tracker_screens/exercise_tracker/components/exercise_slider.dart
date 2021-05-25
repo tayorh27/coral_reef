@@ -7,10 +7,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:stacked/stacked.dart';
 
+import '../../../locator.dart';
+import '../../../services/step_service.dart';
+
 class ExerciseSlider extends StatelessWidget {
 
   ExerciseSlider();
-
+  final StepService _stepService = locator<StepService>();
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -43,9 +46,10 @@ class ExerciseSlider extends StatelessWidget {
                     trackWidth: 8.0
                 )
             ),
-            initialValue: double.parse(model.steps),
+            initialValue: _stepService.steps != null?  double.parse(
+                _stepService.steps.toString()):4,
             min: 0,
-            max: 33000,
+            max:model.stepsGoal != null ?model.stepsGoal:10,
             innerWidget: (double value) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.center,

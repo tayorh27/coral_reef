@@ -8,6 +8,7 @@ import 'package:coral_reef/tracker_screens/diet_tracker_screen/components/diet_s
 import 'package:coral_reef/tracker_screens/exercise_tracker/components/exercise_slider.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/components/exercise_summary_card.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/steps.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/track_a.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/track_activities.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/view_models/step_view_model.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class PopulateExerciseSummary extends StatefulWidget {
 }
 
 class _PopulateDietSummary extends State<PopulateExerciseSummary> {
-
+  final StepService _stepService = locator<StepService>();
   double totalKm = 0.0;
   int totalChallenge = 0;
 
@@ -72,7 +73,7 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
                 title: 'Steps',
                 icon: 'assets/exercise/foot_white.svg',
                 title2: '',
-                title3: model.steps,
+                title3: model.getSt(),
                 title4: "Goal: ${model.stepsGoal.floor().toString()}",
                 textColor: Colors.white,
                 press: () {
@@ -92,7 +93,7 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
                 title4: 'Total km: $totalKm',
                 textColor: Color(MyColors.primaryColor),
                 press: () {
-                  Navigator.pushNamed(context, TrackActivities.routeName);
+                  Navigator.pushNamed(context, TrackActivity.routeName);
                 },
                 color: Colors.purpleAccent.withOpacity(0.1),
                 child: SvgPicture.asset(
