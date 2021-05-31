@@ -1,6 +1,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/storage.dart';
@@ -46,12 +47,23 @@ class ChallengeStepService {
     int steps = event.steps;
     DateTime timeStamp = event.timeStamp;
 
-    // print("onStep number: $steps");
+    doStepChange(steps, timeStamp);
+  }
+
+  Future<void> doStepChange(int steps, DateTime timeStamp) async {
+    int mSteps = steps;
+
+    if(Platform.isIOS) {
+      String initSteps = await ss.getItem("init_step_count") ?? "0";
+      mSteps = steps - int.parse(initSteps);
+    }
+
+    print("onStep number: $steps");
     // new GeneralUtils().showToast(context, "onStep number: $steps");
     //calculate km based on steps
-    double distance = double.parse(((steps.toDouble() * 78) / 100000).toStringAsFixed(2));
+    double distance = double.parse(((mSteps.toDouble() * 78) / 100000).toStringAsFixed(2));
 
-    onStepChange(steps, distance, timeStamp);
+    onStepChange(mSteps, distance, timeStamp);
   }
 
   void onPedestrianStatusChanged(PedestrianStatus event) {

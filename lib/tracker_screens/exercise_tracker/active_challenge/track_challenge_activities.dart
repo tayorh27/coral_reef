@@ -164,11 +164,16 @@ class _PageState extends State<TrackChallengeActivities> {
     }
   }
 
+  int initSteps = 0;
+
   Future<void> continuePhysicalActivitySetup() async {
     challengeStepService = new ChallengeStepService(
         context, onStepChange: (steps, distance, timestamp) async {
       String running = await ss.getItem("running");
-      if (running == null) return;
+      if (running == null) {
+        initSteps = steps;
+        return;
+      }
       if (steps != null || distance != null || timestamp != null) {
         // if(!mounted) return;
         setState(() {
@@ -740,6 +745,7 @@ class _PageState extends State<TrackChallengeActivities> {
     await ss.deletePref("currentPosition");
     await ss.deletePref("startTime");
     await ss.deletePref("currentTime");
+    await ss.deletePref("init_step_count");
     await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("setups").doc("user-data").update(
         {
           "currentChallenge": FieldValue.delete(),
@@ -749,6 +755,7 @@ class _PageState extends State<TrackChallengeActivities> {
           "currentPosition": FieldValue.delete(),
           "startTime": FieldValue.delete(),
           "currentTime": FieldValue.delete(),
+          "init_step_count": FieldValue.delete(),
         });
     String activityText = "has finished the challenge.";
     await exerciseService.logActivity(ch, activityText);
@@ -802,12 +809,12 @@ class _PageState extends State<TrackChallengeActivities> {
     await ss.setPrefItem("startTime", DateTime.now().toString());
     await ss.setPrefItem("currentTime", DateTime.now().toString());
 
-    print(_currentLocation.toString());
-
-
-    // await exerciseService.getRequiredTime(_currentLocation, ch);
+    // print(_currentLocation.toString());
+    if(Platform.isIOS) ss.setPrefItem("init_step_count", initSteps.toString());
 
     challengeStepService.resumeCounting();
+
+    await exerciseService.getRequiredTime(_currentLocation, ch);
 
     // FlutterBackgroundService.initialize(onStart);
   }

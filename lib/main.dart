@@ -121,6 +121,7 @@ class _MyApp extends State<MyApp> {
       await ss.deletePref("currentPosition");
       await ss.deletePref("startTime");
       await ss.deletePref("currentTime");
+      await ss.deletePref("init_step_count");
       await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("setups").doc("user-data").update(
           {
             "currentChallenge": FieldValue.delete(),
@@ -130,6 +131,7 @@ class _MyApp extends State<MyApp> {
             "currentPosition": FieldValue.delete(),
             "startTime": FieldValue.delete(),
             "currentTime": FieldValue.delete(),
+            "init_step_count": FieldValue.delete(),
           });
 
     }
