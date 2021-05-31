@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/ListItem/model_challenge.dart';
@@ -54,6 +55,7 @@ class _PageState extends State<TrackChallengeActivities> {
   Future<void> _onMapCreated(GoogleMapController controller) async {
       mapController = controller;
       controller.setMapStyle(Utils.mapStyles);
+      if(_controller.isCompleted) return;
       _controller.complete(controller);
   }
 
@@ -145,35 +147,50 @@ class _PageState extends State<TrackChallengeActivities> {
   setupPhysicalActivityTracking() async {
     // String startTime = await ss.getItem("startTime");
     // DateTime st = DateTime.parse(startTime);
-
-    if (await ph.Permission.activityRecognition.request().isGranted) {
-      _physicalActivityEnabled = true;
-      challengeStepService = new ChallengeStepService(
-          context, onStepChange: (steps, distance, timestamp) async {
-        String running = await ss.getItem("running");
-        if(running == null) return;
-        if (steps != null || distance != null || timestamp != null) {
-          // if(!mounted) return;
-          setState(() {
-            distanceCovered = distance;
-          });
-          // new GeneralUtils().showToast(context, "Step number: $steps");
-          if(ch == null) return;
-
-          await exerciseService.updateUserChallengeData(ch, distance);
-
-          if(distance == double.parse(ch.distance) / 2) {
-            String activityText = "has completed ${double.parse(ch.distance) / 2} km.";
-            await exerciseService.logActivity(ch, activityText);
-          }
-
-          if(distance >= double.parse(ch.distance)) {
-            currentChallengeEnded(true);
-          }
-        }
-      });
-      challengeStepService.pauseCounting();
+    if(Platform.isAndroid) {
+      if (await ph.Permission.activityRecognition
+          .request()
+          .isGranted) {
+        _physicalActivityEnabled = true;
+        continuePhysicalActivitySetup();
+      }
+    }else {
+      if (await ph.Permission.sensors
+          .request()
+          .isGranted) {
+        _physicalActivityEnabled = true;
+        continuePhysicalActivitySetup();
+      }
     }
+  }
+
+  Future<void> continuePhysicalActivitySetup() async {
+    challengeStepService = new ChallengeStepService(
+        context, onStepChange: (steps, distance, timestamp) async {
+      String running = await ss.getItem("running");
+      if (running == null) return;
+      if (steps != null || distance != null || timestamp != null) {
+        // if(!mounted) return;
+        setState(() {
+          distanceCovered = distance;
+        });
+        // new GeneralUtils().showToast(context, "Step number: $steps");
+        if (ch == null) return;
+
+        await exerciseService.updateUserChallengeData(ch, distance);
+
+        if (distance == double.parse(ch.distance) / 2) {
+          String activityText = "has completed ${double.parse(ch.distance) /
+              2} km.";
+          await exerciseService.logActivity(ch, activityText);
+        }
+
+        if (distance >= double.parse(ch.distance)) {
+          currentChallengeEnded(true);
+        }
+      }
+    });
+    challengeStepService.pauseCounting();
   }
 
   double distanceCovered = 0.0;
@@ -632,12 +649,18 @@ class _PageState extends State<TrackChallengeActivities> {
                     onTap: () {
                       if(!_serviceEnabled) {
                         initPlatformState();
-                        return;
+                        // return;
                       }
-                      if(!_physicalActivityEnabled) {
+                      if (!_physicalActivityEnabled) {
                         setupPhysicalActivityTracking();
-                        return;
+                        // return;
                       }
+                      // setupPhysicalActivityTracking();
+                      // if(Platform.isAndroid) {
+                      //
+                      // }else {
+                      //   setupPhysicalActivityTracking();
+                      // }
                       setState(() {
                         counting = true;
                         startTimeout();
@@ -779,7 +802,10 @@ class _PageState extends State<TrackChallengeActivities> {
     await ss.setPrefItem("startTime", DateTime.now().toString());
     await ss.setPrefItem("currentTime", DateTime.now().toString());
 
-    await exerciseService.getRequiredTime(_currentLocation, ch);
+    print(_currentLocation.toString());
+
+
+    // await exerciseService.getRequiredTime(_currentLocation, ch);
 
     challengeStepService.resumeCounting();
 

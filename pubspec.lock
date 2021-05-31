@@ -391,13 +391,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
-  flutter_plugin_qr_scanner:
-    dependency: "direct main"
-    description:
-      name: flutter_plugin_qr_scanner
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.1"
   flutter_polyline_points:
     dependency: "direct main"
     description:

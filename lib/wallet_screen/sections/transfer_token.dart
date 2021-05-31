@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:syncfusion_flutter_barcodes/barcodes.dart';
 import 'package:akvelon_flutter_share_plugin/akvelon_flutter_share_plugin.dart';
-import 'package:flutter_plugin_qr_scanner/flutter_plugin_qr_scanner.dart';
+// import 'package:flutter_plugin_qr_scanner/flutter_plugin_qr_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../size_config.dart';
@@ -270,19 +270,19 @@ class _TransferToken extends State<TransferToken> {
   }
 
   openQRCode() async {
-    final results = await QrScanner.scan(
-      title: "scanner",
-      laserColor: Colors.white, //default #ffff55ff
-      playBeep: false, //default false
-      promptMessage: "Point the QR code to the frame to complete the scan.",
-      errorMsg: "Oops, something went wrong. You may need to check your permission of camera or restart the device.",
-      permissionDeniedText: "Your privacy settings seem to prevent us from accessing your camera for barcode scanning. You can fix it by doing this, touch the OK button below to open the Settings and then turn the Camera on.",
-      messageConfirmText: "OK",
-      messageCancelText: "Cancel",
-    );
-    if (results != null) {
-      _textEditingController.text = results;
-    }
+    // final results = await QrScanner.scan(
+    //   title: "scanner",
+    //   laserColor: Colors.white, //default #ffff55ff
+    //   playBeep: false, //default false
+    //   promptMessage: "Point the QR code to the frame to complete the scan.",
+    //   errorMsg: "Oops, something went wrong. You may need to check your permission of camera or restart the device.",
+    //   permissionDeniedText: "Your privacy settings seem to prevent us from accessing your camera for barcode scanning. You can fix it by doing this, touch the OK button below to open the Settings and then turn the Camera on.",
+    //   messageConfirmText: "OK",
+    //   messageCancelText: "Cancel",
+    // );
+    // if (results != null) {
+    //   _textEditingController.text = results;
+    // }
   }
 
   Widget amountField() {
