@@ -58,7 +58,7 @@ class ChallengeStepService {
       mSteps = steps - int.parse(initSteps);
     }
 
-    print("onStep number: $steps");
+    print("onStep number: $steps, mSteps = $mSteps");
     // new GeneralUtils().showToast(context, "onStep number: $steps");
     //calculate km based on steps
     double distance = double.parse(((mSteps.toDouble() * 78) / 100000).toStringAsFixed(2));

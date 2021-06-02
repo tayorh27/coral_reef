@@ -661,7 +661,7 @@ class _PageState extends State<ChallengePage> {
                                       fit: BoxFit.contain,
                                     )),
                                 width: double.infinity,
-                                height: getProportionateScreenHeight(110),
+                                height: getProportionateScreenHeight(121),
                                 child: ClipRRect(
                                     child: Stack(children: [
                                   // Container(
