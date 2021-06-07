@@ -245,25 +245,24 @@ class _TransferToken extends State<TransferToken> {
           border: InputBorder.none,
           focusedBorder: InputBorder.none,
           enabledBorder: InputBorder.none,
-          suffixIcon: TextButton.icon(
-            icon: Icon(Icons.camera_alt_rounded,
-                color: Color(MyColors.primaryColor)),
-            label: Text(""),
-            onPressed: () async {
-              var status = await Permission.camera.status;
-              if(status.isGranted) {
-                openQRCode();
-                return;
-              }
-              final allowPermission = await new GeneralUtils().requestPermission(context, "Camera", "Allow Coral Reef to access your camera");
-              if(allowPermission) {
-                if (await Permission.camera.request().isGranted) {
-                  openQRCode();
-                }
-              }
-            },
-          ),
-          //hintText: '',
+          // suffixIcon: TextButton.icon(
+          //   icon: Icon(Icons.camera_alt_rounded,
+          //       color: Color(MyColors.primaryColor)),
+          //   label: Text(""),
+          //   onPressed: () async {
+          //     var status = await Permission.camera.status;
+          //     if(status.isGranted) {
+          //       openQRCode();
+          //       return;
+          //     }
+          //     final allowPermission = await new GeneralUtils().requestPermission(context, "Camera", "Allow Coral Reef to access your camera");
+          //     if(allowPermission) {
+          //       if (await Permission.camera.request().isGranted) {
+          //         openQRCode();
+          //       }
+          //     }
+          //   },
+          // ),
         ),
       ),
     );

@@ -73,9 +73,7 @@ class _DesiredWeightScreen extends State<DesiredWeightScreen> {
                         height: 100.0,
                         alignment: Alignment.center,
                         child: GestureDetector(
-                          onTap: () {
-                            // _showTestDialog(context);
-                          },
+                          onTap: displayDialog,
                           child: Text(
                             "$weight $metricSelected",
                             style: Theme.of(context).textTheme.headline2.copyWith(
@@ -85,6 +83,11 @@ class _DesiredWeightScreen extends State<DesiredWeightScreen> {
                           ),
                         ),
                       ),
+                      Text("Tap above to edit your desired weight",
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.subtitle1.copyWith(
+                              color: Color(MyColors.titleTextColor),
+                              fontSize: getProportionateScreenWidth(15))),
                       VerticalWeightSlider(
                         maximumWeight: 2000,
                         initialWeight: weight,
@@ -147,23 +150,36 @@ class _DesiredWeightScreen extends State<DesiredWeightScreen> {
       ],
     );
   }
-}
 
-void _showTestDialog(context) {
-    showDialog(
+  Future<bool> displayDialog() {
+    return showDialog<bool>(
         context: context,
         barrierDismissible: false,
-        //context: _scaffoldKey.currentContext,
         builder: (context) {
-          return AlertDialogPage();
-        }
-     );
+          return AlertDialogPage(
+              title: "Add Desired Weight",
+              initialValue: "$weight",
+              wMetric: metricSelected,
+              onSaved: (mw, metric) {
+                if (!mounted) return;
+                setState(() {
+                  weight = mw;
+                  metricSelected = metric;
+                });
+              });
+        });
+  }
 }
 
+
 class AlertDialogPage extends StatefulWidget {
-  const AlertDialogPage({
-    Key key,
-  }) : super(key: key);
+  const AlertDialogPage(
+      {Key key, this.title, this.initialValue, this.wMetric, this.onSaved})
+      : super(key: key);
+  final String title;
+  final String initialValue;
+  final String wMetric;
+  final Function(double newWeight, String newMetric) onSaved;
 
   @override
   _AlertDialogPageState createState() => _AlertDialogPageState();
@@ -171,83 +187,142 @@ class AlertDialogPage extends StatefulWidget {
 
 class _AlertDialogPageState extends State<AlertDialogPage> {
 
-  DateTime now = DateTime.now();
+  TextEditingController _textEditingController;
+  bool _loading = false;
+  String wMetric = "";
+
+  StorageSystem ss = new StorageSystem();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    wMetric = widget.wMetric;
+    _textEditingController = new TextEditingController(text: widget.initialValue);
+  }
+
+  rewriteTimeValue(int value) {
+    return value < 10 ? "0$value" : "$value";
+  }
+
+  getCurrentDateTime() {
+    List<String> months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+    DateTime date = DateTime.now();
+    return "${rewriteTimeValue(date.day)} ${months[date.month - 1]} ${date.year}, ${rewriteTimeValue(date.hour)}:${rewriteTimeValue(date.minute)}";
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      //contentPadding: EdgeInsets.only(left: 20, right: 20),
-      title: Text('Add Desired Weight',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-        color: Colors.black,
-        fontSize: getProportionateScreenWidth(20),
-        fontWeight: FontWeight.bold,
-        ),
+      title: Column(
+        children: [
+          Text(widget.title,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.subtitle1.copyWith(
+                  color: Color(MyColors.titleTextColor),
+                  fontSize: getProportionateScreenWidth(18))),
+          Divider()
+        ],
       ),
       shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          borderRadius: BorderRadius.all(Radius.circular(20.0))),
       content: Container(
-      height: 200,
-      width: 300,
-      child: SingleChildScrollView(
-        child: Container(
-          child: Center(
-            child: Column(
-            //crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-            Divider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text('70.0',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: kPrimaryColor,
-                    fontSize: getProportionateScreenWidth(30),
-                    fontWeight: FontWeight.bold,
+        height: 300,
+        width: MediaQuery.of(context).size.width - 100.0,
+        child: SingleChildScrollView(
+          child: Container(
+            child: Center(
+              child: Column(
+                children: [
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 200.0,
+                          child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            obscureText: false,
+                            autofocus: true,
+                            controller: _textEditingController,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.headline2.copyWith(
+                                fontSize: getProportionateScreenWidth(45),
+                                color: Color(MyColors.primaryColor)
+                            ),
+                            decoration: InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 15,
+                                ),
+                                border: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                enabledBorder: InputBorder.none,hintText: "0"
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                 ),
-                 Button2(
-                   text: 'kg',
-                 )
-              ],
+                  Divider(thickness: 2.0,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Date",
+                        style: Theme.of(context).textTheme.subtitle1.copyWith(
+                          color: Color(MyColors.titleTextColor),
+                          fontSize: getProportionateScreenWidth(12),
+                        ),
+                      ),
+                      Text(
+                        getCurrentDateTime(),
+                        style: Theme.of(context).textTheme.subtitle1.copyWith(
+                          color: Color(MyColors.primaryColor),
+                          fontSize: getProportionateScreenWidth(12),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Divider(thickness: 2.0,),
+                  SizedBox(height: SizeConfig.screenHeight * 0.02),
+                  DefaultButton(
+                      text: 'Save',
+                      loading: _loading,
+                      press: () async {
+                        widget.onSaved(double.parse(_textEditingController.text), wMetric);
+                        Navigator.of(context).pop(false);
+                      }),
+                  SizedBox(height: SizeConfig.screenHeight * 0.02),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                      child: Text(
+                        "Cancel",
+                        style: Theme.of(context).textTheme.subtitle1.copyWith(
+                            color: Color(MyColors.primaryColor),
+                            fontSize: getProportionateScreenWidth(16)),
+                      ))
+                ],
+              ),
             ),
-             Divider(),
-             SizedBox(height: SizeConfig.screenHeight * 0.02),
-             Row(
-               mainAxisAlignment: MainAxisAlignment.start,
-               children: [
-                Text('DATE: ',
-                style: TextStyle(
-                color: Colors.black,
-                fontSize: getProportionateScreenWidth(13),
-                fontWeight: FontWeight.bold,
-                ),),
-                Spacer(),
-                Text(now.toString(),
-                style: TextStyle(
-                color: kPrimaryColor,
-                fontSize: getProportionateScreenWidth(13),
-                fontWeight: FontWeight.bold,
-                ),
-                ),
-               ],
-             ),
-             SizedBox(height: SizeConfig.screenHeight * 0.02),
-             Divider(),
-             SizedBox(height: SizeConfig.screenHeight * 0.02),
-             DefaultButton(
-                 text: 'Save',
-                 press: (){
-                   Navigator.pop(context);
-                 }
-               ) 
-            ],
           ),
         ),
       ),
-     ),
-   ),
-  );
- }
+    );
+  }
 }

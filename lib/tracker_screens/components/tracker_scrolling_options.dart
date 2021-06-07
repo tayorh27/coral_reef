@@ -109,7 +109,7 @@ class _TrackerScrollingOptions extends State<TrackerScrollingOptions> {
 
   Widget topScrollElement(BuildContext context, String text,
       {bool selected = false, void Function() onTap}) {
-    return Container(
+    return InkWell(onTap: onTap ?? (){}, child: Container(
       decoration: BoxDecoration(
         color: selected
             ? Color(MyColors.other3)
@@ -118,22 +118,19 @@ class _TrackerScrollingOptions extends State<TrackerScrollingOptions> {
       ),
       padding: EdgeInsets.only(right: 20, left: 20, top: 10.0, bottom: 10.0),
       margin: EdgeInsets.only(right: 15.0),
-      child: GestureDetector(
-        onTap: onTap ?? () {},
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              text,
-              style: Theme.of(context).textTheme.bodyText2.copyWith(
-                  color: selected
-                      ? Color(MyColors.primaryColor)
-                      : Color(MyColors.titleTextColor)),
-            ),
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            text,
+            style: Theme.of(context).textTheme.bodyText2.copyWith(
+                color: selected
+                    ? Color(MyColors.primaryColor)
+                    : Color(MyColors.titleTextColor)),
+          ),
+        ],
       ),
-    );
+    ));
   }
 }

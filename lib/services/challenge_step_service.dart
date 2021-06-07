@@ -51,6 +51,12 @@ class ChallengeStepService {
   }
 
   Future<void> doStepChange(int steps, DateTime timeStamp) async {
+    String getInit = await ss.getItem("init_step_count");
+    if(getInit == null) {
+      await ss.setPrefItem("init_step_count", steps.toString());
+      return;
+    }
+
     int mSteps = steps;
 
     if(Platform.isIOS) {

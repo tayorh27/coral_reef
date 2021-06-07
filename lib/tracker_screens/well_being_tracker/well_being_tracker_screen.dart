@@ -9,10 +9,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'components/insight_card.dart';
 import 'components/populate_card_titles.dart';
-import 'components/sleep_mood_cards.dart';
-// import '../../screens/sleepscreen/sleep.dart';
-// import '../../screens/moodscreen/moodscreen.dart';
-// import '../../screens/vitaminscreen/vitamin.dart';
 
 
 class WellBeingTrackerScreen extends StatefulWidget {
@@ -40,7 +36,7 @@ class _WellBeingTrackerScreen extends State<WellBeingTrackerScreen> {
                 SizedBox(height: SizeConfig.screenHeight * 0.02),
                 VitaminCard(),
                 SizedBox(height: SizeConfig.screenHeight * 0.02),
-                InsightCard(),
+                // InsightCard(),
               ],
             ),
           ),

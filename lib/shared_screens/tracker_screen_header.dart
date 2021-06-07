@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/account/notifications/notification.dart';
+import 'package:coral_reef/account/profile/account.dart';
 import 'package:coral_reef/components/coral_back_button.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -57,7 +58,7 @@ class _TrackerScreenHeader extends State<TrackerScreenHeader> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
-          (widget.child == null) ? Container(
+          (widget.child == null) ? InkWell(onTap: (){Navigator.pushNamed(context, Account.routeName);}, child: Container(
             width: 50.0,
             height: 50.0,
             margin: EdgeInsets.only(top: 15.0),
@@ -69,7 +70,7 @@ class _TrackerScreenHeader extends State<TrackerScreenHeader> {
             //   placeholder: 'assets/images/default_avatar.png',
             //   image: user.photoURL,
             // ),
-          ) : widget.child
+          )) : InkWell(onTap: (){Navigator.pushNamed(context, Account.routeName);}, child: widget.child)
 
         ],
       ),

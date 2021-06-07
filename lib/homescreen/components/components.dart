@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/account/notifications/notification.dart';
 import 'package:coral_reef/account/profile/account.dart';
+import 'package:coral_reef/wellness/diet_exercise_well_being/diet_exercise_well_being_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:coral_reef/size_config.dart';
@@ -37,6 +38,7 @@ class HomeLogo extends StatelessWidget {
           children: [
             IconButton(onPressed: (){
               Navigator.pushNamed(context, Notifications.routeName);
+              // Navigator.pushNamed(context, DietExerciseWellBeingInfo.routeName);
             },iconSize: 28.0, color: Color(MyColors.primaryColor), icon: Icon(Icons.notifications),),
             IconButton(onPressed: (){
               Navigator.pushNamed(context, Account.routeName);

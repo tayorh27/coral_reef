@@ -1,21 +1,55 @@
 
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/shared_screens/pill_icon.dart';
+import 'package:coral_reef/tracker_screens/well_being_tracker/sections/vitamin_goal.dart';
+import 'package:coral_reef/tracker_screens/well_being_tracker/services/vitamins_services.dart';
 import 'package:flutter/material.dart';
 
 import '../../../size_config.dart';
 
-class VitaminCard extends StatelessWidget {
-  const VitaminCard({
-    Key key,
+class VitaminCard extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _VitaminCard();
+}
 
-  }) : super(key: key);
+class _VitaminCard extends State<VitaminCard> {
+
+  String vitaminsGoal = "0", currentTakenVitamins = "0";
+
+  WellBeingServices vitaminServices;
+
+  StorageSystem ss = new StorageSystem();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    vitaminServices = new WellBeingServices();
+    getVitaminsLocalData();
+  }
+
+  getVitaminsLocalData() async {
+    final date = DateTime.now();
+    final months = ["JAN", "FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
+    String formatDate = "${date.year}_${months[date.month - 1]}_${date.day}";
+
+    String goal = await ss.getItem("vitaminGoal") ?? "0";
+    String current = await ss.getItem("vitaminCurrent_$formatDate") ?? "0";
+
+    setState(() {
+      vitaminsGoal = goal;
+      currentTakenVitamins = current;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // Navigator.pushNamed(context, VitaminScreen.routeName);
+      onTap: () async {
+        await Navigator.pushNamed(context, VitaminGoal.routeName);
+        getVitaminsLocalData();
       },
       child: Container(
           decoration: BoxDecoration(
@@ -40,30 +74,53 @@ class VitaminCard extends StatelessWidget {
                   Container(height: 20.0,),
                   Row(
                     children: [
-                      PillIcon(
-                        icon: 'assets/well_being/Subtract.svg',
-                        size: 30,
+                      InkWell(
+                        onTap: () {
+                          int goal = int.parse(vitaminsGoal);
+                          int currentV = int.parse(currentTakenVitamins);
+                          if(goal <= 0 || (currentV - 1) < 0) {
+                            return;
+                          }
+                          setState(() {
+                            currentTakenVitamins = "${currentV - 1}";
+                          });
+                          vitaminServices.updateVitaminTakenCount(currentV - 1);
+                        },
+                        child: PillIcon(
+                          icon: 'assets/well_being/Subtract.svg',
+                          size: 20,
+                        ),
                       ),
                       PillIcon(
                         icon: 'assets/well_being/pill.svg',
                         size: 20,
                       ),
-                      PillIcon(
-                        icon: 'assets/well_being/add.svg',
-                        size: 30,
-                      ),
+                      InkWell(
+                        onTap: () {
+                          int currentV = int.parse(currentTakenVitamins);
+                          setState(() {
+                            currentTakenVitamins = "${currentV + 1}";
+                          });
+                          vitaminServices.updateVitaminTakenCount(currentV + 1);
+                        },
+                        child: PillIcon(
+                          icon: 'assets/well_being/add.svg',
+                          size: 20,
+                        ),
+                      )
                     ],)
                 ],
               ),
               Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   SizedBox(height: 20.0,),
-                  Text('2/4.0',
+                  Text('$currentTakenVitamins/$vitaminsGoal',
                     style: Theme.of(context).textTheme.headline2.copyWith(
                       color: Color(MyColors.primaryColor),
                       fontSize: getProportionateScreenWidth(18),
                     ),),
-                  Text('TODAY',
+                  Text((vitaminsGoal == "0") ? 'CLICK TO SETUP' : 'TODAY',
                     style: Theme.of(context).textTheme.bodyText1.copyWith(
                       color: Color(MyColors.titleTextColor),
                       fontSize: getProportionateScreenWidth(13),

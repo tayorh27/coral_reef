@@ -4,6 +4,9 @@ import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
 import 'package:coral_reef/onboarding/sign_up/signup_screen.dart';
 import 'package:coral_reef/onboarding/forgotpassword/forgotpassword.dart';
 import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
+import 'package:coral_reef/tracker_screens/diet_tracker_screen/sections/calories_goal.dart';
+import 'package:coral_reef/tracker_screens/diet_tracker_screen/sections/water_goal.dart';
+import 'package:coral_reef/tracker_screens/diet_tracker_screen/sections/weight_goal.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/active_challenge/track_challenge_activities.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/community_challenge_details.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/period_tracker_screen.dart';
@@ -14,6 +17,9 @@ import 'package:coral_reef/tracker_screens/pregnancy_tracker/sections/tips.dart'
 import 'package:coral_reef/tracker_screens/pregnancy_tracker/sections/your_baby.dart';
 import 'package:coral_reef/tracker_screens/pregnancy_tracker/sections/your_body.dart';
 import 'package:coral_reef/tracker_screens/pregnancy_tracker/sections/your_tips.dart';
+import 'package:coral_reef/tracker_screens/well_being_tracker/sections/mood_section.dart';
+import 'package:coral_reef/tracker_screens/well_being_tracker/sections/sleep_screen.dart';
+import 'package:coral_reef/tracker_screens/well_being_tracker/sections/vitamin_goal.dart';
 import 'package:coral_reef/wallet_screen/sections/receive_token.dart';
 import 'package:coral_reef/wallet_screen/sections/setup_pin.dart';
 import 'package:coral_reef/wallet_screen/sections/transfer_token.dart';
@@ -109,4 +115,10 @@ final Map<String, WidgetBuilder> routes = {
   ChallengeParticipant.routeName: (context) => ChallengeParticipant(),
   CommunityChallengeDetails.routeName: (context) => CommunityChallengeDetails(),
   TrackChallengeActivities.routeName: (context) => TrackChallengeActivities(),
+  VitaminGoal.routeName: (context) => VitaminGoal(),
+  MoodSection.routeName: (context) => MoodSection(),
+  SleepScreen.routeName: (context) => SleepScreen(),
+  WaterGoal.routeName: (context) => WaterGoal(),
+  WeightGoal.routeName: (context) => WeightGoal(),
+  CaloriesGoal.routeName: (context) => CaloriesGoal(),
 };

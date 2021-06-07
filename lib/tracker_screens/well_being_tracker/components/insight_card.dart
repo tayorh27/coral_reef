@@ -5,11 +5,19 @@ import 'package:flutter/material.dart';
 
 import '../../../size_config.dart';
 
-class InsightCard extends StatelessWidget {
-  const InsightCard({
-    Key key,
+class InsightCard extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _InsightCard();
+}
 
-  }) : super(key: key);
+class _InsightCard extends State<InsightCard> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {

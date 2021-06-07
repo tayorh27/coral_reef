@@ -1,15 +1,87 @@
 
+import 'dart:convert';
+
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/shared_screens/pill_icon.dart';
 import 'package:flutter/material.dart';
 
 import '../../../size_config.dart';
 
-class InsightCard extends StatelessWidget {
-  const InsightCard({
-    Key key,
+class InsightCard extends StatefulWidget {
 
-  }) : super(key: key);
+  @override
+  State<StatefulWidget> createState() => _InsightCard();
+}
+
+class _InsightCard extends State<InsightCard> {
+
+  StorageSystem ss = new StorageSystem();
+
+  String currentWeight = "", currentHeight = "", goalWeight = "0", weightMetric = "kg", heightMetric = "cm", bmi = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getWeightLocalData();
+    getExerciseSetupData();
+  }
+
+  getExerciseSetupData() async {
+    String exercise = await ss.getItem("dewRecord");
+    String wMetric = await ss.getItem("weight_metric");
+    String hMetric = await ss.getItem("height_metric");
+    Map<String, dynamic> json = jsonDecode(exercise);
+    setState(() {
+      goalWeight = "${json["2"]}";
+      currentHeight = "${json["3"]}";
+      weightMetric = wMetric;
+      heightMetric = hMetric;
+      if(currentWeight.isEmpty) {
+        currentWeight = "${json["1"]}";
+        bmi = calculateBMI();
+      }
+    });
+  }
+
+  getWeightLocalData() async {
+    final date = DateTime.now();
+    final months = ["JAN", "FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
+    String formatDate = "${date.year}_${months[date.month - 1]}_${date.day}";
+
+    String current = await ss.getItem("weightCurrent_$formatDate") ?? "";
+
+    if(current.isEmpty) return;
+
+    List<String> list = current.split("/");
+
+    setState(() {
+      currentWeight = list[0];
+      bmi = list[1];
+    });
+  }
+
+  String calculateBMI() {
+    double bmi = 0;
+    if(weightMetric == "kg" && heightMetric == "cm") {
+      double heightInMeters = double.parse(currentHeight) / 100;
+      bmi = double.parse(currentWeight) / (heightInMeters * heightInMeters);
+      return bmi.toStringAsFixed(2);
+    }
+    if(weightMetric == "lbs" && heightMetric == "ft") {
+
+      bmi = (double.parse(currentWeight) / (double.parse(currentHeight) * (double.parse(currentHeight)))) * 703;
+      return bmi.toStringAsFixed(2);
+    }
+    double weight = (weightMetric == "kg") ? double.parse(currentWeight) : double.parse(currentWeight) * 2.205;
+    double height = (heightMetric == "cm") ? (double.parse(currentHeight) / 100) : (double.parse(currentHeight) / 2.54);
+
+    bmi = weight / (height * height);
+    return bmi.toStringAsFixed(2);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -51,14 +123,14 @@ class InsightCard extends StatelessWidget {
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: "70",
+                        text: "$currentWeight",
                         style: Theme.of(context).textTheme.bodyText1.copyWith(
                             fontSize: getProportionateScreenWidth(18),
                             color: Color(MyColors.primaryColor)
                         ),
                       ),
                       TextSpan(
-                        text: "kg\n",
+                        text: "$weightMetric\n",
                         style: Theme.of(context).textTheme.bodyText1.copyWith(
                             fontSize: getProportionateScreenWidth(10),
                             color: Color(MyColors.primaryColor)
@@ -67,7 +139,7 @@ class InsightCard extends StatelessWidget {
                       TextSpan(text: "Current Weight\n", style: Theme.of(context).textTheme.subtitle1.copyWith(
                           color: Color(MyColors.titleTextColor)
                       ),),
-                      TextSpan(text: "BMI 25.6", style: Theme.of(context).textTheme.subtitle1.copyWith(
+                      TextSpan(text: "BMI $bmi", style: Theme.of(context).textTheme.subtitle1.copyWith(
                           color: Colors.grey
                       ),)
                     ],
@@ -77,20 +149,20 @@ class InsightCard extends StatelessWidget {
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: "0.0",
+                        text: "$goalWeight",
                         style: Theme.of(context).textTheme.bodyText1.copyWith(
                             fontSize: getProportionateScreenWidth(18),
                             color: Color(MyColors.primaryColor)
                         ),
                       ),
                       TextSpan(
-                        text: "kg\n",
+                        text: "$weightMetric\n",
                         style: Theme.of(context).textTheme.bodyText1.copyWith(
                             fontSize: getProportionateScreenWidth(10),
                             color: Color(MyColors.primaryColor)
                         ),
                       ),
-                      TextSpan(text: "New Weight", style: Theme.of(context).textTheme.subtitle1.copyWith(
+                      TextSpan(text: "Weight Goal", style: Theme.of(context).textTheme.subtitle1.copyWith(
                           color: Color(MyColors.titleTextColor)
                       ),),
                     ],

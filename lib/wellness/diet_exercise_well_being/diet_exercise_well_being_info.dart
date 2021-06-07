@@ -33,7 +33,7 @@ class _DietExerciseWellBeingInfo extends State<DietExerciseWellBeingInfo> {
   List<OnboardingQuestions> questionsAndScreenType = [
     OnboardingQuestions("What year were you born?", ScreenType.year),
     OnboardingQuestions("Add Weight", ScreenType.weight),
-    OnboardingQuestions("Add Desired Weight", ScreenType.desired_weight),
+    OnboardingQuestions("Add Your Desired Weight", ScreenType.desired_weight),
     OnboardingQuestions("Add Height", ScreenType.height),
   ];
 
@@ -139,9 +139,10 @@ class _DietExerciseWellBeingInfo extends State<DietExerciseWellBeingInfo> {
       });
     }
     if(screenType == ScreenType.height){
-      return HeightScreen(answers["$pageIndex"], onPress: (selectedWeight, clicked){
+      return HeightScreen(answers["$pageIndex"], answers["inch"], onPress: (selectedWeight, selectedInch, clicked){
         if(!clicked) return;
         if(selectedWeight != null)
+          answers["inch"] = selectedInch;
           selectedOption(selectedWeight);
       });
     }
@@ -188,6 +189,7 @@ class _DietExerciseWellBeingInfo extends State<DietExerciseWellBeingInfo> {
     Timer(Duration(seconds: 2), () async {
       //encode the answers from the questions and store in local storage
       String dewRecord = jsonEncode(answers);
+      print(dewRecord);
       await ss.setPrefItem("dewRecord", dewRecord);
       await ss.setPrefItem("dewSetup", "true");//don't display wellness.dart again
       await ss.setPrefItem("wellnessSetup", "true");

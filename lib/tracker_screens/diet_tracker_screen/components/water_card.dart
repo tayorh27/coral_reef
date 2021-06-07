@@ -1,22 +1,57 @@
 
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/shared_screens/pill_icon.dart';
+import 'package:coral_reef/tracker_screens/diet_tracker_screen/sections/water_goal.dart';
+import 'package:coral_reef/tracker_screens/diet_tracker_screen/services/diet_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../../size_config.dart';
 
-class WaterCard extends StatelessWidget {
-  const WaterCard({
-    Key key,
+class WaterCard extends StatefulWidget {
 
-  }) : super(key: key);
+  @override
+  State<StatefulWidget> createState() => _WaterCard();
+}
+
+class _WaterCard extends State<WaterCard> {
+
+  String waterGoal = "0", currentTakenWater = "0";
+
+  DietServices dietServices;
+
+  StorageSystem ss = new StorageSystem();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    dietServices = new DietServices();
+    getWaterLocalData();
+  }
+
+  getWaterLocalData() async {
+    final date = DateTime.now();
+    final months = ["JAN", "FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
+    String formatDate = "${date.year}_${months[date.month - 1]}_${date.day}";
+
+    String goal = await ss.getItem("waterGoal") ?? "0";
+    String current = await ss.getItem("waterCurrent_$formatDate") ?? "0";
+
+    setState(() {
+      waterGoal = goal;
+      currentTakenWater = current;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // Navigator.pushNamed(context, VitaminScreen.routeName);
+      onTap: () async {
+        await Navigator.pushNamed(context, WaterGoal.routeName);
+        getWaterLocalData();
       },
       child: Container(
           decoration: BoxDecoration(
@@ -41,10 +76,23 @@ class WaterCard extends StatelessWidget {
                   Container(height: 20.0,),
                   Row(
                     children: [
-                      PillIcon(
-                        icon: 'assets/well_being/Subtract.svg',
-                        size: 25,
-                        svgColor: Colors.white,
+                      InkWell(
+                        onTap: (){
+                          int goal = int.parse(waterGoal);
+                          int currentV = int.parse(currentTakenWater);
+                          if(goal <= 0 || (currentV - 1) < 0) {
+                            return;
+                          }
+                          setState(() {
+                            currentTakenWater = "${currentV - 1}";
+                          });
+                          dietServices.updateWaterTakenCount(currentV - 1);
+                        },
+                        child: PillIcon(
+                          icon: 'assets/well_being/Subtract.svg',
+                          size: 25,
+                          svgColor: Colors.white,
+                        ),
                       ),
                       Padding(
                         padding: EdgeInsets.only(right: 20.0),
@@ -57,21 +105,36 @@ class WaterCard extends StatelessWidget {
                           child: SvgPicture.asset("assets/diet/glass.svg",),
                         ),
                       ),
-                      PillIcon(
-                        icon: 'assets/well_being/add.svg',
-                        size: 25,
-                        svgColor: Colors.white,
-                      ),
+                      InkWell(
+                        onTap: (){
+                          int currentV = int.parse(currentTakenWater);
+                          setState(() {
+                            currentTakenWater = "${currentV + 1}";
+                          });
+                          dietServices.updateWaterTakenCount(currentV + 1);
+                        },
+                        child: PillIcon(
+                          icon: 'assets/well_being/add.svg',
+                          size: 25,
+                          svgColor: Colors.white,
+                        ),
+                      )
                     ],)
                 ],
               ),
               Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   SizedBox(height: 20.0,),
-                  Text('7/10',
+                  Text('$currentTakenWater/$waterGoal',
                     style: Theme.of(context).textTheme.headline2.copyWith(
                       color: Colors.white,
                       fontSize: getProportionateScreenWidth(18),
+                    ),),
+                  Text((waterGoal == "0") ? 'CLICK TO SETUP' : 'TODAY',
+                    style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Colors.white,
+                      fontSize: getProportionateScreenWidth(13),
                     ),),
                 ],
               )

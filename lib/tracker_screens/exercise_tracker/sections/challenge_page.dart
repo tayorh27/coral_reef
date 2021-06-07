@@ -916,7 +916,7 @@ class _PageState extends State<ChallengePage> {
 
   Future<void> joinChallenge(VirtualChallenge ch) async {
     //check max
-    if (ch.max_user >= 50) {
+    if (ch.max_user >= 15) { //50
       new GeneralUtils().displayAlertDialog(context, "Attention",
           "Sorry the maximum number of users to join this challenge has been reached.");
       return;

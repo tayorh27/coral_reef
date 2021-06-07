@@ -332,7 +332,7 @@ class _SignFormState extends State<SignForm> {
       userData['picture'] = _picture;
 
       Map<String, dynamic> setupData = new Map();
-      setupData["init"] = true;
+      setupData["init"] = "true";
       await FirebaseFirestore.instance.collection("users").doc(firebaseUser.uid).collection("setups").doc("user-data").set(setupData);
 
 

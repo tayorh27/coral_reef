@@ -140,7 +140,8 @@ class _PageState extends State<TrackChallengeActivities> {
     setCustomMapPin();
     // geolocator = Geolocator();
     // setupCurrentLocation();
-    initPlatformState();
+    // initPlatformState();
+    preSetupLocationPermission();
     setupPhysicalActivityTracking();
   }
 
@@ -172,6 +173,7 @@ class _PageState extends State<TrackChallengeActivities> {
       String running = await ss.getItem("running");
       if (running == null) {
         initSteps = steps;
+        if(Platform.isIOS) await ss.setPrefItem("init_step_count", initSteps.toString());
         return;
       }
       if (steps != null || distance != null || timestamp != null) {
@@ -247,6 +249,18 @@ class _PageState extends State<TrackChallengeActivities> {
     //   currentChallengeEnded(true);
     // }
 
+  }
+
+  preSetupLocationPermission() async {
+    var status = await ph.Permission.locationWhenInUse.status;
+        if(status.isGranted) {
+          initPlatformState();
+          return;
+        }
+        final allowPermission = await new GeneralUtils().requestPermission(context, "Location", "Allow Coral Reef to access your location in order to calculate your distance effectively.");
+        if(allowPermission) {
+          initPlatformState();
+        }
   }
 
   initPlatformState() async {
@@ -756,6 +770,7 @@ class _PageState extends State<TrackChallengeActivities> {
           "startTime": FieldValue.delete(),
           "currentTime": FieldValue.delete(),
           "init_step_count": FieldValue.delete(),
+          "user_ch_id": FieldValue.delete(),
         });
     String activityText = "has finished the challenge.";
     await exerciseService.logActivity(ch, activityText);
@@ -810,7 +825,7 @@ class _PageState extends State<TrackChallengeActivities> {
     await ss.setPrefItem("currentTime", DateTime.now().toString());
 
     // print(_currentLocation.toString());
-    if(Platform.isIOS) ss.setPrefItem("init_step_count", initSteps.toString());
+    // if(Platform.isIOS) ss.setPrefItem("init_step_count", initSteps.toString());
 
     challengeStepService.resumeCounting();
 

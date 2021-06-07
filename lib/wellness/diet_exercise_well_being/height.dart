@@ -1,6 +1,7 @@
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/default_button.dart';
+import 'package:coral_reef/g_chat_screen/components/topics_selection.dart';
 import 'package:coral_reef/wellness/onboarding/component.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +14,10 @@ class HeightScreen extends StatefulWidget {
 
   static String routeName = "/weight";
   final double currentHeight;
-  final Function(double weight, bool clicked) onPress;
+  final int currentInches;
+  final Function(double weight, int inch, bool clicked) onPress;
 
-  HeightScreen(this.currentHeight, {this.onPress});
+  HeightScreen(this.currentHeight, this.currentInches, {this.onPress});
 
   @override
   State<StatefulWidget> createState() => _HeightScreen();
@@ -24,6 +26,7 @@ class HeightScreen extends StatefulWidget {
 class _HeightScreen extends State<HeightScreen> {
 
   double height = 7.0;
+  int inches = 0;
 
   StorageSystem ss = new StorageSystem();
 
@@ -34,6 +37,7 @@ class _HeightScreen extends State<HeightScreen> {
     // TODO: implement initState
     super.initState();
     height = (widget.currentHeight == null) ? 7.0 : widget.currentHeight;
+    inches = (widget.currentInches == null) ? 0 : widget.currentInches;
     ss.getItem("height_metric").then((value) {
       String v = value ?? "ft";
       setState(() {
@@ -65,11 +69,9 @@ class _HeightScreen extends State<HeightScreen> {
                         height: 100.0,
                         alignment: Alignment.center,
                         child: GestureDetector(
-                          onTap: () {
-                            // _showTestDialog(context);
-                          },
+                          onTap: displayDialog,
                           child: Text(
-                            "$height $metricSelected",
+                            (metricSelected == "cm") ? "$height $metricSelected" : "$height $metricSelected $inches''",
                             style: Theme.of(context).textTheme.headline2.copyWith(
                               fontSize: 40.0,
                               color: Color(MyColors.primaryColor)
@@ -77,28 +79,33 @@ class _HeightScreen extends State<HeightScreen> {
                           ),
                         ),
                       ),
-                      VerticalWeightSlider(
-                        maximumWeight: 2000,
-                        initialWeight: height,
-                        gradationColor: [
-                          Colors.purple[500],
-                          Colors.purple[300],
-                          Colors.purple[100],
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            height = value;
-                          });
-                        },
-                      )
+                      Text("Tap above to edit",
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.subtitle1.copyWith(
+                              color: Color(MyColors.titleTextColor),
+                              fontSize: getProportionateScreenWidth(15))),
+                      // VerticalWeightSlider(
+                      //   maximumWeight: 2000,
+                      //   initialWeight: height,
+                      //   gradationColor: [
+                      //     Colors.purple[500],
+                      //     Colors.purple[300],
+                      //     Colors.purple[100],
+                      //   ],
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       height = value;
+                      //     });
+                      //   },
+                      // )
                     ],
                   ),
                 ),
-                SizedBox(height: SizeConfig.screenHeight * 0.04),
+                SizedBox(height: SizeConfig.screenHeight * 0.2),
                 DefaultButton(
                     text: 'Continue',
                     press: () {
-                      widget.onPress(height, true);
+                      widget.onPress(height, inches, true);
                     })
               ],
             ),
@@ -139,24 +146,38 @@ class _HeightScreen extends State<HeightScreen> {
       ],
     );
   }
-}
 
-
-void _showTestDialog(context) {
-    showDialog(
+  Future<bool> displayDialog() {
+    return showDialog<bool>(
         context: context,
         barrierDismissible: false,
-        //context: _scaffoldKey.currentContext,
         builder: (context) {
-          return AlertDialogPage();
-        }
-     );
+          return AlertDialogPage(
+              title: "Add Height",
+              initialValue: "$height",
+              initialValueInches: "$inches",
+              hMetric: metricSelected,
+              onSaved: (mh, inch, metric) {
+                if (!mounted) return;
+                setState(() {
+                  height = mh;
+                  inches = inch;
+                  metricSelected = metric;
+                });
+              });
+        });
+  }
 }
 
 class AlertDialogPage extends StatefulWidget {
-  const AlertDialogPage({
-    Key key,
-  }) : super(key: key);
+  const AlertDialogPage(
+      {Key key, this.title, this.initialValue, this.initialValueInches, this.hMetric, this.onSaved})
+      : super(key: key);
+  final String title;
+  final String initialValue;
+  final String initialValueInches;
+  final String hMetric;
+  final Function(double newWeight, int inches, String newMetric) onSaved;
 
   @override
   _AlertDialogPageState createState() => _AlertDialogPageState();
@@ -164,83 +185,186 @@ class AlertDialogPage extends StatefulWidget {
 
 class _AlertDialogPageState extends State<AlertDialogPage> {
 
-  DateTime now = DateTime.now();
+  TextEditingController _textEditingController, _textEditingControllerInches;
+  bool _loading = false;
+  String hMetric = "";
+
+  StorageSystem ss = new StorageSystem();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    hMetric = widget.hMetric;
+    _textEditingController = new TextEditingController(text: widget.initialValue);
+    _textEditingControllerInches = new TextEditingController(text: widget.initialValueInches);
+  }
+
+  rewriteTimeValue(int value) {
+    return value < 10 ? "0$value" : "$value";
+  }
+
+  getCurrentDateTime() {
+    List<String> months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+    DateTime date = DateTime.now();
+    return "${rewriteTimeValue(date.day)} ${months[date.month - 1]} ${date.year}, ${rewriteTimeValue(date.hour)}:${rewriteTimeValue(date.minute)}";
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      //contentPadding: EdgeInsets.only(left: 20, right: 20),
-      title: Text('Add Height',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-        color: Colors.black,
-        fontSize: getProportionateScreenWidth(20),
-        fontWeight: FontWeight.bold,
-        ),
+      title: Column(
+        children: [
+          Text(widget.title,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.subtitle1.copyWith(
+                  color: Color(MyColors.titleTextColor),
+                  fontSize: getProportionateScreenWidth(18))),
+          Divider()
+        ],
       ),
       shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          borderRadius: BorderRadius.all(Radius.circular(20.0))),
       content: Container(
-      height: 200,
-      width: 300,
-      child: SingleChildScrollView(
-        child: Container(
-          child: Center(
-            child: Column(
-            //crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-            Divider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text('70.0',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Color(MyColors.primaryColor),
-                    fontSize: getProportionateScreenWidth(30),
-                    fontWeight: FontWeight.bold,
+        height: 250,
+        width: MediaQuery.of(context).size.width - 100.0,
+        child: SingleChildScrollView(
+          child: Container(
+            child: Center(
+              child: Column(
+                children: [
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 60.0,
+                          child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            obscureText: false,
+                            autofocus: true,
+                            controller: _textEditingController,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.headline2.copyWith(
+                                fontSize: getProportionateScreenWidth(25),
+                                color: Color(MyColors.primaryColor)
+                            ),
+                            decoration: InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 15,
+                                ),
+                                border: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                enabledBorder: InputBorder.none,hintText: "0",
+
+                                suffixStyle: Theme.of(context).textTheme.bodyText1.copyWith(
+                                    fontSize: getProportionateScreenWidth(10),
+                                    color: Color(MyColors.primaryColor)
+                                ),
+                                suffixText: (hMetric == "ft") ? "feet" : "cm"
+                            ),
+                          ),
+                        ),
+                        (hMetric == "ft") ? Container(
+                          width: 100.0,
+                          child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            obscureText: false,
+                            autofocus: true,
+                            controller: _textEditingControllerInches,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.headline2.copyWith(
+                                fontSize: getProportionateScreenWidth(25),
+                                color: Color(MyColors.primaryColor)
+                            ),
+                            decoration: InputDecoration(
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 15,
+                                ),
+                                border: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                enabledBorder: InputBorder.none,hintText: "0",
+                                suffixStyle: Theme.of(context).textTheme.bodyText1.copyWith(
+                                  fontSize: getProportionateScreenWidth(10),
+                                  color: Color(MyColors.primaryColor)
+                              ),
+                                suffixText: "inches"
+                            ),
+                          ),
+                        ) : Text(""),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: TopicsSelection(text: hMetric, selected: true, onTap: () async {
+                            setState(() {
+                              hMetric = (hMetric == "cm") ? "ft" : "cm";
+                            });
+                            await ss.setPrefItem("height_metric", hMetric);
+                          },),
+                        ),
+                      ],
+                    ),
                   ),
-                 ),
-                 Button2(
-                   text: 'kg',
-                 )
-              ],
+                  Divider(thickness: 2.0,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Date",
+                        style: Theme.of(context).textTheme.subtitle1.copyWith(
+                          color: Color(MyColors.titleTextColor),
+                          fontSize: getProportionateScreenWidth(12),
+                        ),
+                      ),
+                      Text(
+                        getCurrentDateTime(),
+                        style: Theme.of(context).textTheme.subtitle1.copyWith(
+                          color: Color(MyColors.primaryColor),
+                          fontSize: getProportionateScreenWidth(12),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Divider(thickness: 2.0,),
+                  SizedBox(height: SizeConfig.screenHeight * 0.02),
+                  DefaultButton(
+                      text: 'Save',
+                      loading: _loading,
+                      press: () async {
+                        widget.onSaved(double.parse(_textEditingController.text), int.parse(_textEditingControllerInches.text), hMetric);
+                        Navigator.of(context).pop(false);
+                      }),
+                  SizedBox(height: SizeConfig.screenHeight * 0.02),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                      child: Text(
+                        "Cancel",
+                        style: Theme.of(context).textTheme.subtitle1.copyWith(
+                            color: Color(MyColors.primaryColor),
+                            fontSize: getProportionateScreenWidth(16)),
+                      ))
+                ],
+              ),
             ),
-             Divider(),
-             SizedBox(height: SizeConfig.screenHeight * 0.02),
-             Row(
-               mainAxisAlignment: MainAxisAlignment.start,
-               children: [
-                Text('DATE: ',
-                style: TextStyle(
-                color: Colors.black,
-                fontSize: getProportionateScreenWidth(13),
-                fontWeight: FontWeight.bold,
-                ),),
-                Spacer(),
-                Text(now.toString(),
-                style: TextStyle(
-                color: Color(MyColors.primaryColor),
-                fontSize: getProportionateScreenWidth(13),
-                fontWeight: FontWeight.bold,
-                ),
-                ),
-               ],
-             ),
-             SizedBox(height: SizeConfig.screenHeight * 0.02),
-             Divider(),
-             SizedBox(height:   SizeConfig.screenHeight * 0.02),
-             DefaultButton(
-                 text: 'Save',
-                 press: (){
-                   Navigator.pop(context);
-                 }
-               ) 
-            ],
           ),
         ),
       ),
-     ),
-   ),
-  );
- }
+    );
+  }
 }

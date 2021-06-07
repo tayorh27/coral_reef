@@ -10,10 +10,6 @@ import 'components/insight_card.dart';
 import 'components/populate_diet_summary.dart';
 import 'components/water_card.dart';
 
-// import '../../screens/sleepscreen/sleep.dart';
-// import '../../screens/moodscreen/moodscreen.dart';
-// import '../../screens/vitaminscreen/vitamin.dart';
-
 
 class DietTrackerScreen extends StatefulWidget {
   @override

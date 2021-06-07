@@ -92,7 +92,7 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
                 title4: 'Total km: $totalKm',
                 textColor: Color(MyColors.primaryColor),
                 press: () {
-                  Navigator.pushNamed(context, TrackActivities.routeName);
+                  // Navigator.pushNamed(context, TrackActivities.routeName);
                 },
                 color: Colors.purpleAccent.withOpacity(0.1),
                 child: SvgPicture.asset(

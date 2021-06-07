@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/storage.dart';
@@ -78,7 +80,10 @@ class _SplashScreenState extends State<SplashScreen> {
   appCheck() async {
     DocumentSnapshot query = await FirebaseFirestore.instance.collection("db").doc("global-settings").get();
     Map<String, dynamic> dt = query.data();
-    destroyApp = dt["destroy_app"];
+    destroyApp = (Platform.isIOS) ? dt["destroy_app_ios"] : dt["destroy_app_android"];
+    if(destroyApp == null) {
+      destroyApp = false;
+    }
   }
 
   gotoOnBoardingScreen() {
