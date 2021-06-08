@@ -142,7 +142,7 @@ class _VitaminGoal extends State<VitaminGoal> {
                                     currentTakenVitamins = "${currentV - 1}";
                                     getPointerValue();
                                   });
-                                  vitaminServices.updateVitaminTakenCount(currentV - 1);
+                                  vitaminServices.updateVitaminTakenCount(currentV - 1, goal);
                                 },
                                 child: PillIcon(
                                   icon: 'assets/well_being/Subtract.svg',
@@ -151,13 +151,17 @@ class _VitaminGoal extends State<VitaminGoal> {
                                 ),
                               ),
                               InkWell(
-                                onTap: () {
+                                onTap: () async {
+                                  int goal = int.parse(vitaminsGoal);
+                                  if(goal <= 0) {
+                                    return;
+                                  }
                                   int currentV = int.parse(currentTakenVitamins);
                                   setState(() {
                                     currentTakenVitamins = "${currentV + 1}";
                                     getPointerValue();
                                   });
-                                  vitaminServices.updateVitaminTakenCount(currentV + 1);
+                                  await vitaminServices.updateVitaminTakenCount(currentV + 1, goal);
                                 },
                                 child: PillIcon(
                                   icon: 'assets/well_being/add.svg',
@@ -325,6 +329,7 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
                   DefaultButton(
                       text: 'Save',
                       press: () async {
+                        if(_textEditingController.text.isEmpty) return;
                         await vitaminServices.saveVitaminGoal(_textEditingController.text);
                         widget.onOptionSelected(_textEditingController.text);
                         Navigator.of(context).pop(false);

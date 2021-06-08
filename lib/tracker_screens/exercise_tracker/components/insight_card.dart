@@ -1,8 +1,11 @@
 import 'dart:math';
 
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/shared_screens/pill_icon.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/insight.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/services/exercise_service.dart';
+import 'package:coral_reef/tracker_screens/insights/dew_insights.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -24,9 +27,17 @@ class _ExerciseInsightCard extends State<ExerciseInsightCard> {
 
   int touchedGroupIndex;
 
+  String stepsGoal = "0", currentTakenSteps = "0";
+
+  ExerciseService exerciseService;
+
+  StorageSystem ss = new StorageSystem();
+
   @override
   void initState() {
     super.initState();
+    exerciseService = new ExerciseService();
+    getStepsLocalData();
     final barGroup1 = makeGroupData(0, 5, 12);
     final barGroup2 = makeGroupData(1, 16, 12);
     final barGroup3 = makeGroupData(2, 18, 5);
@@ -50,11 +61,26 @@ class _ExerciseInsightCard extends State<ExerciseInsightCard> {
     showingBarGroups = rawBarGroups;
   }
 
+  getStepsLocalData() async {
+    final date = DateTime.now();
+    final months = ["JAN", "FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
+    String formatDate = "${date.year}_${months[date.month - 1]}_${date.day}";
+
+    String goal = await ss.getItem("stepsGoal") ?? "0";
+    String current = await ss.getItem("stepsCurrent_$formatDate") ?? "0";
+
+    setState(() {
+      stepsGoal = goal;
+      currentTakenSteps = current;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, ExerciseInsight.routeName);
+        Navigator.pushNamed(context, DewInsights.routeName, arguments: "Steps");
       },
       child: Container(
         decoration: BoxDecoration(
@@ -62,7 +88,7 @@ class _ExerciseInsightCard extends State<ExerciseInsightCard> {
           borderRadius: BorderRadius.circular(10),
         ),
         width: double.infinity,
-        height: getProportionateScreenHeight(320),
+        height: getProportionateScreenHeight(145),
         padding: EdgeInsets.all(20.0),
         child: Column(
           children: [
@@ -95,9 +121,9 @@ class _ExerciseInsightCard extends State<ExerciseInsightCard> {
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: "4,899\n",
+                        text: "$stepsGoal\n",
                         style: Theme.of(context).textTheme.bodyText2.copyWith(
-                            fontSize: getProportionateScreenWidth(18),
+                            fontSize: getProportionateScreenWidth(15),
                             color: Color(MyColors.titleTextColor)),
                       ),
                       TextSpan(
@@ -114,13 +140,13 @@ class _ExerciseInsightCard extends State<ExerciseInsightCard> {
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: "32.899\n",
+                        text: "$currentTakenSteps\n",
                         style: Theme.of(context).textTheme.bodyText1.copyWith(
-                            fontSize: getProportionateScreenWidth(18),
+                            fontSize: getProportionateScreenWidth(15),
                             color: Color(MyColors.primaryColor)),
                       ),
                       TextSpan(
-                        text: "Total Steps",
+                        text: "Total Steps Taken",
                         style: Theme.of(context)
                             .textTheme
                             .subtitle1
@@ -135,7 +161,9 @@ class _ExerciseInsightCard extends State<ExerciseInsightCard> {
             SizedBox(
               height: 20,
             ),
-            AspectRatio(
+            Visibility(
+              visible: false,
+              child: AspectRatio(
               aspectRatio: 2,
               child: Padding(
                 padding: const EdgeInsets.all(2),
@@ -169,7 +197,7 @@ class _ExerciseInsightCard extends State<ExerciseInsightCard> {
 
                                   setState(() {
                                     if (response.touchInput
-                                            is PointerExitEvent ||
+                                    is PointerExitEvent ||
                                         response.touchInput is PointerUpEvent) {
                                       touchedGroupIndex = -1;
                                       showingBarGroups = List.of(rawBarGroups);
@@ -178,9 +206,9 @@ class _ExerciseInsightCard extends State<ExerciseInsightCard> {
                                       if (touchedGroupIndex != -1) {
                                         double sum = 0;
                                         for (BarChartRodData rod
-                                            in showingBarGroups[
-                                                    touchedGroupIndex]
-                                                .barRods) {
+                                        in showingBarGroups[
+                                        touchedGroupIndex]
+                                            .barRods) {
                                           sum += rod.y;
                                         }
                                         final avg = sum /
@@ -191,13 +219,13 @@ class _ExerciseInsightCard extends State<ExerciseInsightCard> {
                                         showingBarGroups[touchedGroupIndex] =
                                             showingBarGroups[touchedGroupIndex]
                                                 .copyWith(
-                                          barRods: showingBarGroups[
-                                                  touchedGroupIndex]
-                                              .barRods
-                                              .map((rod) {
-                                            return rod.copyWith(y: avg);
-                                          }).toList(),
-                                        );
+                                              barRods: showingBarGroups[
+                                              touchedGroupIndex]
+                                                  .barRods
+                                                  .map((rod) {
+                                                return rod.copyWith(y: avg);
+                                              }).toList(),
+                                            );
                                       }
                                     }
                                   });
@@ -264,7 +292,7 @@ class _ExerciseInsightCard extends State<ExerciseInsightCard> {
                   ],
                 ),
               ),
-            ),
+            ),)
           ],
         ),
       ),

@@ -257,6 +257,7 @@ class _WeightGoal extends State<WeightGoal> {
               inches: currentInch,
               wMetric: weightMetric,
               hMetric: heightMetric,
+              weightGoal: goalWeight,
               onSaved: (weight, metric) {
                 setState(() {
                   currentWeight = "$weight";
@@ -271,7 +272,7 @@ class _WeightGoal extends State<WeightGoal> {
 
 class AlertDialogPage extends StatefulWidget {
   const AlertDialogPage(
-      {Key key, this.title, this.initialValue, this.height, this.inches, this.wMetric, this.hMetric, this.onSaved})
+      {Key key, this.title, this.initialValue, this.height, this.inches, this.wMetric, this.hMetric, this.weightGoal, this.onSaved})
       : super(key: key);
   final String title;
   final String initialValue;
@@ -279,6 +280,7 @@ class AlertDialogPage extends StatefulWidget {
   final String inches;
   final String wMetric;
   final String hMetric;
+  final String weightGoal;
   final Function(double newWeight, String newMetric) onSaved;
 
   @override
@@ -438,7 +440,8 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
                       text: 'Save',
                       loading: _loading,
                       press: () async {
-                        await dietServices.updateWeightData(_textEditingController.text, calculateBMI(), widget.height);
+                        if(_textEditingController.text.isEmpty) return;
+                        await dietServices.updateWeightData(_textEditingController.text, calculateBMI(), widget.height, widget.weightGoal);
                         widget.onSaved(double.parse(_textEditingController.text), wMetric);
                         Navigator.of(context).pop(false);
                       }),

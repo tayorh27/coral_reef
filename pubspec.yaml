@@ -92,6 +92,8 @@ dependencies:
   flutter_background_service: ^0.1.4
   location: ^4.1.1
   screen: ^0.0.5
+  group_button: ^2.2.2
+  jiffy: ^4.1.0
 #  carp_core: ^0.20.0
 #  carp_mobile_sensing: ^0.20.0
 #  carp_audio_package: ^0.20.0

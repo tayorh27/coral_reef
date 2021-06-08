@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/ListItem/model_challenge.dart';
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/constants.dart';
 import 'package:coral_reef/services/step_service.dart';
 import 'package:coral_reef/tracker_screens/diet_tracker_screen/components/calories_slider.dart';
@@ -9,6 +10,7 @@ import 'package:coral_reef/tracker_screens/exercise_tracker/components/exercise_
 import 'package:coral_reef/tracker_screens/exercise_tracker/components/exercise_summary_card.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/steps.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/track_activities.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/services/exercise_service.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/view_models/step_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -29,11 +31,34 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
   double totalKm = 0.0;
   int totalChallenge = 0;
 
+  String stepsGoal = "0", currentTakenSteps = "0";
+
+  ExerciseService exerciseService;
+
+  StorageSystem ss = new StorageSystem();
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    exerciseService = new ExerciseService();
+    getStepsLocalData();
     getChallenges();
+  }
+
+  getStepsLocalData() async {
+    final date = DateTime.now();
+    final months = ["JAN", "FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
+    String formatDate = "${date.year}_${months[date.month - 1]}_${date.day}";
+
+    String goal = await ss.getItem("stepsGoal") ?? "0";
+    String current = await ss.getItem("stepsCurrent_$formatDate") ?? "0";
+
+    setState(() {
+      stepsGoal = goal;
+      currentTakenSteps = current;
+    });
   }
 
   getChallenges() async {
@@ -54,6 +79,9 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
     });
   }
 
+  double getPointerValue() {
+    return ((double.parse(currentTakenSteps) / double.parse(stepsGoal)) * 100);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,15 +101,16 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
                 icon: 'assets/exercise/foot_white.svg',
                 title2: '',
                 title3: model.steps,
-                title4: "Goal: ${model.stepsGoal.floor().toString()}",
+                title4: "Goal: $stepsGoal",//"Goal: ${model.stepsGoal.floor().toString()}",
                 textColor: Colors.white,
-                press: () {
+                press: () async {
                   //go to well-being setup screen
-                  Navigator.pushNamed(context, Steps.routeName);
+                  await Navigator.pushNamed(context, Steps.routeName);
+                  getStepsLocalData();
                   // Navigator.pushNamed(context, SleepScreen.routeName);
                 },
                 color: Color(MyColors.primaryColor),
-                child: ExerciseSlider(),
+                child: CaloriesSlider(getPointerValue(), icon: "assets/exercise/foot_white.svg", text: "", height: 40.0,), //ExerciseSlider(),
               ),
               SizedBox(width: SizeConfig.screenWidth * 0.03),
               ExerciseSummaryCard(

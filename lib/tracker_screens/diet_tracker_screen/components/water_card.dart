@@ -23,6 +23,8 @@ class _WaterCard extends State<WaterCard> {
 
   StorageSystem ss = new StorageSystem();
 
+  Color waterCardColor;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -43,7 +45,25 @@ class _WaterCard extends State<WaterCard> {
     setState(() {
       waterGoal = goal;
       currentTakenWater = current;
+      waterCardColor = getWaterState();
     });
+  }
+
+  Color getWaterState() {
+    Color state = Color(MyColors.stroke3Color);
+
+    double goal = double.parse(waterGoal);
+    double current = double.parse(currentTakenWater);
+
+    if(current == 0 || current < (goal / current)) {
+      state = Color(MyColors.stroke1Color);
+    }
+
+    if(current >= (goal / current) && current < goal) {
+      state = Color(MyColors.stroke2Color);
+    }
+
+    return state;
   }
 
   @override
@@ -55,7 +75,7 @@ class _WaterCard extends State<WaterCard> {
       },
       child: Container(
           decoration: BoxDecoration(
-            color: Color(MyColors.other2),
+            color: waterCardColor, //Color(MyColors.other2),
             borderRadius: BorderRadius.circular(10),
           ),
           width: double.infinity,
@@ -86,7 +106,7 @@ class _WaterCard extends State<WaterCard> {
                           setState(() {
                             currentTakenWater = "${currentV - 1}";
                           });
-                          dietServices.updateWaterTakenCount(currentV - 1);
+                          dietServices.updateWaterTakenCount(currentV - 1, goal);
                         },
                         child: PillIcon(
                           icon: 'assets/well_being/Subtract.svg',
@@ -107,11 +127,15 @@ class _WaterCard extends State<WaterCard> {
                       ),
                       InkWell(
                         onTap: (){
+                          int goal = int.parse(waterGoal);
+                          if(goal <= 0) {
+                            return;
+                          }
                           int currentV = int.parse(currentTakenWater);
                           setState(() {
                             currentTakenWater = "${currentV + 1}";
                           });
-                          dietServices.updateWaterTakenCount(currentV + 1);
+                          dietServices.updateWaterTakenCount(currentV + 1, goal);
                         },
                         child: PillIcon(
                           icon: 'assets/well_being/add.svg',

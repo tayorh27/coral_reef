@@ -153,10 +153,12 @@ class _SleepScreen extends State<SleepScreen> {
                                                 if(bt == "PM") {
                                                   v = (v == 12) ? 12 : v - 12; //convert 24-hr to 12-hr time
                                                 }
+                                                int _diff = wakeupValue - value.ceil();
+                                                int diff = (_diff < 0) ? (_diff * -1) : _diff;
                                                 setState(() {
                                                   bedtimeValue = v;
                                                   bedtime = "$v:00 $bt";
-                                                  sleepingTime = "${wakeupValue - value.ceil()} hrs";
+                                                  sleepingTime = "$diff hrs";
                                                 });
                                               },
                                               ),
@@ -190,10 +192,12 @@ class _SleepScreen extends State<SleepScreen> {
                                                 if(bt == "PM") {
                                                   v = (v == 12) ? 12 : v - 12; //convert 24-hr to 12-hr time
                                                 }
+                                                int _diff = value.ceil() - bedtimeValue;
+                                                int diff = (_diff < 0) ? (_diff * -1) : _diff;
                                                 setState(() {
                                                   wakeupValue = v;
                                                   wakeup = "$v:00 $bt";
-                                                  sleepingTime = "${value.ceil() - bedtimeValue} hrs";
+                                                  sleepingTime = "$diff hrs";
                                                 });
                                               },
                                               ),

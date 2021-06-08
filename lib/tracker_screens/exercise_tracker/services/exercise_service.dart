@@ -2,12 +2,14 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/ListItem/model_challenge.dart';
+import 'package:coral_reef/ListItem/model_diet_data.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/constants.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:jiffy/jiffy.dart';
 import 'package:location/location.dart';
 
 import 'dart:math' as Math;
@@ -16,7 +18,16 @@ import 'package:vector_math/vector_math.dart' as Vector;
 class ExerciseService {
   StorageSystem ss = new StorageSystem();
 
-  ExerciseService();
+  String year, month, day, week, hour, min;
+  final date = DateTime.now();
+  final months = [
+    "JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG", "SEP","OCT","NOV","DEC"
+  ];
+
+  ExerciseService() {
+    year = date.year.toString();
+    month = months[date.month - 1];
+  }
 
    static double ONE_SECOND = 1000;
    static double SECONDS = 60;
@@ -221,5 +232,94 @@ class ExerciseService {
     VirtualChallengeActivities vca = new VirtualChallengeActivities(id, user.uid, "stat", "${json["firstname"]} ${json["lastname"]} $text", image, new DateTime.now().toString(), FieldValue.serverTimestamp(), ch.msgId);
     await FirebaseFirestore.instance.collection("challenges").doc(ch.id).collection("activities").doc(id).set(vca.toJSON());
 
+  }
+
+  Future<void> saveStepsGoal(String goal) async {
+    await ss.setPrefItem("stepsGoal", goal);
+  }
+
+  Future<void> updateStepsTakenCount(int value, int goal) async {
+
+    final date = DateTime.now();
+    final months = ["JAN", "FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+    final days = ["MON","TUE","WED","THU","FRI","SAT","SUN"];
+
+    String weekValue = Jiffy(date).week.toString();
+
+    String formatDate = "${date.year}_${months[date.month - 1]}_${date.day}";
+
+    String year = date.year.toString();
+    String month = months[date.month - 1];
+    String day = "${date.day}";
+    String week = days[date.weekday - 1];
+    String hour = "${date.hour}";
+    String min = "${date.minute}";
+
+    String id = "${date.year}-${months[date.month - 1]}-${date.day}"; //FirebaseDatabase.instance.reference().push().key;
+
+    WaterData wd = new WaterData(id, year, month, day, week, weekValue, hour, min, date.toString(), "$value", "$goal", FieldValue.serverTimestamp());
+
+    await ss.setPrefItem("stepsCurrent_$formatDate", "$value");
+
+    await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("steps").doc(id).set(wd.toJSON());
+
+  }
+
+  Map<String, dynamic> manipulateStepsMonthData(List<WaterData> waterData) {
+    Map<String, dynamic> storage = new Map();
+
+    waterData.forEach((element) {
+      String value = months.indexWhere((mth) => mth == element.month).toString();
+      if(storage[value] == null) {
+        storage[value] = int.parse(element.glasses_count);
+      }
+      else {
+        dynamic sum = storage[value];
+        storage[value] = sum + int.parse(element.glasses_count);
+      }
+    });
+
+    return storage;
+  }
+
+  List<Map<String, dynamic>> manipulateStepsWeekData(List<WaterData> mWaterData) {
+    Map<String, dynamic> storage = new Map();
+    Map<String, dynamic> weekRangeStorage = new Map();
+    Map<String, dynamic> storageCount = new Map();
+
+    int numberOfMonths = (month == "SEP" || month == "APR" || month == "JUN" || month == "NOV") ? 30 : (month == "FEB") ? 28 : 31;
+    int weekNumber = 1;
+    int startDay = 1, endDay = 1;
+    for (int i = 1; i <= numberOfMonths; i++) {
+      endDay = i;
+      DateTime dt = DateTime(int.parse(year), date.month, i);
+      if(dt.weekday == DateTime.monday) {
+        if (i != 1) {
+          weekRangeStorage["$weekNumber"] = "$month $startDay - ${endDay - 1}";
+          startDay = endDay;
+          weekNumber = weekNumber + 1; //go to the next week
+        }
+      }
+      List<WaterData> sd = mWaterData.where((element) => element.day == "$i").toList();
+      if(sd.isNotEmpty) {
+        if(storage["$weekNumber"] == null) {
+          storage["$weekNumber"] = int.parse(sd[0].glasses_count);
+        }else {
+          dynamic sum = storage["$weekNumber"];
+          storage["$weekNumber"] = sum + int.parse(sd[0].glasses_count);
+        }
+
+        //for storage count
+        if(storageCount["$weekNumber"] == null) {
+          storageCount["$weekNumber"] = 1;
+        }else {
+          dynamic sum = storageCount["$weekNumber"];
+          storageCount["$weekNumber"] = sum + 1;
+        }
+      }
+    }
+    return [
+      storage,weekRangeStorage,storageCount
+    ];
   }
 }

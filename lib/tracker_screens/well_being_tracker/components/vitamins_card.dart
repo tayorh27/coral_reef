@@ -75,7 +75,7 @@ class _VitaminCard extends State<VitaminCard> {
                   Row(
                     children: [
                       InkWell(
-                        onTap: () {
+                        onTap: () async {
                           int goal = int.parse(vitaminsGoal);
                           int currentV = int.parse(currentTakenVitamins);
                           if(goal <= 0 || (currentV - 1) < 0) {
@@ -84,7 +84,7 @@ class _VitaminCard extends State<VitaminCard> {
                           setState(() {
                             currentTakenVitamins = "${currentV - 1}";
                           });
-                          vitaminServices.updateVitaminTakenCount(currentV - 1);
+                          await vitaminServices.updateVitaminTakenCount(currentV - 1, goal);
                         },
                         child: PillIcon(
                           icon: 'assets/well_being/Subtract.svg',
@@ -96,12 +96,16 @@ class _VitaminCard extends State<VitaminCard> {
                         size: 20,
                       ),
                       InkWell(
-                        onTap: () {
+                        onTap: () async {
+                          int goal = int.parse(vitaminsGoal);
+                          if(goal <= 0) {
+                            return;
+                          }
                           int currentV = int.parse(currentTakenVitamins);
                           setState(() {
                             currentTakenVitamins = "${currentV + 1}";
                           });
-                          vitaminServices.updateVitaminTakenCount(currentV + 1);
+                          await vitaminServices.updateVitaminTakenCount(currentV + 1, goal);
                         },
                         child: PillIcon(
                           icon: 'assets/well_being/add.svg',

@@ -192,6 +192,7 @@ class _CaloriesGoal extends State<CaloriesGoal> {
           return AlertDialogPage(
               title: "Add Calories",
               initialValue: currentTakenCalories,
+              goal: caloriesGoal,
               onOptionSelected: (val) {
                 if (!mounted) return;
                 setState(() {
@@ -223,12 +224,13 @@ class _CaloriesGoal extends State<CaloriesGoal> {
 
 class AlertDialogPage extends StatefulWidget {
   const AlertDialogPage(
-      {Key key, this.onOptionSelected, this.title, this.initialValue = ""})
+      {Key key, this.onOptionSelected, this.title, this.initialValue = "", this.goal})
       : super(key: key);
 
   final Function(String value) onOptionSelected;
   final String title;
   final String initialValue;
+  final String goal;
 
   @override
   _AlertDialogPageState createState() => _AlertDialogPageState();
@@ -344,13 +346,14 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
                       text: 'Save',
                       loading: _loading,
                       press: () async {
+                        if(_textEditingController.text.isEmpty) return;
                         setState(() {
                           _loading = true;
                         });
                         double initCount = double.parse(widget.initialValue);
                         double current = double.parse(_textEditingController.text);
                         String total = (initCount + current).ceil().toString();
-                        await dietServices.updateCaloriesTakenCount(total);
+                        await dietServices.updateCaloriesTakenCount(total, widget.goal);
                         setState(() {
                           _loading = false;
                         });
@@ -499,6 +502,7 @@ class _AlertDialogPageStateGoal extends State<AlertDialogPageGoal> {
                   DefaultButton(
                       text: 'Save',
                       press: () async {
+                        if(_textEditingController.text.isEmpty) return;
                         await dietServices.saveCaloriesGoal(_textEditingController.text);
                         widget.onOptionSelected(_textEditingController.text);
                         Navigator.of(context).pop(false);

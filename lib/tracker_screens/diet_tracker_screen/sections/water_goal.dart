@@ -143,7 +143,7 @@ class _WaterGoal extends State<WaterGoal> {
                                             currentTakenWater = "${currentV - 1}";
                                             getPointerValue();
                                           });
-                                          dietServices.updateWaterTakenCount(currentV - 1);
+                                          dietServices.updateWaterTakenCount(currentV - 1, goal);
                                         },
                                         child: PillIcon(
                                           icon: 'assets/well_being/Subtract.svg',
@@ -153,12 +153,16 @@ class _WaterGoal extends State<WaterGoal> {
                                       ),
                                       InkWell(
                                         onTap: () {
+                                          int goal = int.parse(waterGoal);
+                                          if(goal <= 0) {
+                                            return;
+                                          }
                                           int currentV = int.parse(currentTakenWater);
                                           setState(() {
                                             currentTakenWater = "${currentV + 1}";
                                             getPointerValue();
                                           });
-                                          dietServices.updateWaterTakenCount(currentV + 1);
+                                          dietServices.updateWaterTakenCount((currentV + 1), goal);
                                         },
                                         child: PillIcon(
                                           icon: 'assets/well_being/add.svg',
@@ -335,6 +339,7 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
                   DefaultButton(
                       text: 'Save',
                       press: () async {
+                        if(_textEditingController.text.isEmpty) return;
                         await dietServices.saveWaterGoal(_textEditingController.text);
                         widget.onOptionSelected(_textEditingController.text);
                         Navigator.of(context).pop(false);

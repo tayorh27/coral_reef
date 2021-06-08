@@ -25,6 +25,7 @@ class _PopulateCardTiles extends State<PopulateCardTiles> {
     // TODO: implement initState
     super.initState();
     getMoodLocalData();
+    getSleepLocalData();
   }
 
   getSleepLocalData() async {
@@ -66,8 +67,8 @@ class _PopulateCardTiles extends State<PopulateCardTiles> {
         SleepMoodCard(
             title: 'Sleep',
             icon: 'assets/well_being/arc.svg',
-            title2: bedtime,
-            title3: wakeup,
+            title2: "",
+            title3: "$bedtime - $wakeup",
             title4: sleepingTime,
             press: () async {
               await Navigator.pushNamed(context, SleepScreen.routeName);
@@ -77,7 +78,7 @@ class _PopulateCardTiles extends State<PopulateCardTiles> {
         SizedBox(width: SizeConfig.screenWidth * 0.03),
         SleepMoodCard(
             title: 'Mood',
-            icon: currentMood == "" ? 'Set Mood' : 'assets/well_being/${currentMood.toLowerCase()}.svg',
+            icon: currentMood == "" ? "Set Mood" : 'assets/well_being/${currentMood.toLowerCase()}.svg',
             title2: '',
             title3: 'Current Mood',
             title4: currentMood,
@@ -86,7 +87,6 @@ class _PopulateCardTiles extends State<PopulateCardTiles> {
               getMoodLocalData();
             },
             color: Color(MyColors.stroke1Color)),
-
       ],
     );
   }

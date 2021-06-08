@@ -10,8 +10,11 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 class CaloriesSlider extends StatefulWidget {
 
   final double sliderValue;
+  final double height;
+  final String icon;
+  final String text;
 
-  CaloriesSlider(this.sliderValue);
+  CaloriesSlider(this.sliderValue, {this.icon = "assets/diet/kcal.svg", this.text = "kcal", this.height = 20.0});
 
   @override
   State<StatefulWidget> createState() => _CaloriesSlider();
@@ -62,8 +65,9 @@ class _CaloriesSlider extends State<CaloriesSlider> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            SvgPicture.asset("assets/diet/kcal.svg", height: 20.0,),
-                            Text("kcal", style: Theme.of(context).textTheme.subtitle1.copyWith(
+                            (widget.height == 40.0) ? SizedBox(height: 20,) : SizedBox(),
+                            SvgPicture.asset(widget.icon, height: widget.height),
+                            Text(widget.text, style: Theme.of(context).textTheme.subtitle1.copyWith(
                                 color: Colors.white,
                                 fontSize: getProportionateScreenWidth(15),
                                 fontWeight: FontWeight.bold

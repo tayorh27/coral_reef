@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/shared_screens/pill_icon.dart';
+import 'package:coral_reef/tracker_screens/insights/dew_insights.dart';
 import 'package:flutter/material.dart';
 
 import '../../../size_config.dart';
@@ -33,6 +34,7 @@ class _InsightCard extends State<InsightCard> {
     String wMetric = await ss.getItem("weight_metric");
     String hMetric = await ss.getItem("height_metric");
     Map<String, dynamic> json = jsonDecode(exercise);
+    if(!mounted) return;
     setState(() {
       goalWeight = "${json["2"]}";
       currentHeight = "${json["3"]}";
@@ -87,7 +89,7 @@ class _InsightCard extends State<InsightCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigator.pushNamed(context, InsightsScreen.routeName);
+        Navigator.pushNamed(context, DewInsights.routeName, arguments: "Weight");
       },
       child: Container(
         decoration: BoxDecoration(

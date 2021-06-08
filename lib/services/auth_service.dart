@@ -33,7 +33,7 @@ class AuthService {
       onComplete(user, "success", "google", googleAuth);
     } catch (err) {
       onComplete(null, "error", "google", null);
-      new GeneralUtils().displayAlertDialog(context, "Error Message", "$err");
+      new GeneralUtils().displayAlertDialog(context, "Error Message", "An error occurred. Please try again.");
     }
     return null;
   }
@@ -129,7 +129,7 @@ class AuthService {
       onComplete(credential.user, "success", "firebase", null);
     }).catchError((err) {
       onComplete(null, "error", "firebase", null);
-      new GeneralUtils().displayAlertDialog(context, 'Error', '${err.toString()}');
+      new GeneralUtils().displayAlertDialog(context, 'Error', 'An error occurred. Please try again.');
     });
   }
 
@@ -138,7 +138,7 @@ class AuthService {
       onComplete(credential.user, "success", "firebase", null);
     }).catchError((err) {
       onComplete(null, "error", "firebase", null);
-      new GeneralUtils().displayAlertDialog(context, 'Error', '${err.toString()}');
+      new GeneralUtils().displayAlertDialog(context, 'Error', 'An error occurred. Please try again.');
     });
   }
 
@@ -148,7 +148,7 @@ class AuthService {
       new GeneralUtils().displayAlertDialog(context, 'Attention', 'A password reset link has been sent to your email.');
     }).catchError((err) {
       onComplete(null, "error", "firebase", null);
-      new GeneralUtils().displayAlertDialog(context, 'Error', '${err.toString()}');
+      new GeneralUtils().displayAlertDialog(context, 'Error', 'An error occurred. Please try again.');
     });
   }
 }

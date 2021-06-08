@@ -9,6 +9,7 @@ import 'package:coral_reef/tracker_screens/diet_tracker_screen/sections/water_go
 import 'package:coral_reef/tracker_screens/diet_tracker_screen/sections/weight_goal.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/active_challenge/track_challenge_activities.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/community_challenge_details.dart';
+import 'package:coral_reef/tracker_screens/insights/dew_insights.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/period_tracker_screen.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/sections/login_symptoms.dart';
 import 'package:coral_reef/tracker_screens/period_tracker/sections/period_calendar_date.dart';
@@ -121,4 +122,5 @@ final Map<String, WidgetBuilder> routes = {
   WaterGoal.routeName: (context) => WaterGoal(),
   WeightGoal.routeName: (context) => WeightGoal(),
   CaloriesGoal.routeName: (context) => CaloriesGoal(),
+  DewInsights.routeName: (context) => DewInsights(),
 };

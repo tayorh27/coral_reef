@@ -37,6 +37,7 @@ class _DietTrackerScreen extends State<DietTrackerScreen> {
                 WaterCard(),
                 SizedBox(height: SizeConfig.screenHeight * 0.02),
                 InsightCard(),
+                SizedBox(height: SizeConfig.screenHeight * 0.05),
               ],
             ),
           ),
