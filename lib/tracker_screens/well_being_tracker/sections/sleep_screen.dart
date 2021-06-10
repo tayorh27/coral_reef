@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:coral_reef/Library/TimeRangePicker/time_range_picker.dart';
 import 'package:coral_reef/ListItem/model_vitamins_data.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/general.dart';
@@ -10,8 +11,11 @@ import 'package:coral_reef/shared_screens/pill_icon.dart';
 import 'package:coral_reef/tracker_screens/well_being_tracker/components/diet_header.dart';
 import 'package:coral_reef/tracker_screens/well_being_tracker/services/vitamins_services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:time_range_picker/time_range_picker.dart';
 
 import '../../../size_config.dart';
 
@@ -35,6 +39,9 @@ class _SleepScreen extends State<SleepScreen> {
   String bedtime = "N/A", wakeup = "N/A", sleepingTime = "N/A";
 
   int bedtimeValue = 0, wakeupValue = 6;
+
+  TimeOfDay startPeriod, endPeriod;
+  DateTime today = DateTime.now();
 
   @override
   void initState() {
@@ -93,118 +100,188 @@ class _SleepScreen extends State<SleepScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.max,
                               children: [
-                                SizedBox(height: SizeConfig.screenHeight * 0.01),
-                                Padding(padding: EdgeInsets.symmetric(horizontal: 40),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      topSleepSummary("assets/well_being/sleep.svg", "BEDTIME", bedtime),
-                                      topSleepSummary("assets/well_being/time.svg", "WAKE UP", wakeup)
-                                    ],
-                                  ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Scroll down to save", textAlign: TextAlign.center,
+                                      style: Theme.of(context).textTheme.subtitle1.copyWith(
+                                          color: Color(MyColors.titleTextColor),
+                                          fontSize: getProportionateScreenWidth(12)),
+                                    ),
+                                  ],
                                 ),
-                                Padding(
+                                // Padding(padding: EdgeInsets.symmetric(horizontal: 40),
+                                //   child: Row(
+                                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                //     children: [
+                                //       topSleepSummary("assets/well_being/sleep.svg", "BEDTIME", bedtime),
+                                //       topSleepSummary("assets/well_being/time.svg", "WAKE UP", wakeup)
+                                //     ],
+                                //   ),
+                                // ),
+                                TimeRangePicker(
+                                  hideButtons: true,
+                                  // hideTimes: true,
+                                  paintingStyle: PaintingStyle.stroke,
+                                  start: TimeOfDay(hour: bedtimeValue, minute: 0),
+                                  end: TimeOfDay(hour: wakeupValue, minute: 0),
+                                  use24HourFormat: true,
+                                  strokeWidth: 5,
+                                  ticks: 24,
+                                  ticksOffset: -7,
+                                  ticksColor: Color(MyColors.primaryColor), //["12 PM", "3 AM" "6 AM", "9 AM", "12 AM", "3 PM", "6 PM", "9 PM"]
+                                  // labels: ["12 AM", "3 AM" "6 AM", "9 AM", "12 PM", "3 PM", "6 PM", "9 PM", "12 AM"].asMap().entries.map((e) {
+                                  //   return ClockLabel.fromIndex(idx: e.key, length: 9, text: e.value);
+                                  // }).toList(),
+                                  labels: [
+                                    ClockLabel.fromTime(time: TimeOfDay(hour: 12, minute: 0), text: "12 PM"),
+                                    ClockLabel.fromTime(time: TimeOfDay(hour: 15, minute: 0), text: "3 PM"),
+                                    ClockLabel.fromTime(time: TimeOfDay(hour: 18, minute: 0), text: "6 PM"),
+                                    ClockLabel.fromTime(time: TimeOfDay(hour: 21, minute: 0), text: "9 PM"),
+                                    ClockLabel.fromTime(time: TimeOfDay(hour: 0, minute: 0), text: "12 AM"),
+                                    ClockLabel.fromTime(time: TimeOfDay(hour: 3, minute: 0), text: "3 AM"),
+                                    ClockLabel.fromTime(time: TimeOfDay(hour: 6, minute: 0), text: "6 AM"),
+                                    ClockLabel.fromTime(time: TimeOfDay(hour: 9, minute: 0), text: "9 AM"),
+                                  ],
+                                  labelOffset: 35,
+                                  rotateLabels: false,
+                                  padding: 60,
+                                  onStartChange: (startTime) {
+                                    startPeriod = startTime;
+                                    List<String> period = ["AM","PM"];
+                                    String bt = "${startTime.hour}:${startTime.minute} ${period[startTime.period.index]}";
+                                    int diff = 0;
+                                    if(endPeriod != null) {
+                                      DateTime s = new DateTime(today.year, today.month, today.day, startPeriod.hour, startPeriod.minute);
+                                      DateTime e = new DateTime(today.year, today.month, today.day, endPeriod.hour, endPeriod.minute);
+                                      diff = 24 + (endPeriod.hour - startPeriod.hour);//s.difference(e).inHours;
+                                    }
+                                    setState(() {
+                                      bedtimeValue = startTime.hour;
+                                      bedtime = bt;
+                                      sleepingTime = "$diff hrs";
+                                    });
+                                  },
+                                  onEndChange: (endTime) {
+                                    endPeriod = endTime;
+                                    List<String> period = ["AM","PM"];
+                                    String wkt = "${endTime.hour}:${endTime.minute} ${period[endTime.period.index]}";
+                                    int diff = 0;
+                                    if(startPeriod != null) {
+                                      DateTime s = new DateTime(today.year, today.month, today.day, startPeriod.hour, startPeriod.minute);
+                                      DateTime e = new DateTime(today.year, today.month, today.day, endPeriod.hour, endPeriod.minute);
+                                      diff = 24 + (endPeriod.hour - startPeriod.hour);//s.difference(e).inHours;
+                                    }
+                                    setState(() {
+                                      wakeupValue = endTime.hour;
+                                      wakeup = wkt;
+                                      sleepingTime = "$diff hrs";
+                                    });
+                                  },
+                                ),
+                                Visibility(visible: false,child: Padding(
                                   padding: EdgeInsets.all(20.0),
                                   child:  SfRadialGauge(
                                       axes: <RadialAxis>[
                                         RadialAxis(
-                                            interval: 1,
-                                            startAngle: 0,
-                                            endAngle: 360,
-                                            showTicks: true,
-                                            showLabels: true,
+                                          interval: 6,
+                                          startAngle: 0,
+                                          endAngle: 360,
+                                          showTicks: true,
+                                          showLabels: true,
                                           onLabelCreated: (label) {
-                                              return "$label AM";
+                                            return "$label AM";
                                           },
                                           showAxisLine: true,
-                                          maximum: 23,
-                                            minimum: 0,
-                                            canScaleToFit: true,
-                                            axisLineStyle: AxisLineStyle(thickness: 30, color: Color(MyColors.lightBackground)),
+                                          maximum: 24,
+                                          minimum: 0,
+                                          // canScaleToFit: true,
+                                          axisLineStyle: AxisLineStyle(thickness: 30, color: Color(MyColors.lightBackground)),
 
-                                            pointers: <GaugePointer>[
-                                              WidgetPointer(
-                                                child: Container(
-                                                    width: 50.0,
-                                                    height: 50.0,
-                                                    margin: EdgeInsets.only(left: 0.0),
-                                                    decoration: BoxDecoration(
-                                                        color: Color(MyColors.primaryColor),
-                                                        borderRadius: BorderRadius.circular(25.0),
-                                                        border: Border.all(color: Colors.white, width: 3.0)
-                                                    ),
-                                                    child: Stack(
-                                                      children: [
-                                                        Positioned(
-                                                          left: 12.0,
-                                                          top: 12.0,
-                                                          child: PillIcon(
-                                                            icon: 'assets/well_being/sleep.svg',
-                                                            size: 20,
-                                                            svgColor: Colors.white,
-                                                          ),
-                                                        )
-                                                      ],
-                                                    )
-                                                ),
-                                                value: bedtimeValue.toDouble(),enableDragging: true,enableAnimation: true, onValueChanged: (double value) async {
-                                                int v = value.ceil();
-                                                String bt = (v >= 12) ? "PM" : "AM";
-                                                if(bt == "PM") {
-                                                  v = (v == 12) ? 12 : v - 12; //convert 24-hr to 12-hr time
-                                                }
-                                                int _diff = wakeupValue - value.ceil();
-                                                int diff = (_diff < 0) ? (_diff * -1) : _diff;
-                                                setState(() {
-                                                  bedtimeValue = v;
-                                                  bedtime = "$v:00 $bt";
-                                                  sleepingTime = "$diff hrs";
-                                                });
-                                              },
+                                          pointers: <GaugePointer>[
+                                            WidgetPointer(
+                                              child: Container(
+                                                  width: 50.0,
+                                                  height: 50.0,
+                                                  margin: EdgeInsets.only(left: 0.0),
+                                                  decoration: BoxDecoration(
+                                                      color: Color(MyColors.primaryColor),
+                                                      borderRadius: BorderRadius.circular(25.0),
+                                                      border: Border.all(color: Colors.white, width: 3.0)
+                                                  ),
+                                                  child: Stack(
+                                                    children: [
+                                                      Positioned(
+                                                        left: 12.0,
+                                                        top: 12.0,
+                                                        child: PillIcon(
+                                                          icon: 'assets/well_being/sleep.svg',
+                                                          size: 20,
+                                                          svgColor: Colors.white,
+                                                        ),
+                                                      )
+                                                    ],
+                                                  )
                                               ),
-                                              WidgetPointer(
-                                                child: Container(
-                                                    width: 50.0,
-                                                    height: 50.0,
-                                                    margin: EdgeInsets.only(left: 0.0),
-                                                    decoration: BoxDecoration(
-                                                        color: Color(MyColors.primaryColor),
-                                                        borderRadius: BorderRadius.circular(25.0),
-                                                        border: Border.all(color: Colors.white, width: 3.0)
-                                                    ),
-                                                    child: Stack(
-                                                      children: [
-                                                        Positioned(
-                                                          left: 12.0,
-                                                          top: 12.0,
-                                                          child: PillIcon(
-                                                            icon: 'assets/well_being/time.svg',
-                                                            size: 20,
-                                                            svgColor: Colors.white,
-                                                          ),
-                                                        )
-                                                      ],
-                                                    )
-                                                ),
-                                                value: wakeupValue.toDouble(),enableDragging: true,enableAnimation: true, onValueChanged: (double value) async {
-                                                int v = value.ceil();
-                                                String bt = (v >= 12) ? "PM" : "AM";
-                                                if(bt == "PM") {
-                                                  v = (v == 12) ? 12 : v - 12; //convert 24-hr to 12-hr time
-                                                }
-                                                int _diff = value.ceil() - bedtimeValue;
-                                                int diff = (_diff < 0) ? (_diff * -1) : _diff;
-                                                setState(() {
-                                                  wakeupValue = v;
-                                                  wakeup = "$v:00 $bt";
-                                                  sleepingTime = "$diff hrs";
-                                                });
-                                              },
-                                              ),
-                                            ],),
+                                              value: bedtimeValue.toDouble(),enableDragging: true, onValueChanged: (double value) async {
+                                              int v = value.ceil();
+                                              String bt = (v >= 12) ? "PM" : "AM";
+                                              if(bt == "PM") {
+                                                v = (v == 12) ? 12 : v - 12; //convert 24-hr to 12-hr time
+                                              }
+                                              int _diff = wakeupValue - value.ceil();
+                                              int diff = (_diff < 0) ? (_diff * -1) : _diff;
+                                              setState(() {
+                                                bedtimeValue = v;
+                                                bedtime = "$v:00 $bt";
+                                                sleepingTime = "$diff hrs";
+                                              });
+                                            },
+                                            ),
+                                            // WidgetPointer(
+                                            //   child: Container(
+                                            //       width: 50.0,
+                                            //       height: 50.0,
+                                            //       margin: EdgeInsets.only(left: 0.0),
+                                            //       decoration: BoxDecoration(
+                                            //           color: Color(MyColors.primaryColor),
+                                            //           borderRadius: BorderRadius.circular(25.0),
+                                            //           border: Border.all(color: Colors.white, width: 3.0)
+                                            //       ),
+                                            //       child: Stack(
+                                            //         children: [
+                                            //           Positioned(
+                                            //             left: 12.0,
+                                            //             top: 12.0,
+                                            //             child: PillIcon(
+                                            //               icon: 'assets/well_being/time.svg',
+                                            //               size: 20,
+                                            //               svgColor: Colors.white,
+                                            //             ),
+                                            //           )
+                                            //         ],
+                                            //       )
+                                            //   ),
+                                            //   value: wakeupValue.toDouble(),enableDragging: true,enableAnimation: true, onValueChanged: (double value) async {
+                                            //   int v = value.ceil();
+                                            //   String bt = (v >= 12) ? "PM" : "AM";
+                                            //   if(bt == "PM") {
+                                            //     v = (v == 12) ? 12 : v - 12; //convert 24-hr to 12-hr time
+                                            //   }
+                                            //   int _diff = value.ceil() - bedtimeValue;
+                                            //   int diff = (_diff < 0) ? (_diff * -1) : _diff;
+                                            //   setState(() {
+                                            //     wakeupValue = v;
+                                            //     wakeup = "$v:00 $bt";
+                                            //     sleepingTime = "$diff hrs";
+                                            //   });
+                                            // },
+                                            // ),
+                                          ],),
                                       ]
                                   ),
-                                ),
+                                ),),
                                 Container(
                                   width: MediaQuery.of(context).size.width,
                                   child: Text(
@@ -230,7 +307,7 @@ class _SleepScreen extends State<SleepScreen> {
                                   height: 140.0,
                                   padding: EdgeInsets.all(20.0),
                                   decoration: BoxDecoration(
-                                    color: Color(MyColors.defaultTextInField).withOpacity(0.3),
+                                    color: Color(MyColors.lightBackground),
                                     borderRadius: BorderRadius.circular(10.0)
                                   ),
                                   child: Column(
@@ -261,6 +338,10 @@ class _SleepScreen extends State<SleepScreen> {
                                   text: "Save",
                                   loading: _loading,
                                   press: () async {
+                                    if(sleepingTime == "N/A" || sleepingTime == "0 hrs") {
+                                      new GeneralUtils().displayAlertDialog(context, "Attention", "Please select your sleep schedule from bed time to wakeup time.");
+                                      return;
+                                    }
                                     setState(() {
                                       _loading = true;
                                     });

@@ -18,7 +18,7 @@ class DietHeader {
         child: CoralBackButton(),
       ),
       centerTitle: true,
-      toolbarHeight: 120.0,
+      toolbarHeight: 80.0, //120
       title: Text(
         titleText,
         style: Theme.of(context).textTheme.headline2.copyWith(
