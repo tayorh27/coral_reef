@@ -166,6 +166,7 @@ class _PageState extends State<TrackChallengeActivities> {
   }
 
   int initSteps = 0;
+  int userTime = 0;
 
   Future<void> continuePhysicalActivitySetup() async {
     challengeStepService = new ChallengeStepService(
@@ -233,6 +234,7 @@ class _PageState extends State<TrackChallengeActivities> {
 
     setState(() {
       // distanceCovered = distance;
+      userTime = diff;
       timeCovered = ExerciseService.formatTimeCovered(st, ct.add(Duration(seconds: 1)));
     });
 
@@ -772,6 +774,15 @@ class _PageState extends State<TrackChallengeActivities> {
           "init_step_count": FieldValue.delete(),
           "user_ch_id": FieldValue.delete(),
         });
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user.uid)
+        .collection("my-challenges")
+        .doc(ch.id)
+        .update({
+      "km_covered": distanceCovered,
+      "time_taken": userTime,
+    });
     String activityText = "has finished the challenge.";
     await exerciseService.logActivity(ch, activityText);
     String text = (success) ? "You have successfully completed your challenge." : "Thank you for participating.";

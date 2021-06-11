@@ -44,14 +44,14 @@ class ExerciseService {
     String user_ch_id = await ss.getItem("user_ch_id") ?? "-MaB74f3xFrYfQk1w-ep";
 
     //update personal user record
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(user.uid)
-        .collection("my-challenges")
-        .doc(ch.id)
-        .update({
-      "km_covered": km,
-    });
+    // await FirebaseFirestore.instance
+    //     .collection("users")
+    //     .doc(user.uid)
+    //     .collection("my-challenges")
+    //     .doc(ch.id)
+    //     .update({
+    //   "km_covered": km,
+    // });
 
     //update general record for public view
     await FirebaseFirestore.instance
@@ -68,14 +68,14 @@ class ExerciseService {
     String user_ch_id = await ss.getItem("user_ch_id") ?? "-MaB74f3xFrYfQk1w-ep";
 
     //update personal user record
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(user.uid)
-        .collection("my-challenges")
-        .doc(ch.id)
-        .update({
-      "time_taken": time,
-    });
+    // await FirebaseFirestore.instance
+    //     .collection("users")
+    //     .doc(user.uid)
+    //     .collection("my-challenges")
+    //     .doc(ch.id)
+    //     .update({
+    //   "time_taken": time,
+    // });
 
     //update general record for public view
     await FirebaseFirestore.instance
@@ -238,9 +238,9 @@ class ExerciseService {
     await ss.setPrefItem("stepsGoal", goal);
   }
 
-  Future<void> updateStepsTakenCount(int value, int goal) async {
+  Future<void> updateStepsTakenCount(int value, int goal, DateTime timestamp) async {
 
-    final date = DateTime.now();
+    final date = timestamp; //DateTime.now();
     final months = ["JAN", "FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
     final days = ["MON","TUE","WED","THU","FRI","SAT","SUN"];
 

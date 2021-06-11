@@ -95,6 +95,7 @@ dependencies:
   group_button: ^2.2.2
   jiffy: ^4.1.0
   time_range_picker: ^2.0.1
+  neat_periodic_task: ^1.0.1
 #  carp_core: ^0.20.0
 #  carp_mobile_sensing: ^0.20.0
 #  carp_audio_package: ^0.20.0
