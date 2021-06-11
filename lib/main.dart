@@ -16,6 +16,7 @@ import 'package:flutter/services.dart';
 import 'package:coral_reef/routes.dart';
 import 'package:coral_reef/onboarding/splash/splash_screen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:neat_periodic_task/neat_periodic_task.dart';
 
 import 'ListItem/model_challenge.dart';
 import 'Utils/colors.dart';
@@ -137,10 +138,28 @@ class _MyApp extends State<MyApp> {
     }
   }
 
+  setupSteps() {
+    final scheduler = NeatPeriodicTaskScheduler(
+        name: "coral-app-steps",
+        interval: Duration(seconds: 10),
+        timeout: Duration(seconds: 5),
+        task: () async {
+          String value = await ss.getItem("scheduler") ?? "0";
+          int newV = int.parse(value) + 1;
+          await ss.setPrefItem("scheduler", "$newV");
+          print("new value = $value");
+          return;
+        },
+        minCycle: Duration(seconds: 5)
+    );
+    scheduler.start();
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    // setupSteps();
     checkIfCurrentChallengeHasEnded();
     setupLocator().then((value) {
       final StepService stepService = locator<StepService>();

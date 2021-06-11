@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/storage.dart';
@@ -8,6 +10,7 @@ import 'package:coral_reef/tracker_screens/well_being_tracker/well_being_tracker
 import 'package:coral_reef/wellness/diet_exercise_well_being/diet_exercise_well_being_info.dart';
 import 'package:coral_reef/wellness/wellness_tracker_options.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../size_config.dart';
 import 'components/tracker_scrolling_options.dart';
@@ -32,6 +35,31 @@ class _TrackerLanding extends State<TrackerLanding> {
   Widget selectedScreen = DietTrackerScreen();//diet class first
 
   StorageSystem ss = new StorageSystem();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setupPhysicalActivityTracking();
+  }
+
+  setupPhysicalActivityTracking() async {
+    // String startTime = await ss.getItem("startTime");
+    // DateTime st = DateTime.parse(startTime);
+    if(Platform.isAndroid) {
+      if (await Permission.activityRecognition
+          .request()
+          .isGranted) {
+        print("Request granted");
+      }
+    }else {
+      if (await Permission.sensors
+          .request()
+          .isGranted) {
+        print("Request granted");
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

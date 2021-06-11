@@ -8,6 +8,4 @@ GetIt locator = GetIt.instance;
 
 Future<void> setupLocator() async {
   locator.registerLazySingleton(() => StepService());
-
-
 }

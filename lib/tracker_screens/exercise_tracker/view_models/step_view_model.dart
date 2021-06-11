@@ -73,7 +73,7 @@ class StepViewModel extends BaseModel {
   }
 
   void onStepCount(StepCount event) {
-    print(event);
+    print("TAYO: $event");
     steps = event.steps.toString();
     //notifyListeners();
   }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/services/exercise_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pedometer/pedometer.dart';
 
@@ -21,9 +22,20 @@ class StepService {
   Stream<StepCount> _stepCountStream;
   Stream<PedestrianStatus> _pedestrianStatusStream;
 
-  void onStepCount(StepCount event) {
-    print(event);
-    _steps = event.steps.toString();
+  void onStepCount(StepCount event){
+    // print(event);
+    int mSteps = event.steps;
+    DateTime timestamp = event.timeStamp;
+    doStepsOperation(mSteps, timestamp);
+  }
+
+  Future<void> doStepsOperation(int steps, DateTime timestamp) async {
+
+    String goal = await ss.getItem("stepsGoal") ?? "0";
+    new ExerciseService().updateStepsTakenCount(steps, int.parse(goal), timestamp);
+
+    //do more with this.
+    // print("steps na = $mSteps");
   }
 
   void onPedestrianStatusChanged(PedestrianStatus event) {
@@ -90,7 +102,7 @@ class StepService {
 
 //var dataResult = data['stepGoal'];
     //   print(dataResult);
-    // return dataResult;
+    // return dataResult;10510
 
     // print(result);
     //return result;
