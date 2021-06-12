@@ -54,7 +54,7 @@ class _WeightGoal extends State<WeightGoal> {
       heightMetric = hMetric;
       goalWeight = "${json["2"]}";
       currentHeight = "${json["3"]}";
-      currentInch = "${json["inch"]}";
+      currentInch = "${json["inch"]}" ?? "0.0";
       if(currentWeight.isEmpty) {
         currentWeight = "${json["1"]}";
       }
@@ -172,7 +172,7 @@ class _WeightGoal extends State<WeightGoal> {
                                                     children: [
                                                       formatTexts("", currentHeight, heightMetric),
                                                       SizedBox(width: 5.0,),
-                                                      formatTexts("", currentInch, "''"),
+                                                      formatTexts("", (currentInch == "null") ? "0" : currentInch, "''"),
                                                     ],
                                                   )
                                                 ],
@@ -224,6 +224,7 @@ class _WeightGoal extends State<WeightGoal> {
   String calculateBMI() {
     double bmi = 0;
     if(weightMetric == "kg" && heightMetric == "cm") {
+      print(currentHeight);
       double heightInMeters = double.parse(currentHeight) / 100;
       bmi = double.parse(currentWeight) / (heightInMeters * heightInMeters);
       return bmi.toStringAsFixed(2);
@@ -242,7 +243,13 @@ class _WeightGoal extends State<WeightGoal> {
 
   getTotalHeightFt() {
     double convertFtToIn = double.parse(currentHeight) * 12;
-    return convertFtToIn + double.parse(currentInch);
+    String inch = currentInch ?? "0.0";
+    print("c = $convertFtToIn inch = $inch");
+    if(inch == null || inch == "null") {
+      inch = "0.0";
+    }
+    print("c = $convertFtToIn inch = $inch 2");
+    return convertFtToIn + double.parse(inch);
   }
 
   Future<bool> displayDialog() {
