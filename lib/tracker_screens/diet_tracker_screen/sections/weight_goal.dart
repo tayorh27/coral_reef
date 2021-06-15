@@ -170,7 +170,7 @@ class _WeightGoal extends State<WeightGoal> {
                                                   ),
                                                   (heightMetric == "cm") ? formatTexts("", currentHeight, heightMetric) : Row(
                                                     children: [
-                                                      formatTexts("", currentHeight, heightMetric),
+                                                      formatTexts("", currentHeight, "'"),//heightMetric
                                                       SizedBox(width: 5.0,),
                                                       formatTexts("", (currentInch == "null") ? "0" : currentInch, "''"),
                                                     ],
@@ -324,7 +324,11 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
 
   getTotalHeightFt() {
     double convertFtToIn = double.parse(widget.height) * 12;
-    return convertFtToIn + double.parse(widget.inches);
+    String inch = widget.inches;
+    if(inch == null || inch == "null") {
+      inch = "0.0";
+    }
+    return convertFtToIn + double.parse(inch);
   }
 
   @override
@@ -448,7 +452,17 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
                       loading: _loading,
                       press: () async {
                         if(_textEditingController.text.isEmpty) return;
+                        if(!new GeneralUtils().isNumberFormatted(_textEditingController.text)) {
+                          new GeneralUtils().showToast(context, "Enter a valid number.");
+                          return;
+                        }
+                        setState(() {
+                          _loading = true;
+                        });
                         await dietServices.updateWeightData(_textEditingController.text, calculateBMI(), widget.height, widget.weightGoal);
+                        setState(() {
+                          _loading = false;
+                        });
                         widget.onSaved(double.parse(_textEditingController.text), wMetric);
                         Navigator.of(context).pop(false);
                       }),

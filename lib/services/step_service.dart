@@ -32,7 +32,8 @@ class StepService {
   Future<void> doStepsOperation(int steps, DateTime timestamp) async {
 
     String goal = await ss.getItem("stepsGoal") ?? "0";
-    new ExerciseService().updateStepsTakenCount(steps, int.parse(goal), timestamp);
+    String getStepsCount = await new ExerciseService().getStepsCount(steps, timestamp);
+    new ExerciseService().updateStepsTakenCount(int.parse(getStepsCount), int.parse(goal), timestamp);
 
     //do more with this.
     // print("steps na = $mSteps");

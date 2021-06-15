@@ -17,7 +17,7 @@ import 'package:coral_reef/tracker_screens/exercise_tracker/sections/records_act
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/save_activities.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/services/exercise_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
+// import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -916,22 +916,22 @@ class _PageState extends State<TrackChallengeActivities> {
 }
 
 void onStart() async{
-  WidgetsFlutterBinding.ensureInitialized();
-  final service = FlutterBackgroundService();
-  service.onDataReceived.listen((event) {
-    if (event["action"] == "setAsForeground") {
-      service.setForegroundMode(true);
-      return;
-    }
-
-    if (event["action"] == "setAsBackground") {
-      service.setForegroundMode(false);
-    }
-
-    if (event["action"] == "stopService") {
-      service.stopBackgroundService();
-    }
-  });
+  // WidgetsFlutterBinding.ensureInitialized();
+  // final service = FlutterBackgroundService();
+  // service.onDataReceived.listen((event) {
+  //   if (event["action"] == "setAsForeground") {
+  //     service.setForegroundMode(true);
+  //     return;
+  //   }
+  //
+  //   if (event["action"] == "setAsBackground") {
+  //     service.setForegroundMode(false);
+  //   }
+  //
+  //   if (event["action"] == "stopService") {
+  //     service.stopBackgroundService();
+  //   }
+  // });
 
   StorageSystem ss = new StorageSystem();
 
@@ -989,10 +989,10 @@ void onStart() async{
           "currentTime": FieldValue.delete(),
         });
 
-    service.setNotificationInfo(
-          title: "Challenge Alert",
-          content: "You have reached your goal in this challenge. Thank you for participating.",
-    );
+    // service.setNotificationInfo(
+    //       title: "Challenge Alert",
+    //       content: "You have reached your goal in this challenge. Thank you for participating.",
+    // );
 
     // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     // FlutterLocalNotificationsPlugin();

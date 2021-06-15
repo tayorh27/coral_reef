@@ -1,4 +1,5 @@
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/g_chat_screen/components/topics_selection.dart';
@@ -347,16 +348,20 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
                       loading: _loading,
                       press: () async {
                         if(_textEditingController.text.isEmpty) return;
-                        setState(() {
-                          _loading = true;
-                        });
+                        if(!new GeneralUtils().isNumberFormatted(_textEditingController.text)) {
+                          new GeneralUtils().showToast(context, "Enter a valid number.");
+                          return;
+                        }
+                        // setState(() {
+                        //   _loading = true;
+                        // });
                         double initCount = double.parse(widget.initialValue);
                         double current = double.parse(_textEditingController.text);
                         String total = (initCount + current).ceil().toString();
                         await dietServices.updateCaloriesTakenCount(total, widget.goal);
-                        setState(() {
-                          _loading = false;
-                        });
+                        // setState(() {
+                        //   _loading = false;
+                        // });
                         widget.onOptionSelected(total);
                         Navigator.of(context).pop(false);
                       }),
@@ -503,6 +508,10 @@ class _AlertDialogPageStateGoal extends State<AlertDialogPageGoal> {
                       text: 'Save',
                       press: () async {
                         if(_textEditingController.text.isEmpty) return;
+                        if(!new GeneralUtils().isNumberFormatted(_textEditingController.text)) {
+                          new GeneralUtils().showToast(context, "Enter a valid number.");
+                          return;
+                        }
                         await dietServices.saveCaloriesGoal(_textEditingController.text);
                         widget.onOptionSelected(_textEditingController.text);
                         Navigator.of(context).pop(false);

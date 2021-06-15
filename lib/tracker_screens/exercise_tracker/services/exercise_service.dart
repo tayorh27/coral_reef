@@ -259,7 +259,7 @@ class ExerciseService {
 
     WaterData wd = new WaterData(id, year, month, day, week, weekValue, hour, min, date.toString(), "$value", "$goal", FieldValue.serverTimestamp());
 
-    await ss.setPrefItem("stepsCurrent_$formatDate", "$value");
+    await ss.setPrefItem("stepsCurrent_$formatDate", "$value", isStoreOnline: false);
 
     await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("steps").doc(id).set(wd.toJSON());
 
@@ -321,5 +321,22 @@ class ExerciseService {
     return [
       storage,weekRangeStorage,storageCount
     ];
+  }
+
+  Future<String> getStepsCount(int currentCount, DateTime timestamp) async {
+    final today = timestamp;
+    final months = ["JAN", "FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
+    String formatDate = "${today.year}_${months[today.month - 1]}_${today.day}";
+    String getTodayCounts = await ss.getItem("step_count_$formatDate");
+
+    if(getTodayCounts == null) {
+      await ss.setPrefItem("step_count_$formatDate", "$currentCount", isStoreOnline: false);
+      return "0";
+    }
+
+    int tCount = int.parse(getTodayCounts);
+    return (currentCount - tCount).toString();
+
   }
 }

@@ -14,6 +14,7 @@ import 'package:readmore/readmore.dart';
 import 'package:shot_widget/shot_service.dart';
 import 'package:shot_widget/shot_widget.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class YourBody extends StatefulWidget {
   static final routeName = "yourbody";
@@ -234,9 +235,10 @@ class _YourBodyState extends State<YourBody> {
   }
 
   shareImage(String path) {
-    AkvelonFlutterSharePlugin.shareSingle(path, ShareType.IMAGE,
-        text: "Hello",
-        subject: "Pregnancy: Week ${widget.weekNumber}");
+    // AkvelonFlutterSharePlugin.shareSingle(path, ShareType.IMAGE,
+    //     text: "Hello",
+    //     subject: "Pregnancy: Week ${widget.weekNumber}");
+    Share.shareFiles(['$path'], text: "Pregnancy: Week ${widget.weekNumber}");
   }
 }
 

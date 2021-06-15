@@ -155,7 +155,13 @@ class _SleepScreen extends State<SleepScreen> {
                                     if(endPeriod != null) {
                                       DateTime s = new DateTime(today.year, today.month, today.day, startPeriod.hour, startPeriod.minute);
                                       DateTime e = new DateTime(today.year, today.month, today.day, endPeriod.hour, endPeriod.minute);
-                                      diff = 24 + (endPeriod.hour - startPeriod.hour);//s.difference(e).inHours;
+                                      if((endPeriod.hour - startPeriod.hour) < 0) {
+                                        diff = 24 + (endPeriod.hour -
+                                            startPeriod
+                                                .hour); //s.difference(e).inHours;
+                                      }else {
+                                        diff = (endPeriod.hour - startPeriod.hour);
+                                      }
                                     }
                                     setState(() {
                                       bedtimeValue = startTime.hour;
@@ -171,7 +177,13 @@ class _SleepScreen extends State<SleepScreen> {
                                     if(startPeriod != null) {
                                       DateTime s = new DateTime(today.year, today.month, today.day, startPeriod.hour, startPeriod.minute);
                                       DateTime e = new DateTime(today.year, today.month, today.day, endPeriod.hour, endPeriod.minute);
-                                      diff = 24 + (endPeriod.hour - startPeriod.hour);//s.difference(e).inHours;
+                                      if((endPeriod.hour - startPeriod.hour) < 0) {
+                                        diff = 24 + (endPeriod.hour -
+                                            startPeriod
+                                                .hour); //s.difference(e).inHours;
+                                      }else {
+                                        diff = (endPeriod.hour - startPeriod.hour);
+                                      }
                                     }
                                     setState(() {
                                       wakeupValue = endTime.hour;

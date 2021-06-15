@@ -1,4 +1,5 @@
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/coral_back_button.dart';
 import 'package:coral_reef/components/default_button.dart';
@@ -513,6 +514,10 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
                       text: 'Save',
                       press: () async {
                         if(_textEditingController.text.isEmpty) return;
+                        if(!new GeneralUtils().isNumberFormatted(_textEditingController.text)) {
+                          new GeneralUtils().showToast(context, "Enter a valid number.");
+                          return;
+                        }
                         await exerciseService.saveStepsGoal(_textEditingController.text);
                         widget.onOptionSelected(_textEditingController.text);
                         Navigator.of(context).pop(false);

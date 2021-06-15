@@ -32,10 +32,10 @@ class _GChatHomeScreen extends State<GChatHomeScreen> {
       updateHideFloat(hideFloat);
     })},
     {"screen_name": "Blog post", "screen_class": BlogPostScreen()},
-    {
-      "screen_name": "Job opportunities",
-      "screen_class": JobOpportunitiesScreen()
-    },
+    // {
+    //   "screen_name": "Job opportunities",
+    //   "screen_class": JobOpportunitiesScreen()
+    // },
   ];
 
   Widget selectedScreen = GChatTimelineScreen((bool hideFloat) {

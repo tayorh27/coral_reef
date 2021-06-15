@@ -89,14 +89,16 @@ dependencies:
   stacked: ^2.1.5
   get_it: ^6.0.0
   flutter_countdown_timer: ^4.1.0
-  flutter_background_service: ^0.1.4
+#  flutter_background_service: ^0.1.4
   location: ^4.1.1
   screen: ^0.0.5
   group_button: ^2.2.2
   jiffy: ^4.1.0
   time_range_picker: ^2.0.1
   neat_periodic_task: ^1.0.1
+  share_plus: ^2.1.2
 #  carp_core: ^0.20.0
+#  playify: ^2.0.0
 #  carp_mobile_sensing: ^0.20.0
 #  carp_audio_package: ^0.20.0
 #  share_files_and_screenshot_widgets: ^1.0.3

@@ -14,6 +14,17 @@ import 'colors.dart';
 class GeneralUtils {
   GeneralUtils();
 
+  isNumberFormatted(String value) {
+    double val = double.tryParse(value);
+    if(val == null) {
+      return false;
+    }
+    if(val <= 0){
+      return false;
+    }
+    return true;
+  }
+
   // String formattedMoney(double price, String currency) {
   //   MoneyFormatterOutput mfo = FlutterMoneyFormatter(
   //           amount: price,

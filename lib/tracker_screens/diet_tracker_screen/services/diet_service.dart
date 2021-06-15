@@ -55,7 +55,7 @@ class DietServices {
 
     WaterData wd = new WaterData(id, year, month, day, week, weekValue, hour, min, date.toString(), "$value", "$goal", FieldValue.serverTimestamp());
 
-    await ss.setPrefItem("waterCurrent_$formatDate", "$value");
+    await ss.setPrefItem("waterCurrent_$formatDate", "$value", isStoreOnline: false);
 
     await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("water").doc(id).set(wd.toJSON());
 
@@ -82,7 +82,7 @@ class DietServices {
 
     WeightData wd = new WeightData(id, year, month, day, week, weekValue, hour, min, date.toString(), weight, bmi, height, goal, FieldValue.serverTimestamp());
 
-    await ss.setPrefItem("weightCurrent_$formatDate", "$weight/$bmi/$height");
+    await ss.setPrefItem("weightCurrent_$formatDate", "$weight/$bmi/$height", isStoreOnline: false);
 
     await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("weights").doc(id).set(wd.toJSON());
 
@@ -110,7 +110,7 @@ class DietServices {
 
     WaterData wd = new WaterData(id, year, month, day, week, weekValue, hour, min, date.toString(), value, goal, FieldValue.serverTimestamp());
 
-    await ss.setPrefItem("caloriesCurrent_$formatDate", value);
+    await ss.setPrefItem("caloriesCurrent_$formatDate", value, isStoreOnline: false);
 
     await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("calories").doc(id).set(wd.toJSON());
 

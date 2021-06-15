@@ -48,7 +48,7 @@ class WellBeingServices {
 
     VitaminsData vd = new VitaminsData(id, year, month, day, week, weekValue, hour, min, date.toString(), "$value", "$goal", FieldValue.serverTimestamp());
 
-    await ss.setPrefItem("vitaminCurrent_$formatDate", "$value");
+    await ss.setPrefItem("vitaminCurrent_$formatDate", "$value", isStoreOnline: false);
 
     await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("vitamins").doc(id).set(vd.toJSON());
 
@@ -75,7 +75,7 @@ class WellBeingServices {
 
     MoodData vd = new MoodData(id, year, month, day, week, weekValue, hour, min, date.toString(), mood, FieldValue.serverTimestamp());
 
-    await ss.setPrefItem("moodCurrent_$formatDate", mood);
+    await ss.setPrefItem("moodCurrent_$formatDate", mood, isStoreOnline: false);
 
     await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("moods").doc(id).set(vd.toJSON());
 
@@ -102,8 +102,8 @@ class WellBeingServices {
 
     SleepData sd = new SleepData(id, year, month, day, week, weekValue, hour, min, date.toString(), bedtime, wakeup, sleepingTime, FieldValue.serverTimestamp());
 
-    await ss.setPrefItem("sleepCurrent_$formatDate", "$bedtime/$wakeup/$sleepingTime");
-    await ss.setPrefItem("generalSleepCurrent", "$bedtime/$wakeup/$sleepingTime");
+    await ss.setPrefItem("sleepCurrent_$formatDate", "$bedtime/$wakeup/$sleepingTime", isStoreOnline: false);
+    await ss.setPrefItem("generalSleepCurrent", "$bedtime/$wakeup/$sleepingTime", isStoreOnline: false);
 
     await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("sleep").doc(id).set(sd.toJSON());
 
