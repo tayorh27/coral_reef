@@ -37,6 +37,8 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
 
   StorageSystem ss = new StorageSystem();
 
+  StepService stepService;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -44,6 +46,12 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
     exerciseService = new ExerciseService();
     getStepsLocalData();
     getChallenges();
+    stepService = new StepService(stepCallback: (steps) {
+      print("hello word = $steps");
+      setState(() {
+        currentTakenSteps = steps;
+      });
+    });
   }
 
   getStepsLocalData() async {
@@ -100,7 +108,7 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
                 title: 'Steps',
                 icon: 'assets/exercise/foot_white.svg',
                 title2: '',
-                title3: model.steps,
+                title3: currentTakenSteps, //model.steps
                 title4: "Goal: $stepsGoal",//"Goal: ${model.stepsGoal.floor().toString()}",
                 textColor: Colors.white,
                 press: () async {

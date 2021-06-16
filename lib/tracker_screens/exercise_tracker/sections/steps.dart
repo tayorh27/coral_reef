@@ -4,6 +4,7 @@ import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/coral_back_button.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/models/step_goal_model.dart';
+import 'package:coral_reef/services/step_service.dart';
 import 'package:coral_reef/shared_screens/pill_icon.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/services/exercise_service.dart';
@@ -33,10 +34,18 @@ class _PageState extends State<Steps> {
 
   StorageSystem ss = new StorageSystem();
 
+  StepService stepService;
+
   @override
   void initState() {
     super.initState();
     getStepsLocalData();
+    stepService = new StepService(stepCallback: (steps) {
+      print("hello world2 = $steps");
+      setState(() {
+        currentTakenSteps = steps;
+      });
+    });
   }
 
   getStepsLocalData() async {

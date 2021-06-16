@@ -14,6 +14,10 @@ class StepService {
   String get steps => _steps;
   StorageSystem ss = new StorageSystem();
 
+  final Function(String stepCount) stepCallback;
+
+  StepService({this.stepCallback});
+
   //final User user = auth.currentUser;
   String formatDate(DateTime d) {
     return d.toString().substring(0, 19);
@@ -33,6 +37,9 @@ class StepService {
 
     String goal = await ss.getItem("stepsGoal") ?? "0";
     String getStepsCount = await new ExerciseService().getStepsCount(steps, timestamp);
+    if(stepCallback != null) {
+      stepCallback(getStepsCount);
+    }
     new ExerciseService().updateStepsTakenCount(int.parse(getStepsCount), int.parse(goal), timestamp);
 
     //do more with this.
