@@ -42,6 +42,7 @@ class _WaterCard extends State<WaterCard> {
     String goal = await ss.getItem("waterGoal") ?? "0";
     String current = await ss.getItem("waterCurrent_$formatDate") ?? "0";
 
+    if(!mounted) return;
     setState(() {
       waterGoal = goal;
       currentTakenWater = current;
@@ -105,6 +106,7 @@ class _WaterCard extends State<WaterCard> {
                           }
                           setState(() {
                             currentTakenWater = "${currentV - 1}";
+                            waterCardColor = getWaterState();
                           });
                           dietServices.updateWaterTakenCount(currentV - 1, goal);
                         },
@@ -134,6 +136,7 @@ class _WaterCard extends State<WaterCard> {
                           int currentV = int.parse(currentTakenWater);
                           setState(() {
                             currentTakenWater = "${currentV + 1}";
+                            waterCardColor = getWaterState();
                           });
                           dietServices.updateWaterTakenCount(currentV + 1, goal);
                         },

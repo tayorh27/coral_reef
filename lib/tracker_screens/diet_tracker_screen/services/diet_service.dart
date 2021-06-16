@@ -27,7 +27,7 @@ class DietServices {
   }
 
   Future<void> saveWaterGoal(String goal) async {
-    await ss.setPrefItem("waterGoal", goal);
+    await ss.setPrefItem("waterGoal", double.parse(goal).ceil().toString());
   }
 
   Future<void> saveCaloriesGoal(String goal) async {

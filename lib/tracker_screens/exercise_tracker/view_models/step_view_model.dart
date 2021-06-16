@@ -3,6 +3,7 @@ import 'package:coral_reef/baseModel.dart';
 import 'package:coral_reef/locator.dart';
 import 'package:coral_reef/models/step_goal_model.dart';
 import 'package:coral_reef/services/step_service.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/services/exercise_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pedometer/pedometer.dart';
@@ -75,7 +76,22 @@ class StepViewModel extends BaseModel {
   void onStepCount(StepCount event) {
     print("TAYO: $event");
     steps = event.steps.toString();
+    doStepsOperation(event.steps, event.timeStamp);
     //notifyListeners();
+  }
+
+  Future<void> doStepsOperation(int steps, DateTime timestamp) async {
+
+    String goal = await ss.getItem("stepsGoal") ?? "0";
+    String getStepsCount = await new ExerciseService().getStepsCount(steps, timestamp);
+    // print("step count revamp = $getStepsCount");
+    // if(stepCallback != null) {
+    //   stepCallback(getStepsCount);
+    // }
+    new ExerciseService().updateStepsTakenCount(int.parse(getStepsCount), double.parse(goal).ceil(), timestamp);
+
+    //do more with this.
+    // print("steps na = $mSteps");
   }
 
   currentStep() {

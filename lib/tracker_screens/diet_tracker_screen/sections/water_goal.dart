@@ -51,7 +51,7 @@ class _WaterGoal extends State<WaterGoal> {
   }
 
   double getPointerValue() {
-    return ((int.parse(currentTakenWater) / int.parse(waterGoal)) * 100);
+    return ((double.parse(currentTakenWater) / double.parse(waterGoal)) * 100);
   }
 
   @override

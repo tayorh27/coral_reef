@@ -37,10 +37,11 @@ class StepService {
 
     String goal = await ss.getItem("stepsGoal") ?? "0";
     String getStepsCount = await new ExerciseService().getStepsCount(steps, timestamp);
+    print("step count revamp = $getStepsCount");
     if(stepCallback != null) {
       stepCallback(getStepsCount);
     }
-    new ExerciseService().updateStepsTakenCount(int.parse(getStepsCount), int.parse(goal), timestamp);
+    new ExerciseService().updateStepsTakenCount(int.parse(getStepsCount), double.parse(goal).ceil(), timestamp);
 
     //do more with this.
     // print("steps na = $mSteps");

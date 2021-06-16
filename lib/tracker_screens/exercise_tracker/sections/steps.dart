@@ -40,12 +40,12 @@ class _PageState extends State<Steps> {
   void initState() {
     super.initState();
     getStepsLocalData();
-    stepService = new StepService(stepCallback: (steps) {
-      print("hello world2 = $steps");
-      setState(() {
-        currentTakenSteps = steps;
-      });
-    });
+    // stepService = new StepService(stepCallback: (steps) {
+    //   print("hello world2 = $steps");
+    //   setState(() {
+    //     currentTakenSteps = steps;
+    //   });
+    // });
   }
 
   getStepsLocalData() async {
@@ -64,7 +64,7 @@ class _PageState extends State<Steps> {
   }
 
   double getPointerValue() {
-    return ((int.parse(currentTakenSteps) / int.parse(stepsGoal)) * 100);
+    return ((double.parse(currentTakenSteps) / double.parse(stepsGoal)) * 100);
   }
 
   // _showGoalDialog(StepViewModel model) {

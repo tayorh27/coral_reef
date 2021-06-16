@@ -14,14 +14,19 @@ import 'package:coral_reef/tracker_screens/exercise_tracker/services/exercise_se
 import 'package:coral_reef/tracker_screens/exercise_tracker/view_models/step_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:neat_periodic_task/neat_periodic_task.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:stacked/stacked.dart';
 import 'dart:async';
+import 'dart:io';
 
 import '../../../locator.dart';
 import '../../../size_config.dart';
 
 class PopulateExerciseSummary extends StatefulWidget {
+
+  final String stepCount;
+  PopulateExerciseSummary({this.stepCount = "0"});
   @override
   State<StatefulWidget> createState() => _PopulateDietSummary();
 }
@@ -39,19 +44,120 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
 
   StepService stepService;
 
+  NeatPeriodicTaskScheduler scheduler;
+
+  // List<HealthDataPoint> _healthDataList = [];
+  //
+  // Future fetchData() async {
+  //   /// Get everything from midnight until now
+  //   DateTime startDate = DateTime(2021, 6, 16, 0, 0, 0);
+  //   DateTime endDate = DateTime(2021, 6, 16, 23, 59, 59);
+  //
+  //   HealthFactory health = HealthFactory();
+  //
+  //   /// Define the types to get.
+  //   List<HealthDataType> types = [
+  //     HealthDataType.STEPS,
+  //     // HealthDataType.WEIGHT,
+  //     // HealthDataType.HEIGHT,
+  //     // HealthDataType.BLOOD_GLUCOSE,
+  //     // HealthDataType.DISTANCE_WALKING_RUNNING,
+  //   ];
+  //
+  //   /// You MUST request access to the data types before reading them
+  //   bool accessWasGranted = await health.requestAuthorization(types);
+  //
+  //   int steps = 0;
+  //
+  //   if (accessWasGranted) {
+  //     try {
+  //       /// Fetch new data
+  //       List<HealthDataPoint> healthData =
+  //       await health.getHealthDataFromTypes(startDate, endDate, types);
+  //
+  //       /// Save all the new data points
+  //       _healthDataList.addAll(healthData);
+  //     } catch (e) {
+  //       print("Caught exception in getHealthDataFromTypes: $e");
+  //     }
+  //
+  //     /// Filter out duplicates
+  //     _healthDataList = HealthFactory.removeDuplicates(_healthDataList);
+  //
+  //     /// Print the results
+  //     _healthDataList.forEach((x) {
+  //       print("Data point: $x");
+  //       steps += x.value.round();
+  //     });
+  //
+  //     print("Steps: $steps");
+  //   } else {
+  //     print("Authorization not granted");
+  //   }
+  // }
+  //
+  // Stream<ActivityEvent> activityStream;
+  // ActivityEvent latestActivity = ActivityEvent.empty();
+  // List<ActivityEvent> _events = [];
+  // ActivityRecognition activityRecognition = ActivityRecognition.instance;
+  //
+  // void _startTracking() {
+  //   activityStream =
+  //       activityRecognition.startStream(runForegroundService: true);
+  //   activityStream.listen(onData);
+  // }
+  //
+  // <key>NSHealthShareUsageDescription</key>
+  // <string>We will sync your data with the Apple Health app to give you better insights</string>
+  // <key>NSHealthUpdateUsageDescription</key>
+  // <string>We will sync your data with the Apple Health app to give you better insights</string>
+  // void onData(ActivityEvent activityEvent) {
+  //   print(activityEvent.toString());
+  //   setState(() {
+  //     _events.add(activityEvent);
+  //     latestActivity = activityEvent;
+  //   });
+  // }
+
+  setupSteps() {
+    scheduler = NeatPeriodicTaskScheduler(
+        name: "coral-app-steps-counter",
+        interval: Duration(seconds: 10),
+        timeout: Duration(seconds: 5),
+        task: () async {
+          getStepsLocalData();
+          return;
+        },
+        minCycle: Duration(seconds: 5)
+    );
+    scheduler.start();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    if(scheduler != null) {
+      scheduler.stop();
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    // fetchData();
+    // _startTracking();
     exerciseService = new ExerciseService();
     getStepsLocalData();
+    setupSteps();
     getChallenges();
-    stepService = new StepService(stepCallback: (steps) {
-      print("hello word = $steps");
-      setState(() {
-        currentTakenSteps = steps;
-      });
-    });
+    // stepService = new StepService(stepCallback: (steps) {
+    //   print("hello word = $steps");
+    //   setState(() {
+    //     currentTakenSteps = steps;
+    //   });
+    // });
   }
 
   getStepsLocalData() async {
@@ -63,6 +169,7 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
     String goal = await ss.getItem("stepsGoal") ?? "0";
     String current = await ss.getItem("stepsCurrent_$formatDate") ?? "0";
 
+    if(!mounted) return;
     setState(() {
       stepsGoal = goal;
       currentTakenSteps = current;
@@ -108,7 +215,7 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
                 title: 'Steps',
                 icon: 'assets/exercise/foot_white.svg',
                 title2: '',
-                title3: currentTakenSteps, //model.steps
+                title3: currentTakenSteps, //model.steps,
                 title4: "Goal: $stepsGoal",//"Goal: ${model.stepsGoal.floor().toString()}",
                 textColor: Colors.white,
                 press: () async {

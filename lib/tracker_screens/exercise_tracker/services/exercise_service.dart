@@ -235,7 +235,7 @@ class ExerciseService {
   }
 
   Future<void> saveStepsGoal(String goal) async {
-    await ss.setPrefItem("stepsGoal", goal);
+    await ss.setPrefItem("stepsGoal", double.parse(goal).ceil().toString());
   }
 
   Future<void> updateStepsTakenCount(int value, int goal, DateTime timestamp) async {

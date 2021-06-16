@@ -24,7 +24,7 @@ class WellBeingServices {
   }
 
   Future<void> saveVitaminGoal(String goal) async {
-    await ss.setPrefItem("vitaminGoal", goal);
+    await ss.setPrefItem("vitaminGoal", double.parse(goal).ceil().toString());
   }
 
   Future<void> updateVitaminTakenCount(int value, int goal) async {

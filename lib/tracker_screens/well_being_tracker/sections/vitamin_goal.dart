@@ -51,7 +51,7 @@ class _VitaminGoal extends State<VitaminGoal> {
   }
 
   double getPointerValue() {
-    return ((int.parse(currentTakenVitamins) / int.parse(vitaminsGoal)) * 100);
+    return ((double.parse(currentTakenVitamins) / double.parse(vitaminsGoal)) * 100);
   }
 
   @override
