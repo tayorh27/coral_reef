@@ -141,6 +141,15 @@ class _MyApp extends State<MyApp> {
   DailyNotificationServices dailyNotificationServices;
 
   checkIfCurrentChallengeHasEnded() async {
+    String check = await ss.getItem("vitaminsNotificationAllowed");
+    if(check == null) {
+      await ss.setPrefItem("vitaminsNotificationAllowed", "true");
+      await ss.setPrefItem("waterNotificationAllowed", "true");
+      await ss.setPrefItem("caloriesNotificationAllowed", "true");
+      await ss.setPrefItem("stepsNotificationAllowed", "true");
+      await ss.setPrefItem("pregnancyNotificationAllowed", "true");
+      await ss.setPrefItem("periodNotificationAllowed", "true");
+    }
     String currentCH = await ss.getItem("currentChallenge");
     if (currentCH == null) return;
 
