@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/ListItem/model_challenge.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/general.dart';
+import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/active_challenge/track_challenge_activities.dart';
@@ -94,12 +96,30 @@ class _PageState extends State<CommunityChallengeDetails> {
     markers[markerId] = marker;
   }
 
+  StorageSystem ss = new StorageSystem();
+  bool isTrackAllowed = false;
+
   @override
   void initState() {
     super.initState();
     // setCustomMapPin();
     // geolocator = Geolocator();
     // setupCurrentLocation();
+  }
+
+  checkIfCurrentChallengeHasEnded() async {
+    String currentCH = await ss.getItem("currentChallenge");
+    if (currentCH == null) return;
+
+    Map<String, dynamic> myCh = jsonDecode(currentCH);
+
+    VirtualChallenge vc = VirtualChallenge.fromSnapshot(myCh);
+
+    if(vc.id == ch.id) {
+      setState(() {
+        isTrackAllowed = true;
+      });
+    }
   }
 
   setupCurrentLocation() async {
@@ -125,6 +145,7 @@ class _PageState extends State<CommunityChallengeDetails> {
   Widget build(BuildContext context) {
     ch = ModalRoute.of(context).settings.arguments as VirtualChallenge;
     if(!loadedMembers) {
+      checkIfCurrentChallengeHasEnded();
       getMembers();
       getChallengeActivities();
     }
@@ -255,7 +276,7 @@ class _PageState extends State<CommunityChallengeDetails> {
                         height: 20,
                       ),
                       SvgPicture.asset("assets/exercise/track_race.svg"),
-                      Align(
+                      (isTrackAllowed) ? Align(
                         alignment: Alignment.center,
                         child: Container(
                             width: 190,
@@ -269,7 +290,7 @@ class _PageState extends State<CommunityChallengeDetails> {
                               fontSize: 12,
                               text: 'Track Your Challenge',
                             )),
-                      ),
+                      ) : Text(""),
                       SizedBox(
                         height: 30,
                       ),
@@ -388,7 +409,7 @@ class _PageState extends State<CommunityChallengeDetails> {
               fontSize: getProportionateScreenWidth(12),
             ),
           ),
-          subtitle: Text(new GeneralUtils().returnFormattedDate(act.created_date),
+          subtitle: Text(new GeneralUtils().returnFormattedDate(act.created_date, ""),
               style: Theme.of(context)
               .textTheme
               .bodyText1

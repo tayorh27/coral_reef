@@ -1,18 +1,29 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coral_reef/constants.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 import '../size_config.dart';
 import 'colors.dart';
 
 class GeneralUtils {
-  GeneralUtils();
+
+  // String userCurrentTimeZone;
+
+  GeneralUtils() {
+    // currentTimeZone();
+  }
 
   isNumberFormatted(String value) {
     // List<String> startValues = "0,1,2,3,4,5,6,7,8,9".split(",");
@@ -144,12 +155,68 @@ class GeneralUtils {
   void showToast(BuildContext context, String msg) {
     Fluttertoast.showToast(
         msg: "$msg",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.CENTER,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 5,
         backgroundColor: Color(MyColors.primaryColor),
         textColor: Colors.white,
         fontSize: 16.0);
+  }
+
+  getCurrentDateTime() {
+    List<String> months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+    DateTime date = DateTime.now();
+    return "${rewriteTimeValue(date.day)} ${months[date.month - 1]} ${date.year}, ${rewriteTimeValue(date.hour)}:${rewriteTimeValue(date.minute)}";
+  }
+
+  rewriteTimeValue(int value) {
+    return value < 10 ? "0$value" : "$value";
+  }
+
+  Future<void> saveNotification(String title, String message) async {
+    String id = FirebaseDatabase.instance.reference().push().key;
+    await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("notifications").doc(id).set(
+        {
+          "id": id,
+          "title": title,
+          "message": message,
+          "created_date": getCurrentDateTime(),
+          "timestamp": FieldValue.serverTimestamp()
+        });
+  }
+
+  tz.TZDateTime convertFireBaseTimeToLocal(tz.TZDateTime tzDateTime, String locationLocal) {
+    tz.TZDateTime nowLocal = new tz.TZDateTime.now(tz.getLocation(locationLocal));
+    int difference = nowLocal.timeZoneOffset.inHours;
+    // print(difference);
+    tz.TZDateTime newTzDateTime;
+    newTzDateTime = tzDateTime.add(Duration(hours: difference));
+    return newTzDateTime;
+  }
+
+  int getFireBaseTimeToLocalHours(tz.TZDateTime tzDateTime, String locationLocal) {
+    tz.TZDateTime nowLocal = new tz.TZDateTime.now(tz.getLocation(locationLocal));
+    int difference = nowLocal.timeZoneOffset.inHours;
+    return difference;
+  }
+
+  Future<String> currentTimeZone() async {
+    final String currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
+    // userCurrentTimeZone = currentTimeZone;
+    return currentTimeZone;
   }
 
   Future<void> sendAndRetrieveMessage(String _body, String _title, List<dynamic> _ids) async {
@@ -212,13 +279,44 @@ class GeneralUtils {
     // print(r.body);
   }
 
-  String returnFormattedDate(String createdDate) {
-    print(createdDate);
-    List<String> _dates = createdDate.split(" ")[0].split("-");
-    int year = int.parse(_dates[0]);
-    int month = int.parse(_dates[1]);
-    int day = int.parse(_dates[2]);
+  String returnFormattedDate(String createdDate, String timeZone) {
 
+    if(timeZone == null) {
+      return returnFormattedDateWithoutTimeZone(createdDate);
+    }
+    if(timeZone == "") {
+      return returnFormattedDateWithoutTimeZone(createdDate);
+    }
+    if(timeZone == "null") {
+      return returnFormattedDateWithoutTimeZone(createdDate);
+    }
+
+    if(timeZone == userCurrentTimeZone.last) {
+      return returnFormattedDateWithoutTimeZone(createdDate);
+    }
+
+    // print(userCurrentTimeZone.last);
+
+    tz.initializeTimeZones();
+    DateTime myDT = DateTime.parse(createdDate);
+
+    tz.TZDateTime cDT = new tz.TZDateTime(tz.getLocation(timeZone), myDT.year, myDT.month, myDT.day, myDT.hour, myDT.minute, myDT.second, myDT.millisecond, myDT.microsecond);
+    // print("cdt = ${cDT.toString()}");
+    tz.TZDateTime newDT = convertFireBaseTimeToLocal(cDT, userCurrentTimeZone.last); //"Asia/Singapore"
+    // print(newDT.toString());
+    int diff = getFireBaseTimeToLocalHours(cDT, userCurrentTimeZone.last);
+    tz.TZDateTime newDT2;
+    if(diff < 0) {
+      newDT2 = newDT.add(Duration(hours: (diff * -1)));
+    }else {
+      newDT2 = newDT.subtract(Duration(hours: diff));
+    }
+    // print(newDT2.toString());
+
+    return returnFormattedDateWithoutTimeZone(newDT2.toString());
+  }
+
+  String returnFormattedDateWithoutTimeZone(String createdDate) {
     var secs = DateTime.now().difference(DateTime.parse(createdDate)).inSeconds;
     if (secs > 60) {
       var mins =

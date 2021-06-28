@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:coral_reef/Utils/helpers.dart';
 import 'package:coral_reef/baseModel.dart';
 import 'package:coral_reef/locator.dart';
@@ -74,6 +76,9 @@ class StepViewModel extends BaseModel {
   }
 
   void onStepCount(StepCount event) {
+    if(Platform.isIOS) {
+      return;
+    }
     print("TAYO: $event");
     steps = event.steps.toString();
     doStepsOperation(event.steps, event.timeStamp);

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/storage.dart';
@@ -402,6 +405,7 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
 
   TextEditingController _textEditingController;
   ExerciseService exerciseService;
+  DateTime date = DateTime.now();
 
   @override
   void initState() {
@@ -431,7 +435,6 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
       "Nov",
       "Dec"
     ];
-    DateTime date = DateTime.now();
     return "${rewriteTimeValue(date.day)} ${months[date.month - 1]} ${date.year}, ${rewriteTimeValue(date.hour)}:${rewriteTimeValue(date.minute)}";
   }
 
@@ -529,6 +532,16 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
                         }
                         await exerciseService.saveStepsGoal(_textEditingController.text);
                         widget.onOptionSelected(_textEditingController.text);
+
+                        //set background service
+                        if(Platform.isAndroid) {
+                          await AndroidAlarmManager.periodic(const Duration(
+                              days: 1), 0, updateAndroidStepCount,
+                            startAt: DateTime(
+                                date.year, date.month, date.day, 0, 0, 0),
+                            rescheduleOnReboot: true,
+                            wakeup: true,);
+                        }
                         Navigator.of(context).pop(false);
                       }),
                   SizedBox(height: SizeConfig.screenHeight * 0.02),
@@ -549,6 +562,20 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
         ),
       ),
     );
+  }
+}
+
+Future<void> updateAndroidStepCount() async{
+  StorageSystem ss = new StorageSystem();
+
+  final today = DateTime.now();
+  final months = ["JAN", "FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
+  String formatDate = "${today.year}_${months[today.month - 1]}_${today.day}";
+  String getTodayCounts = await ss.getItem("step_count_$formatDate");
+
+  if(getTodayCounts == null) {
+    await ss.setPrefItem("step_count_$formatDate", "0", isStoreOnline: false);
   }
 }
 

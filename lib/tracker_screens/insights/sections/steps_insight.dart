@@ -6,6 +6,7 @@ import 'package:coral_reef/shared_screens/pill_icon.dart';
 import 'package:coral_reef/tracker_screens/services/general_dew_services.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:group_button/group_button.dart';
 
 import '../../../size_config.dart';
@@ -36,7 +37,7 @@ class _StepsInsight extends State<StepsInsight> {
   int touchedGroupIndex = 0;
 
   List<WaterData> stepsData = [];
-  String stepsCount = "N/A", createdDate = "N/A";
+  String stepsCount = "0", createdDate = "N/A";
 
   @override
   void initState() {
@@ -52,7 +53,7 @@ class _StepsInsight extends State<StepsInsight> {
 
   getInitialChartData() async {
     setState(() {
-      stepsCount = "N/A";
+      stepsCount = "0";
       createdDate = "N/A";
     });
     Map<String, dynamic> data = await dewServices.getStepsDataInsight(selectedDataByType);
@@ -140,6 +141,80 @@ class _StepsInsight extends State<StepsInsight> {
               color: Color(MyColors.titleTextColor),
               fontSize: getProportionateScreenWidth(13),
             ),),
+          Container(
+              padding: EdgeInsets.all(0),
+              margin: EdgeInsets.only(top: 30.0),
+              child: Row(
+                mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      SvgPicture.asset(
+                        "assets/exercise/fire.svg",
+                        height: 40.0,
+                      ),
+                      Text(
+                          (double.parse(stepsCount) / 63.4)
+                              .floor()
+                              .toString() +
+                              "kcal",
+                          style: Theme
+                              .of(context)
+                              .textTheme
+                              .subtitle1
+                              .copyWith(
+                            color: Color(MyColors.titleTextColor),
+                            fontSize:
+                            getProportionateScreenWidth(
+                                12),
+                          )),
+                    ],
+                  ),
+                  Column(children: [
+                    SvgPicture.asset(
+                      "assets/exercise/location.svg",
+                      height: 40.0,
+                    ),
+                    Text(
+                        (double.parse(stepsCount) * 0.000762)
+                            .roundToDouble()
+                            .toString() +
+                            'km',
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .subtitle1
+                            .copyWith(
+                          color: Color(MyColors.titleTextColor),
+                          fontSize:
+                          getProportionateScreenWidth(
+                              12),
+                        )),
+                  ]),
+                  Column(children: [
+                    SvgPicture.asset(
+                      "assets/exercise/time.svg",
+                      height: 40.0,
+                    ),
+                    Text(
+                        (double.parse(stepsCount) / 100)
+                            .round()
+                            .toString() +
+                            "Min",
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .subtitle1
+                            .copyWith(
+                          color: Color(MyColors.titleTextColor),
+                          fontSize:
+                          getProportionateScreenWidth(
+                              12),
+                        )),
+                  ]),
+                ],
+              )),
         ],
       ),
     );
@@ -155,6 +230,7 @@ class _StepsInsight extends State<StepsInsight> {
         barTouchData: BarTouchData(
             touchTooltipData: BarTouchTooltipData(
               tooltipBgColor:  Color(MyColors.primaryColor),
+              direction: TooltipDirection.auto,
               getTooltipItem: (_a, _b, _c, _d) {
                 return BarTooltipItem("${_c.y}",Theme.of(context).textTheme.bodyText1.copyWith(
                     color: Colors.white,

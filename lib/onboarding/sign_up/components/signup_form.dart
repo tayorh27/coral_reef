@@ -333,6 +333,13 @@ class _SignFormState extends State<SignForm> {
 
       Map<String, dynamic> setupData = new Map();
       setupData["init"] = "true";
+      setupData["sleepNotificationAllowed"] = "true";
+      setupData["vitaminsNotificationAllowed"] = "true";
+      setupData["waterNotificationAllowed"] = "true";
+      setupData["caloriesNotificationAllowed"] = "true";
+      setupData["stepsNotificationAllowed"] = "true";
+      setupData["pregnancyNotificationAllowed"] = "false";
+      setupData["periodNotificationAllowed"] = "false";
       await FirebaseFirestore.instance.collection("users").doc(firebaseUser.uid).collection("setups").doc("user-data").set(setupData);
 
 

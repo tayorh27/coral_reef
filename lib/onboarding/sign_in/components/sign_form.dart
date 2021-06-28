@@ -13,6 +13,7 @@ import 'package:device_info/device_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../../components/default_button.dart';
 import '../../../constants.dart';
@@ -211,14 +212,27 @@ class _SignFormState extends State<SignForm> {
     return form.validate();
   }
 
+  signOutGoogle(String authType) async {
+    if(authType == "google") {
+      final GoogleSignIn _googleSignIn = GoogleSignIn(
+        scopes: [
+          'email',
+          'profile'
+        ],
+      );
+      await _googleSignIn.signIn();
+    }
+  }
+
   firebaseLoginContinues(User firebaseUser, String authType, dynamic extraData) {
     FirebaseFirestore.instance
         .collection('users')
         .doc(firebaseUser.uid)
         .get()
-        .then((result) {
+        .then((result) async {
       //check if user exists in database
       if (!result.exists) {
+        signOutGoogle(authType);
         FirebaseAuth.instance.signOut();
         // pd.dismissDialog();
         setState(() {
@@ -232,6 +246,7 @@ class _SignFormState extends State<SignForm> {
       Map<String, dynamic> user = result.data();
       bool blocked = user['blocked'];
       if (blocked) {
+        signOutGoogle(authType);
         FirebaseAuth.instance.signOut();
         // pd.dismissDialog();
         setState(() {

@@ -283,7 +283,7 @@ class _CreateNewGChat extends State<CreateNewGChat> {
                             ],
                           ),
                         ),
-                        top: MediaQuery.of(context).size.height - 90,
+                        top: MediaQuery.of(context).size.height - 120,
                       ),
                       Visibility(
                           visible: showProgress,
@@ -356,6 +356,7 @@ class _CreateNewGChat extends State<CreateNewGChat> {
     FilePickerResult result = await FilePicker.platform
         .pickFiles(type: FileType.image, allowMultiple: false);
     if (result != null) {
+      print(result.paths);
       File file = File(result.files.first.path);
 
       File croppedFile = await ImageCropper.cropImage(
@@ -515,9 +516,11 @@ class _CreateNewGChat extends State<CreateNewGChat> {
       String username = topicsData["username"];
       List<dynamic> _topics = topicsData["selectedTopics"];
 
+      String timeZone = await new GeneralUtils().currentTimeZone();
+
       //populate gchat model
       GChat gChat = new GChat(key, json["uid"], username, avatarData, _controllerTitle.text, _controllerBody.text,
-          [mediaInfo], 0, 0, 0, 0, [], new DateTime.now().toString(), FieldValue.serverTimestamp(), _topics, false, dynamicLink, "published");
+          [mediaInfo], 0, 0, 0, 0, [], new DateTime.now().toString(), FieldValue.serverTimestamp(), _topics, false, dynamicLink, "published", timeZone);
 
 
       await FirebaseFirestore.instance.collection("gchats").doc(key).set(gChat.toJSON());

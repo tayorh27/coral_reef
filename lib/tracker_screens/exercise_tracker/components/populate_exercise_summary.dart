@@ -14,6 +14,7 @@ import 'package:coral_reef/tracker_screens/exercise_tracker/services/exercise_se
 import 'package:coral_reef/tracker_screens/exercise_tracker/view_models/step_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:health/health.dart';
 import 'package:neat_periodic_task/neat_periodic_task.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:stacked/stacked.dart';
@@ -46,55 +47,59 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
 
   NeatPeriodicTaskScheduler scheduler;
 
-  // List<HealthDataPoint> _healthDataList = [];
-  //
-  // Future fetchData() async {
-  //   /// Get everything from midnight until now
-  //   DateTime startDate = DateTime(2021, 6, 16, 0, 0, 0);
-  //   DateTime endDate = DateTime(2021, 6, 16, 23, 59, 59);
-  //
-  //   HealthFactory health = HealthFactory();
-  //
-  //   /// Define the types to get.
-  //   List<HealthDataType> types = [
-  //     HealthDataType.STEPS,
-  //     // HealthDataType.WEIGHT,
-  //     // HealthDataType.HEIGHT,
-  //     // HealthDataType.BLOOD_GLUCOSE,
-  //     // HealthDataType.DISTANCE_WALKING_RUNNING,
-  //   ];
-  //
-  //   /// You MUST request access to the data types before reading them
-  //   bool accessWasGranted = await health.requestAuthorization(types);
-  //
-  //   int steps = 0;
-  //
-  //   if (accessWasGranted) {
-  //     try {
-  //       /// Fetch new data
-  //       List<HealthDataPoint> healthData =
-  //       await health.getHealthDataFromTypes(startDate, endDate, types);
-  //
-  //       /// Save all the new data points
-  //       _healthDataList.addAll(healthData);
-  //     } catch (e) {
-  //       print("Caught exception in getHealthDataFromTypes: $e");
-  //     }
-  //
-  //     /// Filter out duplicates
-  //     _healthDataList = HealthFactory.removeDuplicates(_healthDataList);
-  //
-  //     /// Print the results
-  //     _healthDataList.forEach((x) {
-  //       print("Data point: $x");
-  //       steps += x.value.round();
-  //     });
-  //
-  //     print("Steps: $steps");
-  //   } else {
-  //     print("Authorization not granted");
-  //   }
-  // }
+  List<HealthDataPoint> _healthDataList = [];
+
+  Future<void> fetchData() async {
+    /// Get everything from midnight until now
+    final today = DateTime.now();
+    DateTime startDate = DateTime(today.year, today.month, today.day, 0, 0, 0);
+    DateTime endDate = DateTime(today.year, today.month, today.day, 23, 59, 59);
+
+    HealthFactory health = HealthFactory();
+
+    /// Define the types to get.
+    List<HealthDataType> types = [
+      HealthDataType.STEPS,
+      // HealthDataType.WEIGHT,
+      // HealthDataType.HEIGHT,
+      // HealthDataType.BLOOD_GLUCOSE,
+      // HealthDataType.DISTANCE_WALKING_RUNNING,
+    ];
+
+    /// You MUST request access to the data types before reading them
+    bool accessWasGranted = await health.requestAuthorization(types);
+
+    int steps = 0;
+
+    if (accessWasGranted) {
+      try {
+        /// Fetch new data
+        List<HealthDataPoint> healthData =
+        await health.getHealthDataFromTypes(startDate, endDate, types);
+
+        /// Save all the new data points
+        _healthDataList.addAll(healthData);
+      } catch (e) {
+        print("Caught exception in getHealthDataFromTypes: $e");
+      }
+
+      /// Filter out duplicates
+      _healthDataList = HealthFactory.removeDuplicates(_healthDataList);
+
+      /// Print the results
+      _healthDataList.forEach((x) {
+        // print("Data point: $x");
+        steps += x.value.round();
+      });
+
+      String goal = await ss.getItem("stepsGoal") ?? "0";
+      new ExerciseService().updateStepsTakenCount(steps, double.parse(goal).ceil(), today);
+
+      // print("Steps: $steps");
+    } else {
+      print("Authorization not granted");
+    }
+  }
   //
   // Stream<ActivityEvent> activityStream;
   // ActivityEvent latestActivity = ActivityEvent.empty();
@@ -107,10 +112,7 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
   //   activityStream.listen(onData);
   // }
   //
-  // <key>NSHealthShareUsageDescription</key>
-  // <string>We will sync your data with the Apple Health app to give you better insights</string>
-  // <key>NSHealthUpdateUsageDescription</key>
-  // <string>We will sync your data with the Apple Health app to give you better insights</string>
+  //
   // void onData(ActivityEvent activityEvent) {
   //   print(activityEvent.toString());
   //   setState(() {
@@ -125,6 +127,9 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
         interval: Duration(seconds: 10),
         timeout: Duration(seconds: 5),
         task: () async {
+          if(Platform.isIOS) {
+            fetchData();
+          }
           getStepsLocalData();
           return;
         },
@@ -146,7 +151,6 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // fetchData();
     // _startTracking();
     exerciseService = new ExerciseService();
     getStepsLocalData();
@@ -188,9 +192,12 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
 
     query.docs.forEach((chan) {
       Map<String, dynamic> ch = chan.data();
-      setState(() {
-        totalKm += (ch["km_covered"] == null) ? 0.0 : ch["km_covered"];
-      });
+      totalKm += (ch["km_covered"] == null) ? 0.0 : ch["km_covered"];
+    });
+
+    if(!mounted) return;
+    setState(() {
+      totalKm = double.parse(totalKm.toStringAsFixed(2));
     });
   }
 

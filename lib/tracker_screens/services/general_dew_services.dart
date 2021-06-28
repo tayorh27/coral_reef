@@ -130,7 +130,7 @@ class DewServices {
       Map<String, dynamic> storageCount = result[2];
 
       storage.entries.forEach((element) {
-        final barGroup = makeGroupData(int.parse(element.key), 0, (double.parse("${element.value}") / storageCount[element.key]));
+        final barGroup = makeGroupData(int.parse(element.key), 0, returnDoubleInTwoDecimals((double.parse("${element.value}") / storageCount[element.key])));
         List<String> daysRange = weekStorage[element.key].toString().split(" ");
         String bedtime = getHighestOccurrenceByWeek(mSleepData, "bedtime", int.parse(daysRange[1]), int.parse(daysRange[3]));
         String wakeup = getHighestOccurrenceByWeek(mSleepData, "wakeup", int.parse(daysRange[1]), int.parse(daysRange[3]));
@@ -167,7 +167,7 @@ class DewServices {
       storage.entries.forEach((element) {
         //find the length of data in a particular month
         List<SleepData> len = mSleepData.where((sleepD) => sleepD.month == months[int.parse(element.key)]).toList();
-        final barGroup = makeGroupData(int.parse(element.key), 0, (double.parse("${element.value}")/len.length));
+        final barGroup = makeGroupData(int.parse(element.key), 0, returnDoubleInTwoDecimals((double.parse("${element.value}")/len.length)));
         String bedtime = getHighestOccurrence(mSleepData, "bedtime", months[int.parse(element.key)]);
         String wakeup = getHighestOccurrence(mSleepData, "wakeup", months[int.parse(element.key)]);
         final sleepD = new SleepData("id", year, month, day, week, "weekValue", hour, min, months[int.parse(element.key)], bedtime, wakeup, "${(element.value / len.length).ceil()} hrs", null);
@@ -437,7 +437,7 @@ class DewServices {
       Map<String, dynamic> storageCount = result[2];
 
       storage.entries.forEach((element) {
-        final barGroup = makeGroupData(int.parse(element.key), 0, (double.parse("${element.value}") / storageCount[element.key]));
+        final barGroup = makeGroupData(int.parse(element.key), 0, returnDoubleInTwoDecimals((double.parse("${element.value}") / storageCount[element.key])));
         final vitaminD = new VitaminsData("id", year, month, day, week, "weekValue", hour, min, weekStorage[element.key], "${(element.value / storageCount[element.key]).ceil()}", "", null);
         vitaminsData.add(vitaminD);
         chartData.add(barGroup);
@@ -471,7 +471,7 @@ class DewServices {
       storage.entries.forEach((element) {
         //find the length of data in a particular month
         List<VitaminsData> len = mVitaminsData.where((vitaminD) => vitaminD.month == months[int.parse(element.key)]).toList();
-        final barGroup = makeGroupData(int.parse(element.key), 0, (double.parse("${element.value}") / len.length));
+        final barGroup = makeGroupData(int.parse(element.key), 0, returnDoubleInTwoDecimals((double.parse("${element.value}") / len.length)));
         final vitaminD = new VitaminsData("id", year, month, day, week, "weekValue", hour, min, months[int.parse(element.key)], "${(element.value / len.length).ceil()}", "", null);
         vitaminsData.add(vitaminD);
         chartData.add(barGroup);
@@ -541,7 +541,7 @@ class DewServices {
       Map<String, dynamic> storageCount = result[2];
 
       storage.entries.forEach((element) {
-        final barGroup = makeGroupData(int.parse(element.key), 0, (double.parse("${element.value}") / storageCount[element.key]));
+        final barGroup = makeGroupData(int.parse(element.key), 0, returnDoubleInTwoDecimals((double.parse("${element.value}") / storageCount[element.key])));
         final waterD = new WaterData("id", year, month, day, week, "weekValue", hour, min, weekStorage[element.key], "${(element.value / storageCount[element.key]).ceil()}", "", null);
         waterData.add(waterD);
         chartData.add(barGroup);
@@ -575,7 +575,7 @@ class DewServices {
       storage.entries.forEach((element) {
         //find the length of data in a particular month
         List<WaterData> len = mWaterData.where((waterD) => waterD.month == months[int.parse(element.key)]).toList();
-        final barGroup = makeGroupData(int.parse(element.key), 0, (double.parse("${element.value}") / len.length));
+        final barGroup = makeGroupData(int.parse(element.key), 0, returnDoubleInTwoDecimals((double.parse("${element.value}") / len.length)));
         final waterD = new WaterData("id", year, month, day, week, "weekValue", hour, min, months[int.parse(element.key)], "${(element.value / len.length).ceil()}", "", null);
         waterData.add(waterD);
         chartData.add(barGroup);
@@ -644,7 +644,7 @@ class DewServices {
       Map<String, dynamic> storageCount = result[2];
 
       storage.entries.forEach((element) {
-        final barGroup = makeGroupData(int.parse(element.key), 0, (double.parse("${element.value}") / storageCount[element.key]));
+        final barGroup = makeGroupData(int.parse(element.key), 0, returnDoubleInTwoDecimals((double.parse("${element.value}") / storageCount[element.key])));
         final weightD = new WeightData("id", year, month, day, week, "weekValue", hour, min, weekStorage[element.key], "${(element.value / storageCount[element.key]).ceil()}", "", "", "", null);
         weightData.add(weightD);
         chartData.add(barGroup);
@@ -678,7 +678,7 @@ class DewServices {
       storage.entries.forEach((element) {
         //find the length of data in a particular month
         List<WeightData> len = mWeightData.where((weightD) => weightD.month == months[int.parse(element.key)]).toList();
-        final barGroup = makeGroupData(int.parse(element.key), 0, (double.parse("${element.value}") / len.length));
+        final barGroup = makeGroupData(int.parse(element.key), 0, returnDoubleInTwoDecimals((double.parse("${element.value}") / len.length)));
         final weightD = new WeightData("id", year, month, day, week, "weekValue", hour, min, months[int.parse(element.key)], "${(element.value / len.length).ceil()}", "", "", "", null);
         weightData.add(weightD);
         chartData.add(barGroup);
@@ -748,7 +748,7 @@ class DewServices {
       Map<String, dynamic> storageCount = result[2];
 
       storage.entries.forEach((element) {
-        final barGroup = makeGroupData(int.parse(element.key), 0, (double.parse("${element.value}") / storageCount[element.key]));
+        final barGroup = makeGroupData(int.parse(element.key), 0, returnDoubleInTwoDecimals((double.parse("${element.value}") / storageCount[element.key])));
         final waterD = new WaterData("id", year, month, day, week, "weekValue", hour, min, weekStorage[element.key], "${(element.value / storageCount[element.key]).ceil()}", "", null);
         waterData.add(waterD);
         chartData.add(barGroup);
@@ -782,7 +782,7 @@ class DewServices {
       storage.entries.forEach((element) {
         //find the length of data in a particular month
         List<WaterData> len = mWaterData.where((waterD) => waterD.month == months[int.parse(element.key)]).toList();
-        final barGroup = makeGroupData(int.parse(element.key), 0, (double.parse("${element.value}") / len.length));
+        final barGroup = makeGroupData(int.parse(element.key), 0, returnDoubleInTwoDecimals((double.parse("${element.value}") / len.length)));
         final waterD = new WaterData("id", year, month, day, week, "weekValue", hour, min, months[int.parse(element.key)], "${(element.value / len.length).ceil()}", "", null);
         waterData.add(waterD);
         chartData.add(barGroup);
@@ -795,6 +795,10 @@ class DewServices {
 
     return returnData;
 
+  }
+
+  double returnDoubleInTwoDecimals(double value) {
+    return double.parse(value.toStringAsFixed(2)).ceilToDouble();
   }
 
   Future<Map<String, dynamic>> getStepsDataInsight(String dataByType) async { //days,weeks,months
@@ -851,7 +855,7 @@ class DewServices {
       Map<String, dynamic> storageCount = result[2];
 
       storage.entries.forEach((element) {
-        final barGroup = makeGroupData(int.parse(element.key), 0, (double.parse("${element.value}") / storageCount[element.key]));
+        final barGroup = makeGroupData(int.parse(element.key), 0, returnDoubleInTwoDecimals((double.parse("${element.value}") / storageCount[element.key])));
         final waterD = new WaterData("id", year, month, day, week, "weekValue", hour, min, weekStorage[element.key], "${(element.value / storageCount[element.key]).ceil()}", "", null);
         waterData.add(waterD);
         chartData.add(barGroup);
@@ -885,7 +889,7 @@ class DewServices {
       storage.entries.forEach((element) {
         //find the length of data in a particular month
         List<WaterData> len = mWaterData.where((waterD) => waterD.month == months[int.parse(element.key)]).toList();
-        final barGroup = makeGroupData(int.parse(element.key), 0, (double.parse("${element.value}") / len.length));
+        final barGroup = makeGroupData(int.parse(element.key), 0, returnDoubleInTwoDecimals((double.parse("${element.value}") / len.length)));
         final waterD = new WaterData("id", year, month, day, week, "weekValue", hour, min, months[int.parse(element.key)], "${(element.value / len.length).ceil()}", "", null);
         waterData.add(waterD);
         chartData.add(barGroup);

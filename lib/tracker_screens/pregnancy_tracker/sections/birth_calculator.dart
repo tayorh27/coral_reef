@@ -96,6 +96,7 @@ class _BirthCalculator extends State<BirthCalculator> {
                         return;
                       }
                       await ss.setPrefItem("pregnancyCalculatorDate", _textEditingController.text);
+                      await ss.setPrefItem("pregnancyNotificationAllowed", "true");
                       await displayDueDate();
                       showNotification();
                       Navigator.of(context).pop(true);

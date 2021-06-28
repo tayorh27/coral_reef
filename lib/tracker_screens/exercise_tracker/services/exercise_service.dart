@@ -336,7 +336,7 @@ class ExerciseService {
     }
 
     int tCount = int.parse(getTodayCounts);
-    return (currentCount - tCount).toString();
 
+    return (currentCount - tCount).toString();
   }
 }

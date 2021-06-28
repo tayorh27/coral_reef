@@ -2,8 +2,10 @@ import 'package:coral_reef/ListItem/model_gchat_comment.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/storage.dart';
+import 'package:coral_reef/constants.dart';
 import 'package:coral_reef/g_chat_screen/services/gchat_services.dart';
 import 'package:coral_reef/shared_screens/gchat_user_avatar.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:readmore/readmore.dart';
 
@@ -50,10 +52,10 @@ class _RecentPostComment extends State<RecentPostComment> {
     comments.forEach((com) {
       mComments.add(
           ListTile(
-            leading: GChatUserAvatar(
-              40.0,
-              avatarData: com["avatar"],
-            ),
+            // leading: GChatUserAvatar(
+            //   40.0,
+            //   avatarData: com["avatar"],
+            // ),
             title: Container(
               padding: EdgeInsets.only(top: 10.0),
               child: Row(
@@ -67,12 +69,38 @@ class _RecentPostComment extends State<RecentPostComment> {
                           .copyWith(
                           color: Color(MyColors.titleTextColor),
                           fontSize: getProportionateScreenWidth(13))),
-                  Text(
-                    new GeneralUtils().returnFormattedDate(com["created_date"]),
-                    style: Theme.of(context).textTheme.subtitle1.copyWith(
-                      color: Color(MyColors.titleTextColor),
-                      fontSize: getProportionateScreenWidth(10),
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        new GeneralUtils().returnFormattedDate(com["created_date"], com["time_zone"]),
+                        style: Theme.of(context).textTheme.subtitle1.copyWith(
+                          color: Color(MyColors.titleTextColor),
+                          fontSize: getProportionateScreenWidth(10),
+                        ),
+                      ),
+                      SizedBox(width: 5.0,),
+                      InkWell(
+                        child: userLikeRecords.contains(com["id"]) ? Icon(Icons.favorite, size: 14.0, color: Colors.redAccent,) : Icon(Icons.favorite_border, size: 14.0,),
+                        onTap: () async {
+                          String commentID = com["id"];
+                          if(userLikeRecords.contains(commentID)) {
+                            setState(() {
+                              userLikeRecords.remove(commentID);
+                            });
+                            await operationAfterLikeButton("remove", commentID);
+                          }else {
+                            setState(() {
+                              userLikeRecords.add(commentID);
+                            });
+                            await operationAfterLikeButton("add", commentID);
+                          }
+
+
+                        },
+                      )
+                    ],
                   ),
                 ],
               ),
@@ -93,5 +121,27 @@ class _RecentPostComment extends State<RecentPostComment> {
       );
     });
     return mComments;
+  }
+
+  Future<void> operationAfterLikeButton(String action, String commentID) async {
+    //find likeMap data with commentID if action is remove
+    if(action == "remove") {
+      dynamic findLike = likesData.firstWhere((like) => like["comment_id"] == commentID);
+      String likeDataID = findLike["like_id"];
+      await gChatServices.removeLikeData(likeDataID);
+      await gChatServices.updateCommentNumberOfLikesByID(commentID, -1);
+      return;
+    }
+    String key = FirebaseDatabase.instance.reference().push().key;
+    Map<String, dynamic> likeMap = new Map();
+    likeMap["like_id"] = key;
+    likeMap["gchat_id"] = null;
+    likeMap["type"] = "comment";
+    likeMap["comment_id"] = commentID;
+    setState(() {
+      likesData.add(likeMap);
+    });
+    await gChatServices.saveLikeData(key, null, "comment", commentID);
+    await gChatServices.updateCommentNumberOfLikesByID(commentID, 1);
   }
 }

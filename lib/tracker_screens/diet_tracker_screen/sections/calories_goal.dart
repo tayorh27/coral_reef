@@ -171,9 +171,13 @@ class _CaloriesGoal extends State<CaloriesGoal> {
                                             ])
                                       ]),
                                 ),
-                                (caloriesGoal != "0") ? Align(
-                                  alignment: Alignment.topCenter,
-                                  child: TopicsSelection(text: "Add calories", selected: true, onTap: displayDialog,),
+                                (caloriesGoal != "0") ? Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    TopicsSelection(text: "Remove calories", selected: true, onTap: (currentTakenCalories == "0") ? null : (){displayDialog("remove");},),
+                                    TopicsSelection(text: "Add calories", selected: true, onTap: (){displayDialog("add");},),
+                                  ],
                                 ) : Text(""),
                                 SizedBox(height: SizeConfig.screenHeight * 0.07),
                                 DefaultButton(
@@ -185,15 +189,16 @@ class _CaloriesGoal extends State<CaloriesGoal> {
     );
   }
 
-  Future<bool> displayDialog() {
+  Future<bool> displayDialog(String action) {
     return showDialog<bool>(
         context: context,
         barrierDismissible: false,
         builder: (context) {
           return AlertDialogPage(
-              title: "Add Calories",
+              title: (action == "add") ? "Add Calories" : "Remove Calories",
               initialValue: currentTakenCalories,
               goal: caloriesGoal,
+              action: action,
               onOptionSelected: (val) {
                 if (!mounted) return;
                 setState(() {
@@ -225,13 +230,14 @@ class _CaloriesGoal extends State<CaloriesGoal> {
 
 class AlertDialogPage extends StatefulWidget {
   const AlertDialogPage(
-      {Key key, this.onOptionSelected, this.title, this.initialValue = "", this.goal})
+      {Key key, this.onOptionSelected, this.title, this.initialValue = "", this.goal, this.action})
       : super(key: key);
 
   final Function(String value) onOptionSelected;
   final String title;
   final String initialValue;
   final String goal;
+  final String action;
 
   @override
   _AlertDialogPageState createState() => _AlertDialogPageState();
@@ -357,7 +363,17 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
                         // });
                         double initCount = double.parse(widget.initialValue);
                         double current = double.parse(_textEditingController.text);
-                        String total = (initCount + current).ceil().toString();
+                        String total = "0";
+                        if(widget.action == "add") {
+                          total = (initCount + current).ceil().toString();
+                        }else {
+                          total = (initCount - current).ceil().toString();
+                        }
+
+                        if(double.parse(total) < 0) {
+                          new GeneralUtils().showToast(context, "Number of calories cannot be negative.");
+                          return;
+                        }
                         await dietServices.updateCaloriesTakenCount(total, widget.goal);
                         // setState(() {
                         //   _loading = false;

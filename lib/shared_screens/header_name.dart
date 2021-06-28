@@ -30,7 +30,7 @@ class _Heading extends State<Heading> {
     ss.getItem("user").then((value) {
       Map<String, dynamic> user = jsonDecode(value);
       setState(() {
-        username = user["firstname"];
+        username = (user["firstname"] == "") ? user["lastname"] : user["firstname"];
       });
     });
   }

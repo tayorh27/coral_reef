@@ -15,6 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../constants.dart';
+
 class GChatServices {
   StorageSystem ss = new StorageSystem();
   BuildContext context;
@@ -107,7 +109,7 @@ class GChatServices {
     return result;
   }
 
-  Future<void> saveLikeData(String key, GChat gchat) async {
+  Future<void> saveLikeData(String key, GChat gchat, String type, String commentID) async {
     //get user data
     String user = await ss.getItem('user');
     Map<String, dynamic> json = jsonDecode(user);
@@ -121,7 +123,8 @@ class GChatServices {
     Map<String, dynamic> topicsData = jsonDecode(topics);
     String username = topicsData["username"];
 
-    GChatLike gChatLike = new GChatLike(key, gchat.id, json["uid"], username, avatarData,
+    String gchatID = (gchat == null) ? "" : gchat.id;
+    GChatLike gChatLike = new GChatLike(key, gchatID, commentID, type, json["uid"], username, avatarData,
         new DateTime.now().toString(), FieldValue.serverTimestamp());
 
     await FirebaseFirestore.instance
@@ -149,7 +152,7 @@ class GChatServices {
     return "${num.ceil()}";
   }
 
-  Future<GChatComment> submitPostComment(String comment, String gchat_id) async {
+  Future<GChatComment> submitPostComment(String comment, String gchat_id, String main_comment_id) async {
 
     String key = FirebaseDatabase.instance.reference().push().key;
 
@@ -166,10 +169,21 @@ class GChatServices {
     Map<String, dynamic> topicsData = jsonDecode(topics);
     String username = topicsData["username"];
 
-    GChatComment gChatComment = new GChatComment(key, gchat_id, json["uid"], username, avatarData, comment, new DateTime.now().toString(), json["msgId"], FieldValue.serverTimestamp());
+    String timeZone = await new GeneralUtils().currentTimeZone();
+    if(main_comment_id.isEmpty) {
+      main_comment_id = key; //in case of new comments
+    }
+    GChatComment gChatComment = new GChatComment(key, main_comment_id, gchat_id, json["uid"], username, avatarData, comment, new DateTime.now().toString(), json["msgId"], FieldValue.serverTimestamp(), timeZone, 0);
 
     await FirebaseFirestore.instance.collection("comments").doc(key).set(gChatComment.toJSON());
 
     return gChatComment;
+  }
+
+  Future<void> updateCommentNumberOfLikesByID(String commentID, int increment) async {
+    await FirebaseFirestore.instance.collection("comments").doc(commentID).update(
+        {
+          "number_of_likes" : FieldValue.increment(increment)
+        });
   }
 }

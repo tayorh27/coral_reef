@@ -153,6 +153,7 @@ class _VitaminsInsight extends State<VitaminsInsight> {
         barTouchData: BarTouchData(
             touchTooltipData: BarTouchTooltipData(
               tooltipBgColor:  Color(MyColors.primaryColor),
+              direction: TooltipDirection.auto,
               getTooltipItem: (_a, _b, _c, _d) {
                 return BarTooltipItem("${_c.y}",Theme.of(context).textTheme.bodyText1.copyWith(
                     color: Colors.white,

@@ -5,18 +5,18 @@ import 'package:coral_reef/constants.dart';
 import 'package:coral_reef/g_chat_screen/services/gchat_services.dart';
 import 'package:flutter/material.dart';
 
-class PostComment extends StatefulWidget {
+class SinglePostComment extends StatefulWidget {
   final Widget leadingWidget;
   final String gchatID;
   final Function(GChatComment comment) onCreateComment;
 
-  PostComment(this.leadingWidget, this.gchatID, {this.onCreateComment});
+  SinglePostComment(this.leadingWidget, this.gchatID, {this.onCreateComment});
 
   @override
-  State<StatefulWidget> createState() => _PostComment();
+  State<StatefulWidget> createState() => _SinglePostComment();
 }
 
-class _PostComment extends State<PostComment> {
+class _SinglePostComment extends State<SinglePostComment> {
 
   TextEditingController _controllerMessage = new TextEditingController(text: "");
   FocusNode focusNode = new FocusNode();
@@ -26,11 +26,24 @@ class _PostComment extends State<PostComment> {
 
   bool sending = false;
 
+  String replyToUser = "";
+  String commentID = "";
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     gChatServices = new GChatServices(context);
+    alertPost.listen((value) {
+      if(value.isNotEmpty) {
+        replyToUser = value[0];
+        commentID = value[1];
+        setState(() {
+          _controllerMessage.text = "@$replyToUser";
+          focusNode.requestFocus();
+        });
+      }
+    });
   }
 
   @override
@@ -66,8 +79,8 @@ class _PostComment extends State<PostComment> {
                     .subtitle1
                     .copyWith(color: Colors.grey),
                 labelStyle: Theme.of(context).textTheme.subtitle1.copyWith(
-                      color: Color(MyColors.titleTextColor),
-                    )),
+                  color: Color(MyColors.titleTextColor),
+                )),
           ),
         ),
         trailing: Container(
@@ -92,11 +105,11 @@ class _PostComment extends State<PostComment> {
     setState(() {
       sending = true;
     });
-    // String main_comment_id = (replyToUser.isEmpty) ? "" : commentID ?? "";
-    GChatComment com = await gChatServices.submitPostComment(_controllerMessage.text, widget.gchatID, "");
+    String main_comment_id = (replyToUser.isEmpty) ? "" : commentID ?? "";
+    GChatComment com = await gChatServices.submitPostComment(_controllerMessage.text, widget.gchatID, main_comment_id);
     widget.onCreateComment(com);
     _controllerMessage.clear();
-
+    alertPost.drain();
     setState(() {
       sending = false;
     });

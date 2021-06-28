@@ -5,6 +5,7 @@ class GChat {
       number_of_reports,
       number_of_impressions;
   dynamic user_avatar, images, recent_comments, timestamp, topics;
+  String time_zone;
   bool rewarded_token;
 
   GChat(
@@ -25,7 +26,8 @@ class GChat {
       this.topics,
       this.rewarded_token,
       this.link,
-      this.visibility);
+      this.visibility,
+      this.time_zone);
 
   Map<String, dynamic> toJSON() {
     return {
@@ -46,7 +48,8 @@ class GChat {
       'topics': topics,
       'rewarded_token': rewarded_token,
       'link': link,
-      'visibility': visibility
+      'visibility': visibility,
+      'time_zone': time_zone
     };
   }
 
@@ -69,5 +72,6 @@ class GChat {
     rewarded_token = data['rewarded_token'];
     link = data['link'];
     visibility = data['visibility'];
+    time_zone = data['time_zone'];
   }
 }

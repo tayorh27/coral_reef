@@ -10,6 +10,7 @@ import 'package:coral_reef/components/coral_back_button.dart';
 import 'package:coral_reef/g_chat_screen/components/image_display_widget.dart';
 import 'package:coral_reef/g_chat_screen/components/post_comment.dart';
 import 'package:coral_reef/g_chat_screen/components/recent_comments.dart';
+import 'package:coral_reef/g_chat_screen/components/single_post_comment.dart';
 import 'package:coral_reef/g_chat_screen/components/single_post_recent_comment.dart';
 import 'package:coral_reef/g_chat_screen/components/video_display_widget.dart';
 import 'package:coral_reef/g_chat_screen/services/gchat_services.dart';
@@ -76,6 +77,7 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
     QuerySnapshot query = await FirebaseFirestore.instance
         .collection("comments")
         .where("gchat_id", isEqualTo: widget.gChat.id)
+    .where("", isEqualTo: "")
         .orderBy("timestamp", descending: true).get();
 
     if(!mounted) return;
@@ -148,7 +150,7 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
                                 fontSize: getProportionateScreenWidth(13))),
                       ),
                       subtitle: Text(
-                        new GeneralUtils().returnFormattedDate(widget.gChat.created_date),
+                        new GeneralUtils().returnFormattedDate(widget.gChat.created_date, widget.gChat.time_zone),
                         style: Theme.of(context).textTheme.subtitle1.copyWith(
                           color: Color(MyColors.titleTextColor),
                           fontSize: getProportionateScreenWidth(10),
@@ -248,7 +250,7 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
                       border: Border(
                           top: BorderSide(color: Colors.grey[300]))),
                   child:
-                  PostComment(
+                  SinglePostComment( //handles rxdart
                       GChatUserAvatar(
                         40.0,
                         avatarData: widget.gChat.user_avatar,
@@ -283,7 +285,7 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
         liked = true;
         postLikeID = key;
       });
-      await gServices.saveLikeData(key, currentGChat);
+      await gServices.saveLikeData(key, currentGChat, "gchat", "");
     }
   }
 }

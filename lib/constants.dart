@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'models/period.dart';
 
@@ -59,6 +60,10 @@ OutlineInputBorder outlineInputBorder() {
   );
 }
 
+final List<String> userLikeRecords = [];
+final List<Map<String, dynamic>> likesData = [];
+final BehaviorSubject<List<String>> alertPost = new BehaviorSubject();
+final List<String> userCurrentTimeZone = [];
 
 final firestoreinstance = FirebaseFirestore.instance;
 final user = FirebaseAuth.instance.currentUser;

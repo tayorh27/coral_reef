@@ -474,7 +474,7 @@ class _PageState extends State<ChallengePage> {
     addresses = await walletServices.getUserAddresses();
     Map<String, dynamic> resp =
         await walletServices.getTokenBalance(addresses["public"]);
-    crlxBalance = resp["crlx"];
+    crlxBalance = resp["crl"];
   }
 
   @override
@@ -499,9 +499,9 @@ class _PageState extends State<ChallengePage> {
                       fontSize: getProportionateScreenWidth(15),
                     ),
               ),
-              SvgPicture.asset(
-                  "assets/icons/clarity_notification-outline-badged.svg",
-                  height: 22.0),
+              // SvgPicture.asset(
+              //     "assets/icons/clarity_notification-outline-badged.svg",
+              //     height: 22.0),
             ],
           ),
         ),
@@ -588,6 +588,13 @@ class _PageState extends State<ChallengePage> {
                                       fontSize: getProportionateScreenWidth(20),
                                       color: Color(MyColors.titleTextColor))),
                           SizedBox(height: 20),
+                          (challenges.isEmpty) ? SizedBox() : Text('No challenges available yet!',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subtitle1
+                                  .copyWith(
+                                  fontSize: getProportionateScreenWidth(15),
+                                  color: Color(MyColors.titleTextColor))),
                           ...buildChallengesList(),
                           SizedBox(
                             height: 10,
@@ -1027,7 +1034,7 @@ class _PageState extends State<ChallengePage> {
     VirtualChallengeMembers vcm = new VirtualChallengeMembers(
         id,
         user.uid,
-        "${json["lastname"]}", //${json["firstname"]}
+        (json["lastname"] == "") ? "${json["firstname"]}" : "${json["lastname"]}", //${json["firstname"]}
         image,
         new DateTime.now().toString(),
         FieldValue.serverTimestamp(),
@@ -1040,7 +1047,7 @@ class _PageState extends State<ChallengePage> {
         .collection("challenges")
         .doc(ch.id)
         .collection("joined-users")
-        .doc(id)
+        .doc(id) //use user id ??
         .set(vcm.toJSON());
 
     new GeneralUtils()

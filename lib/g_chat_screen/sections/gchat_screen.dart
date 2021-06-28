@@ -7,6 +7,7 @@ import 'package:coral_reef/ListItem/model_gchat.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/storage.dart';
+import 'package:coral_reef/constants.dart';
 import 'package:coral_reef/g_chat_screen/components/image_display_widget.dart';
 import 'package:coral_reef/g_chat_screen/components/post_comment.dart';
 import 'package:coral_reef/g_chat_screen/components/recent_comments.dart';
@@ -37,74 +38,26 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
 
   GChatServices gServices;
 
+  String mText = "";
+
   bool hasLoadedContent = false;
   var imageNetwork = NetworkImage(
       "https://firebasestorage.googleapis.com/v0/b/taconlinegiftshop.appspot.com/o/logo-3.png?alt=media&token=92f27f22-efdb-4455-9628-8e9ac7ae99c6");
 
   bool isBottom = false;
 
-  List<GChat> chats = [
-    // GChat(
-    //     "id",
-    //     "user_uid",
-    //     "RaeRae0",
-    //     {"selectedAvatar": "avatar2", "selectedColor": MyColors.avatarColor2},
-    //     "Relationships",
-    //     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nec, feugiat non pellentesque duis fames vel diam. Ullamcorper rhoncus id nunc mauris turpis lacus lorem sit augue. ",
-    //     ["https://miro.medium.com/max/600/1*mKaVn6O_214Fj3tDPRRIUA.jpeg"],
-    //     47,
-    //     2,0,
-    //     0,
-    //     [],
-    //     "2 days ago",
-    //     "timestamp",[], false, "",""),
-    // GChat(
-    //     "id",
-    //     "user_uid",
-    //     "coralxyz12",
-    //     {"selectedAvatar": "avatar4", "selectedColor": MyColors.avatarColor4},
-    //     "Periods",
-    //     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nec, feugiat non pellentesque duis fames vel diam. Ullamcorper rhoncus id nunc mauris turpis lacus lorem sit augue. ",
-    //     ["https://dz9yg0snnohlc.cloudfront.net/cro-is-it-healthy-to-chat-with-random-people-online-2.jpg"],
-    //     33,
-    //     22,0,
-    //     0,
-    //     [],
-    //     "1 wk ago",
-    //     "timestamp",[], false, "",""),
-    // GChat(
-    //     "id",
-    //     "user_uid",
-    //     "AshAshto20",
-    //     {"selectedAvatar": "avatar6", "selectedColor": MyColors.avatarColor6},
-    //     "My Pregnancy Test",
-    //     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nec, feugiat non pellentesque duis fames vel diam. Ullamcorper rhoncus id nunc mauris turpis lacus lorem sit augue. ",
-    //     ["https://www.ft.com/__origami/service/image/v2/images/raw/http%3A%2F%2Fcom.ft.imagepublish.upp-prod-us.s3.amazonaws.com%2F082f40aa-39d7-11e9-9988-28303f70fcff?fit=scale-down&source=next&width=700"],
-    //     333,
-    //     242,0,
-    //     0,
-    //     [],
-    //     "1 hr ago",
-    //     "timestamp",[], false, "",""),
-  ];
+  List<GChat> chats = [];
 
   StorageSystem ss = new StorageSystem();
 
   StreamSubscription<QuerySnapshot> gchatsList;
   ScrollController _scrollController = new ScrollController();
 
-  List<Map<String, dynamic>> likesData = [];
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     gServices = GChatServices(context);
-
-    // ss.getItem("gchats_local_storage").then((value) {
-    //   if(value == null) return;
-    //
-    // });
 
     _scrollController.addListener(() {
       if(_scrollController.hasClients) {
@@ -118,7 +71,9 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
       }
     });
 
+    // getUserLikesData();
     getAllLikesData();
+
     // imageNetwork.resolve(new ImageConfiguration()).addListener(
     //     new ImageStreamListener((ImageInfo image, bool synchronousCall) {
     //   if (!mounted) return;
@@ -153,6 +108,22 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
     });
   }
 
+  //not used
+  Future<void> getUserLikesData() async {
+    DocumentSnapshot query = await FirebaseFirestore.instance.collection("likes-record").doc(user.uid).get();
+
+    if(query.exists) {
+      Map<String, dynamic> recs = query.data();
+      userLikeRecords.clear();
+      setState(() {
+        userLikeRecords.addAll(recs["records"]);
+      });
+    }
+
+    getAllLikesData();
+
+  }
+
   getAllLikesData() async {
     //get user data
     String user = await ss.getItem('user');
@@ -161,6 +132,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
     QuerySnapshot query = await FirebaseFirestore.instance.collection("likes").where("user_uid", isEqualTo: json["uid"]).get();
 
     if(query.size > 0) {
+      likesData.clear();
       query.docs.forEach((likeQ) {
         GChatLike gLike = GChatLike.fromSnapshot(likeQ.data());
 
@@ -168,9 +140,14 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
         Map<String, dynamic> likeMap = new Map();
         likeMap["like_id"] = gLike.id;
         likeMap["gchat_id"] = gLike.gchat_id;
+        likeMap["comment_id"] = gLike.comment_id ?? "";
+        likeMap["type"] = gLike.like_type ?? "gchat";
 
         setState(() {
           likesData.add(likeMap);
+          if(gLike.like_type == "comment") {
+            userLikeRecords.add("${gLike.comment_id}");//${gLike.id}|
+          }
         });
       });
     }
@@ -228,7 +205,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                                     fontSize: getProportionateScreenWidth(13))),
                       ),
                       subtitle: Text(
-                        new GeneralUtils().returnFormattedDate(chats[index].created_date),
+                        new GeneralUtils().returnFormattedDate(chats[index].created_date, chats[index].time_zone),
                         style: Theme.of(context).textTheme.subtitle1.copyWith(
                               color: Color(MyColors.titleTextColor),
                               fontSize: getProportionateScreenWidth(10),
@@ -270,15 +247,18 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                           style: Theme.of(context).textTheme.subtitle1.copyWith(
                               color: Color(MyColors.primaryColor),
                               fontSize: getProportionateScreenWidth(13))),
-                      onTap: (){
+                      onTap: () async {
                         String getLikeID = "";
                         if(hasLikedPost(index)) {
                           getLikeID = getLikeIDForPost(index);
                         }
-                        Navigator.push(
+                        await Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => GChatSinglePostView(chats[index], liked, getLikeID)),
                         );
+                        setState(() {
+                          mText = "mText";
+                        });
                       },
                     ) : SizedBox(),
                     // Container(
@@ -331,15 +311,18 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                     ),
                     (chats[index].number_of_comments > 3) ? Center(
                       child: TextButton(
-                        onPressed: (){
+                        onPressed: () async {
                           String getLikeID = "";
                           if(hasLikedPost(index)) {
                             getLikeID = getLikeIDForPost(index);
                           }
-                          Navigator.push(
+                          await Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => GChatSinglePostView(chats[index], liked, getLikeID)),
                           );
+                          setState(() {
+                            mText = "mText";
+                          });
                         },
                         child: Text("View ${chats[index].number_of_comments - 3} more comments.",
                             style: Theme.of(context).textTheme.subtitle1.copyWith(
@@ -409,12 +392,14 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
       Map<String, dynamic> likeMap = new Map();
       likeMap["like_id"] = key;
       likeMap["gchat_id"] = currentGChat.id;
+      likeMap["type"] = "gchat";
+      likeMap["comment_id"] = "";
 
       setState(() {
         likesData.add(likeMap);
       });
 
-      await gServices.saveLikeData(key, currentGChat);
+      await gServices.saveLikeData(key, currentGChat, "gchat", "");
     }
   }
 
