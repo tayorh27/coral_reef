@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/ListItem/model_challenge.dart';
 import 'package:coral_reef/ListItem/model_diet_data.dart';
+import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/constants.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -229,7 +230,8 @@ class ExerciseService {
     String image = (json["picture"] == "") ? "https://firebasestorage.googleapis.com/v0/b/coraltrackerapp.appspot.com/o/default_avatar.png?alt=media&token=f7fcf422-1853-4c7c-9b3a-bb5204c3a94f" : json["picture"];
 
     String id = FirebaseDatabase.instance.reference().push().key;
-    VirtualChallengeActivities vca = new VirtualChallengeActivities(id, user.uid, "stat", "${json["firstname"]} ${json["lastname"]} $text", image, new DateTime.now().toString(), FieldValue.serverTimestamp(), ch.msgId);
+    String timeZone = await new GeneralUtils().currentTimeZone();
+    VirtualChallengeActivities vca = new VirtualChallengeActivities(id, user.uid, "stat", "${json["firstname"]} ${json["lastname"]} $text", image, new DateTime.now().toString(), FieldValue.serverTimestamp(), ch.msgId, timeZone);
     await FirebaseFirestore.instance.collection("challenges").doc(ch.id).collection("activities").doc(id).set(vca.toJSON());
 
   }
@@ -338,5 +340,39 @@ class ExerciseService {
     int tCount = int.parse(getTodayCounts);
 
     return (currentCount - tCount).toString();
+  }
+
+  Future<Map<String, dynamic>> onChallengeParticipation(String chanID) async {
+    String user = await ss.getItem("user");
+    dynamic json = jsonDecode(user);
+    String uid = json["uid"];
+
+    Uri _uri = Uri.parse("https://us-central1-coraltrackerapp.cloudfunctions.net/onchallengeparticipation?uid=$uid&challenge_id=$chanID");
+
+    http.Response res = await http.get(_uri);
+
+    print(res.body);
+
+    Map<String, dynamic> _body = jsonDecode(res.body);
+
+    return _body;
+
+  }
+
+  Future<Map<String, dynamic>> onWinnersReward(String chanID) async {
+    String user = await ss.getItem("user");
+    dynamic json = jsonDecode(user);
+    String uid = json["uid"];
+
+    Uri _uri = Uri.parse("https://us-central1-coraltrackerapp.cloudfunctions.net/onwinnersreward?uid=$uid&challenge_id=$chanID");
+
+    http.Response res = await http.get(_uri);
+
+    print(res.body);
+
+    Map<String, dynamic> _body = jsonDecode(res.body);
+
+    return _body;
+
   }
 }

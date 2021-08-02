@@ -106,23 +106,26 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
                             .copyWith(
                             color: Colors.grey,
                             fontSize: getProportionateScreenWidth(12))),
-                    Container(
-                      margin: EdgeInsets.only(left: (com.number_of_likes == null || com.number_of_likes <= 0) ? 0.0 : 20.0),
-                      child: InkWell(onTap: (){
-                        List<String> post = [com.username, com.main_comment_id];
-                        // print("reply @${com.username}");
-                        // alertPost.
-                        alertPost.add(post);
-                      }, child: Text("Reply",
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyText1
-                              .copyWith(
-                              color: Colors.grey,
-                              fontSize: getProportionateScreenWidth(12))),),
+                    Visibility(
+                      visible: false,
+                      child: Container(
+                        margin: EdgeInsets.only(left: (com.number_of_likes == null || com.number_of_likes <= 0) ? 0.0 : 20.0),
+                        child: InkWell(onTap: (){
+                          List<String> post = [com.username, com.main_comment_id];
+                          // print("reply @${com.username}");
+                          // alertPost.
+                          alertPost.add(post);
+                        }, child: Text("Reply",
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText1
+                                .copyWith(
+                                color: Colors.grey,
+                                fontSize: getProportionateScreenWidth(12))),),
+                      ),
                     ),
                     Container(
-                      margin: EdgeInsets.only(left: 20.0, top: 3.0),
+                      margin: EdgeInsets.only(left: (com.number_of_likes == null || com.number_of_likes <= 0) ? 0.0 : 20.0, top: 3.0),
                       child: InkWell(
                         child: userLikeRecords.contains(com.id) ? Icon(Icons.favorite, size: 14.0, color: Colors.redAccent,) : Icon(Icons.favorite_border, size: 14.0,),
                         onTap: () async {

@@ -8,6 +8,7 @@ import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/coral_back_button.dart';
+import 'package:coral_reef/g_chat_screen/components/topics_selection.dart';
 import 'package:coral_reef/g_chat_screen/services/gchat_services.dart';
 import 'package:coral_reef/shared_screens/gchat_user_avatar.dart';
 import 'package:file_picker/file_picker.dart';
@@ -56,6 +57,21 @@ class _CreateNewGChat extends State<CreateNewGChat> {
 
   String gifURL = "";
 
+  List<String> topics = [
+    "Sex life",
+    "Relationships",
+    "My body",
+    "Health",
+    "Period and cycle",
+    "Parenting",
+    "Pregnancy",
+    "Entertainment",
+    "Harmony",
+    "Trying to conceive"
+  ];
+
+  List<String> selectedTopics = [];
+
   @override
   void initState() {
     // TODO: implement initState
@@ -77,6 +93,7 @@ class _CreateNewGChat extends State<CreateNewGChat> {
         setState(() {
           _controllerTitle.text = value["title"];
           _controllerBody.text = value["body"];
+          selectedTopics = "${value["topics"]}".split(",");
           postFile = (value["file"] == "") ? null : new File(value["file"]);
           thumbnail = (value["thumbnail"] == "") ? null : new File(value["thumbnail"]);
           if(postFile != null) {
@@ -144,7 +161,7 @@ class _CreateNewGChat extends State<CreateNewGChat> {
                                     margin: EdgeInsets.only(top: 10.0),
                                     child: TextButton(
                                         onPressed: () {
-                                          gServices.saveDraft(title: _controllerTitle.text, body: _controllerBody.text, file: postFile, fileType: fileType, thumbnail: thumbnail);
+                                          gServices.saveDraft(title: _controllerTitle.text, body: _controllerBody.text, file: postFile, fileType: fileType, thumbnail: thumbnail, topics: selectedTopics);
                                         },
                                         child: Text("Save Draft",
                                             style: Theme.of(context)
@@ -221,9 +238,9 @@ class _CreateNewGChat extends State<CreateNewGChat> {
                             color: Colors.grey[300],
                           ),
                           Container(
-                            height: 500,
+                            height: 250,
                             width: MediaQuery.of(context).size.width,
-                            padding: EdgeInsets.only(top: 25.0, left: 0.0),
+                            padding: EdgeInsets.only(top: 25.0, left: 0.0, bottom: 10.0),
                             child: TextFormField(
                               keyboardType: TextInputType.multiline,
                               controller: _controllerBody,
@@ -248,6 +265,25 @@ class _CreateNewGChat extends State<CreateNewGChat> {
                                           color: Colors.grey,
                                           fontWeight: FontWeight.bold)),
                             ),
+                          ),
+                          Row(
+                            children: [
+                              Text("Select the topic(s) for this post",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .subtitle1
+                                    .copyWith(color: Color(MyColors.primaryColor), fontSize: 16.0),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10.0,),
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 50.0,
+                            child: ListView(
+                              scrollDirection: Axis.horizontal,
+                              children: listTopics(),
+                            ),
                           )
                         ],
                       )),
@@ -270,10 +306,10 @@ class _CreateNewGChat extends State<CreateNewGChat> {
                                     style: ButtonStyle(
                                         alignment: Alignment.centerLeft),
                                   ),
-                                  TextButton(
-                                      onPressed: onVideoSelectionPressed,
-                                      child: SvgPicture.asset(
-                                          "assets/icons/gchat_video.svg")),
+                                  // TextButton(
+                                  //     onPressed: onVideoSelectionPressed,
+                                  //     child: SvgPicture.asset(
+                                  //         "assets/icons/gchat_video.svg")),
                                   TextButton(
                                       onPressed: onGifImageSelectionPressed,
                                       child: SvgPicture.asset(
@@ -299,7 +335,7 @@ class _CreateNewGChat extends State<CreateNewGChat> {
                                 ],
                               )
                             ),
-                            top: MediaQuery.of(context).size.height - 120,
+                            top: MediaQuery.of(context).size.height - 150,
                           )),
                       Visibility(
                           visible: isVisible,
@@ -309,7 +345,7 @@ class _CreateNewGChat extends State<CreateNewGChat> {
                                 children: [
                                   Container(
                                     width: 70.0,
-                                    height: 70.0,
+                                    height: 50.0,
                                     margin: EdgeInsets.only(right: 20.0),
                                     decoration: BoxDecoration(
                                         // color: Colors.grey,
@@ -350,6 +386,29 @@ class _CreateNewGChat extends State<CreateNewGChat> {
             ),
           ),
         ));
+  }
+
+  List<Widget> listTopics() {
+    List<Widget> tops = [];
+    topics.forEach((opt) {
+      tops.add(TopicsSelection(
+        text: opt,
+        selected: (selectedTopics.contains(opt)) ? true : false,
+        onTap: () {
+          if (selectedTopics.contains(opt)) {
+            setState(() {
+              selectedTopics.remove(opt);
+            });
+          } else {
+            setState(() {
+              selectedTopics.add(opt);
+            });
+          }
+          print(selectedTopics);
+        },
+      ));
+    });
+    return tops;
   }
 
   onImageSelectionPressed() async {
@@ -460,6 +519,11 @@ class _CreateNewGChat extends State<CreateNewGChat> {
   }
 
   Future<void> publicPost() async {
+    if(selectedTopics.isEmpty) {
+      new GeneralUtils().displayAlertDialog(context, "Attention",
+          "Please select at least one topic for this post.");
+      return;
+    }
     if(fileType == "gif") {
       if (_controllerTitle.text.isEmpty || _controllerBody.text.isEmpty || gifURL == "") {
         new GeneralUtils().displayAlertDialog(context, "Attention",
@@ -514,13 +578,13 @@ class _CreateNewGChat extends State<CreateNewGChat> {
       String topics = await ss.getItem("topics");
       Map<String, dynamic> topicsData = jsonDecode(topics);
       String username = topicsData["username"];
-      List<dynamic> _topics = topicsData["selectedTopics"];
+      // List<dynamic> _topics = topicsData["selectedTopics"];
 
       String timeZone = await new GeneralUtils().currentTimeZone();
 
       //populate gchat model
       GChat gChat = new GChat(key, json["uid"], username, avatarData, _controllerTitle.text, _controllerBody.text,
-          [mediaInfo], 0, 0, 0, 0, [], new DateTime.now().toString(), FieldValue.serverTimestamp(), _topics, false, dynamicLink, "published", timeZone);
+          [mediaInfo], 0, 0, 0, 0, [], new DateTime.now().toString(), FieldValue.serverTimestamp(), selectedTopics, false, dynamicLink, "published", timeZone);
 
 
       await FirebaseFirestore.instance.collection("gchats").doc(key).set(gChat.toJSON());

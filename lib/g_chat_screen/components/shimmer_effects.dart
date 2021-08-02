@@ -116,7 +116,7 @@ class LoadingGChat extends StatelessWidget {
   Widget build(BuildContext context) {
     MediaQueryData mediaQueryData = MediaQuery.of(context);
     return Container(
-      margin: EdgeInsets.all(15.0),
+      margin: EdgeInsets.all(13.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[

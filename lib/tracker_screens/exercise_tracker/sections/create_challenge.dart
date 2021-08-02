@@ -150,14 +150,19 @@ class _PageState extends State<CreateChallengePage> {
   String challengeDistance = "0";
   String challengeStartDate = "";
   String challengeEndDate = "";
-  String challengeRewardType = "Sponsor";
-  String challengeRewardValue = "";
+  String challengeFundingType = "Sponsor";
+  String challengeFundingValue = "";
+
+  String challengeWinnerRewardType = "First Winner Only";
+  int sharingAmount = 0;
 
   String challengeType = "";
 
   bool _loading = false;
 
   String crlxBalance = "0";
+
+  int maxUsers = 20;
 
   WalletServices walletServices;
   Map<String, dynamic> addresses = new Map();
@@ -168,12 +173,19 @@ class _PageState extends State<CreateChallengePage> {
     super.initState();
     walletServices = new WalletServices();
     setupInitWallet();
+    getMaxUsersForChallenges();
+  }
+
+  getMaxUsersForChallenges() async {
+    DocumentSnapshot query = await FirebaseFirestore.instance.collection("db").doc("global-settings").get();
+    Map<String, dynamic> dt = query.data();
+    maxUsers = dt["max_challenge_users"];
   }
 
   setupInitWallet() async {
     addresses = await walletServices.getUserAddresses();
     Map<String, dynamic> resp = await walletServices.getTokenBalance(addresses["public"]);
-    crlxBalance = resp["crlx"];
+    crlxBalance = resp["crl"];
   }
 
 
@@ -513,7 +525,7 @@ class _PageState extends State<CreateChallengePage> {
                 indent: 20,
                 endIndent: 20,
               ),
-            InkWell(
+              InkWell(
                 onTap: () async {
                   DateTime getEndDate = await showDatePicker(
                       context: context,
@@ -660,7 +672,7 @@ class _PageState extends State<CreateChallengePage> {
                           children: [
                             Container(
                                 padding: EdgeInsets.only(left: 20),
-                                child: Text('REWARD',
+                                child: Text('FUNDING',
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyText1
@@ -676,10 +688,10 @@ class _PageState extends State<CreateChallengePage> {
                       barrierDismissible: false,
                       //context: _scaffoldKey.currentContext,
                       builder: (context) {
-                        return AlertDialogPage(title: "Select Reward type", options: ["Sponsor", "Pool"], description: "Sponsor: This means the winner of this challenge gets to be rewarded from your XCRL wallet.\nPool: This means everyone gets to pay a certain amount to join this challenge. Winner takes all.", onOptionSelected: (val){
+                        return AlertDialogPage(title: "Select Funding type", options: ["Sponsor", "Pool"], description: "Sponsor: This means the winner(s) of this challenge gets to be rewarded from your CRL wallet.\nPool: This means everyone gets to pay a certain amount to join this challenge. Winner takes all.", onOptionSelected: (val){
                           if(!mounted) return;
                           setState(() {
-                            challengeRewardType = val;
+                            challengeFundingType = val;
                           });
                         },);
                       });
@@ -697,7 +709,7 @@ class _PageState extends State<CreateChallengePage> {
                             children: [
                               Container(
                                   padding: EdgeInsets.only(left: 20),
-                                  child: Text('Select reward type',
+                                  child: Text('Select funding type',
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyText1
@@ -709,7 +721,7 @@ class _PageState extends State<CreateChallengePage> {
                                   padding: EdgeInsets.only(right: 20),
                                   child: Row(
                                     children: [
-                                      Text((challengeRewardType.isEmpty) ? 'Reward type' : challengeRewardType,
+                                      Text((challengeFundingType.isEmpty) ? 'Funding type' : challengeFundingType,
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodyText1
@@ -717,7 +729,7 @@ class _PageState extends State<CreateChallengePage> {
                                               fontSize:
                                               getProportionateScreenWidth(
                                                   13),
-                                              color: (challengeRewardType.isEmpty) ? Colors.grey : Color(MyColors.primaryColor)
+                                              color: (challengeFundingType.isEmpty) ? Colors.grey : Color(MyColors.primaryColor)
                                           )),
                                       SizedBox(
                                         width: 10,
@@ -744,10 +756,10 @@ class _PageState extends State<CreateChallengePage> {
                       barrierDismissible: false,
                       //context: _scaffoldKey.currentContext,
                       builder: (context) {
-                        return AlertDialogPage(title: "Select Reward amount", options: List.generate(1000, (index) => "${index + 1}"), onOptionSelected: (val){
+                        return AlertDialogPage(title: "Select Funding amount", options: List.generate(1000, (index) => "${index + 1}"), onOptionSelected: (val){
                           if(!mounted) return;
                           setState(() {
-                            challengeRewardValue = val;
+                            challengeFundingValue = val;
                           });
                         },);
                       });
@@ -765,7 +777,7 @@ class _PageState extends State<CreateChallengePage> {
                               children: [
                                 Container(
                                     padding: EdgeInsets.only(left: 20),
-                                    child: Text('Select $challengeRewardType amount',
+                                    child: Text('Select $challengeFundingType amount',
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyText1
@@ -777,7 +789,7 @@ class _PageState extends State<CreateChallengePage> {
                                     padding: EdgeInsets.only(right: 20),
                                     child: Row(
                                       children: [
-                                        Text((challengeRewardValue.isEmpty) ? 'Reward amount' : '$challengeRewardValue XCRL',
+                                        Text((challengeFundingValue.isEmpty) ? 'Funding amount' : '$challengeFundingValue CRL',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyText1
@@ -785,7 +797,7 @@ class _PageState extends State<CreateChallengePage> {
                                                 fontSize:
                                                 getProportionateScreenWidth(
                                                     13),
-                                                color: (challengeRewardValue.isEmpty) ? Colors.grey : Color(MyColors.primaryColor)
+                                                color: (challengeFundingValue.isEmpty) ? Colors.grey : Color(MyColors.primaryColor)
                                             )),
                                         SizedBox(
                                           width: 10,
@@ -800,6 +812,156 @@ class _PageState extends State<CreateChallengePage> {
                             ),
                           ])),
             ),
+                  (challengeFundingType == "Pool") ? SizedBox() : Container(
+                      width: MediaQuery.of(context).size.width,
+                      color: Colors.grey[100],
+                      height: 50,
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                                padding: EdgeInsets.only(left: 20),
+                                child: Text('REWARD',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1
+                                        .copyWith(
+                                      color: Colors.grey,
+                                      fontSize: getProportionateScreenWidth(13),
+                                    ))),
+                          ])),
+                  (challengeFundingType == "Pool") ? SizedBox() : InkWell(
+                    onTap: (){
+                      return showDialog<bool>(
+                          context: context,
+                          barrierDismissible: false,
+                          //context: _scaffoldKey.currentContext,
+                          builder: (context) {
+                            return AlertDialogPage(title: "Select Reward type", options: ["First Winner Only", "Top 3 Winners", "All Completed Participants"], description: "First Winner Only: Only the first person to finish the challenge will be rewarded from your CRL wallet.\nTop 3 Winners: This means only the top 3 persons to finish the challenge will be rewarded from your CRL wallet.\nAll Completed Participants: Every participant that completes the challenge will be rewarded.", onOptionSelected: (val){
+                              if(!mounted) return;
+                              setState(() {
+                                challengeWinnerRewardType = val;
+                              });
+                            },);
+                          });
+                    },
+                    child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        //  color: Colors.grey[100],
+                        height: 40,
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                      padding: EdgeInsets.only(left: 20),
+                                      child: Text('Select reward type',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1
+                                              .copyWith(
+                                            fontSize:
+                                            getProportionateScreenWidth(13),
+                                          ))),
+                                  Container(
+                                      padding: EdgeInsets.only(right: 20),
+                                      child: Row(
+                                        children: [
+                                          Text((challengeWinnerRewardType.isEmpty) ? 'Reward type' : challengeWinnerRewardType,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText1
+                                                  .copyWith(
+                                                  fontSize:
+                                                  getProportionateScreenWidth(
+                                                      13),
+                                                  color: (challengeWinnerRewardType.isEmpty) ? Colors.grey : Color(MyColors.primaryColor)
+                                              )),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: Color(MyColors.primaryColor),
+                                          )
+                                        ],
+                                      ))
+                                ],
+                              ),
+                            ])),
+                  ),
+                  (challengeFundingType == "Pool") ? SizedBox() : Divider(
+                    thickness: 2,
+                    indent: 20,
+                    endIndent: 20,
+                  ),
+                  (challengeWinnerRewardType != "All Completed Participants") ? SizedBox() : InkWell(
+                    onTap: (){
+                      return showDialog<bool>(
+                          context: context,
+                          barrierDismissible: false,
+                          //context: _scaffoldKey.currentContext,
+                          builder: (context) {
+                            return AlertDialogPage(title: "Select sharing amount", options: List.generate(1000, (index) => "${index + 1}"), onOptionSelected: (val){
+                              if(!mounted) return;
+                              setState(() {
+                                sharingAmount = int.parse(val);
+                              });
+                            },);
+                          });
+                    },
+                    child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        //  color: Colors.grey[100],
+                        height: 40,
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                      padding: EdgeInsets.only(left: 20),
+                                      child: Text('Select sharing amount',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1
+                                              .copyWith(
+                                            fontSize:
+                                            getProportionateScreenWidth(13),
+                                          ))),
+                                  Container(
+                                      padding: EdgeInsets.only(right: 20),
+                                      child: Row(
+                                        children: [
+                                          Text((sharingAmount == 0) ? 'Sharing amount' : '$sharingAmount CRL',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText1
+                                                  .copyWith(
+                                                  fontSize:
+                                                  getProportionateScreenWidth(
+                                                      13),
+                                                  color: (sharingAmount == 0) ? Colors.grey : Color(MyColors.primaryColor)
+                                              )),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: Color(MyColors.primaryColor),
+                                          )
+                                        ],
+                                      ))
+                                ],
+                              ),
+                            ])),
+                  ),
               Container(
                   padding: EdgeInsets.all(20),
                   child: DefaultButton(
@@ -821,6 +983,8 @@ class _PageState extends State<CreateChallengePage> {
   }
 
   publishChallenge() async {
+    double crlx = double.parse(crlxBalance);
+    double chanValue = double.parse(challengeFundingValue);
     if(controller.text.isEmpty || controllerDetails.text.isEmpty) {
       new GeneralUtils().displayAlertDialog(context, "Attention", "Please enter challenge title and a short description.");
       return;
@@ -832,6 +996,30 @@ class _PageState extends State<CreateChallengePage> {
     if(challengeStartDate.isEmpty || challengeEndDate.isEmpty) {
       new GeneralUtils().displayAlertDialog(context, "Attention", "Please select both start and end dates.");
       return;
+    }
+    if(challengeWinnerRewardType.isEmpty) {
+      new GeneralUtils().displayAlertDialog(context, "Attention", "Please select winner reward type.");
+      return;
+    }
+    if(challengeFundingType.isEmpty || challengeFundingValue.isEmpty) {
+      new GeneralUtils().displayAlertDialog(context, "Attention", "Please select funding details.");
+      return;
+    }
+    if(challengeWinnerRewardType == "All Completed Participants") {
+      if(sharingAmount == 0) {
+        new GeneralUtils().displayAlertDialog(context, "Attention", "Please specify the amount to be shared among participants.");
+        return;
+      }
+      if((sharingAmount * maxUsers).toDouble() > double.parse(challengeFundingValue)) {
+        new GeneralUtils().displayAlertDialog(context, "Attention", "Your funding amount cannot fund 15 participants. Please increase it.");
+        return;
+      }
+    }
+    if(challengeWinnerRewardType == "Top 3 Winners") {
+      if((chanValue * 3) > crlx) {
+        new GeneralUtils().displayAlertDialog(context, "Attention", "Your funding amount cannot fund the top 3 winners.");
+        return;
+      }
     }
     DateTime today = DateTime.now();
     DateTime start = DateTime.parse(challengeStartDate);
@@ -850,23 +1038,16 @@ class _PageState extends State<CreateChallengePage> {
       return;
     }
 
-    if(challengeRewardType.isEmpty || challengeRewardValue.isEmpty) {
-      new GeneralUtils().displayAlertDialog(context, "Attention", "Please select reward details.");
-      return;
-    }
-
     bool allowDebitForSponsor = false;
 
-    if(challengeRewardType == "Sponsor") {
+    if(challengeFundingType == "Sponsor") {
+      double amountToDeduct = (challengeWinnerRewardType == "Top 3 Winners") ? chanValue * 3 : chanValue; //challengeFundingValue
 
-      bool isAllowed = await new GeneralUtils().displayReturnedValueAlertDialog(context, "Attention", "$challengeRewardValue CRLX will be deducted from your wallet for sponsoring this challenge.");
+      bool isAllowed = await new GeneralUtils().displayReturnedValueAlertDialog(context, "Attention", "$amountToDeduct CRL will be deducted from your wallet for sponsoring this challenge.");
       if(!isAllowed) return;
 
-      double crlx = double.parse(crlxBalance);
-      double chanValue = double.parse(challengeRewardValue);
-
       if(crlxBalance == "0" || crlx < chanValue) {
-        new GeneralUtils().displayAlertDialog(context, "Attention", "Sorry, you do not have enough XCRL to sponsor this challenge. You can select the Pool reward type instead.");
+        new GeneralUtils().displayAlertDialog(context, "Attention", "Sorry, you do not have enough CRL to sponsor this challenge. You can select the Pool reward type instead.");
         return;
       }
 
@@ -879,7 +1060,16 @@ class _PageState extends State<CreateChallengePage> {
 
     if(allowDebitForSponsor) {
       //debit user crlx account
-      await walletServices.transferAdmin(addresses["public"], "$challengeRewardValue XCRL has been deducted from your wallet for being a sponsor.", challengeRewardValue);
+      double amountToDeduct = (challengeWinnerRewardType == "Top 3 Winners") ? chanValue * 3 : chanValue; //challengeFundingValue
+
+      Map<String, dynamic> resp = await walletServices.transferAdmin(addresses["public"], "$amountToDeduct CRL has been deducted from your wallet for being a sponsor.", "$amountToDeduct");
+      if(!resp["status"]) {
+        setState(() {
+          _loading = false;
+        });
+        new GeneralUtils().displayAlertDialog(context, "Attention", resp["message"]);
+        return;
+      }
     }
 
     String id = FirebaseDatabase.instance.reference().push().key;
@@ -888,9 +1078,13 @@ class _PageState extends State<CreateChallengePage> {
     String localUser = await ss.getItem('user');
     Map<String, dynamic> json = jsonDecode(localUser);
 
-    int winnerAmount = (challengeRewardType == "Sponsor") ? int.parse(challengeRewardValue) : 0;
+    int winnerAmount = (challengeFundingType == "Sponsor") ? int.parse(challengeFundingValue) : 0;
+
+    //get dynamic link
+    // String dynamicLink = await exer.createDynamicLink(key, _controllerTitle.text, _controllerBody.text, fileUrl);
 
     try {
+      String timeZone = await new GeneralUtils().currentTimeZone();
       VirtualChallenge vc = new VirtualChallenge(
           id,
           user.uid,
@@ -901,12 +1095,13 @@ class _PageState extends State<CreateChallengePage> {
           challengeStartDate,
           challengeEndDate,
           controllerDetails.text,
-          challengeRewardType,
-          challengeRewardValue,
+          challengeFundingType,
+          challengeFundingValue,
           new DateTime.now().toString(),
           "link",
           json["msgId"],
-          FieldValue.serverTimestamp(), 0, "pending",winnerAmount, id.substring(2,8),0,0
+          FieldValue.serverTimestamp(), 0, "pending",winnerAmount, id.substring(2,8),0,0,
+          challengeWinnerRewardType, sharingAmount, false,false,false,false,[], timeZone, []
       );
       await FirebaseFirestore.instance.collection("challenges").doc(id).set(
           vc.toJSON());
@@ -1007,9 +1202,10 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
                       child: Text(
                         widget.options[selectedIndex],
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headline2.copyWith(
+                        style: Theme.of(context).textTheme.bodyText1.copyWith(
                             color: Color(MyColors.primaryColor),
-                            fontSize: getProportionateScreenWidth(35),
+                            fontWeight: FontWeight.bold,
+                            fontSize: getProportionateScreenWidth(30),
                             height: 2.0
                         ),
                       ),

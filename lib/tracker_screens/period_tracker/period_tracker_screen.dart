@@ -61,6 +61,7 @@ class _PeriodTrackerScreen extends State<PeriodTrackerScreen> {
 
   getLastPeriodData() async {
     Map<String, dynamic> _get = await periodServices.getLastPeriodData();
+    if(!mounted) return;
     setState(() {
       lastPeriodData = _get;
     });

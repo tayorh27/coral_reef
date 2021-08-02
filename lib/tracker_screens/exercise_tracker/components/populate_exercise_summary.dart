@@ -25,7 +25,6 @@ import '../../../locator.dart';
 import '../../../size_config.dart';
 
 class PopulateExerciseSummary extends StatefulWidget {
-
   final String stepCount;
   PopulateExerciseSummary({this.stepCount = "0"});
   @override
@@ -33,7 +32,6 @@ class PopulateExerciseSummary extends StatefulWidget {
 }
 
 class _PopulateDietSummary extends State<PopulateExerciseSummary> {
-
   double totalKm = 0.0;
   int totalChallenge = 0;
 
@@ -75,7 +73,7 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
       try {
         /// Fetch new data
         List<HealthDataPoint> healthData =
-        await health.getHealthDataFromTypes(startDate, endDate, types);
+            await health.getHealthDataFromTypes(startDate, endDate, types);
 
         /// Save all the new data points
         _healthDataList.addAll(healthData);
@@ -93,7 +91,8 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
       });
 
       String goal = await ss.getItem("stepsGoal") ?? "0";
-      new ExerciseService().updateStepsTakenCount(steps, double.parse(goal).ceil(), today);
+      new ExerciseService()
+          .updateStepsTakenCount(steps, double.parse(goal).ceil(), today);
 
       // print("Steps: $steps");
     } else {
@@ -127,14 +126,13 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
         interval: Duration(seconds: 10),
         timeout: Duration(seconds: 5),
         task: () async {
-          if(Platform.isIOS) {
+          if (Platform.isIOS) {
             fetchData();
           }
           getStepsLocalData();
           return;
         },
-        minCycle: Duration(seconds: 5)
-    );
+        minCycle: Duration(seconds: 5));
     scheduler.start();
   }
 
@@ -142,7 +140,7 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    if(scheduler != null) {
+    if (scheduler != null) {
       scheduler.stop();
     }
   }
@@ -166,14 +164,27 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
 
   getStepsLocalData() async {
     final date = DateTime.now();
-    final months = ["JAN", "FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+    final months = [
+      "JAN",
+      "FEB",
+      "MAR",
+      "APR",
+      "MAY",
+      "JUN",
+      "JUL",
+      "AUG",
+      "SEP",
+      "OCT",
+      "NOV",
+      "DEC"
+    ];
 
     String formatDate = "${date.year}_${months[date.month - 1]}_${date.day}";
 
     String goal = await ss.getItem("stepsGoal") ?? "0";
     String current = await ss.getItem("stepsCurrent_$formatDate") ?? "0";
 
-    if(!mounted) return;
+    if (!mounted) return;
     setState(() {
       stepsGoal = goal;
       currentTakenSteps = current;
@@ -181,11 +192,14 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
   }
 
   getChallenges() async {
+    QuerySnapshot query = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user.uid)
+        .collection("my-challenges")
+        .get();
+    if (query.docs.isEmpty) return;
 
-    QuerySnapshot query = await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("my-challenges").get();
-    if(query.docs.isEmpty) return;
-
-    if(!mounted) return;
+    if (!mounted) return;
     setState(() {
       totalChallenge = query.docs.length;
     });
@@ -195,7 +209,7 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
       totalKm += (ch["km_covered"] == null) ? 0.0 : ch["km_covered"];
     });
 
-    if(!mounted) return;
+    if (!mounted) return;
     setState(() {
       totalKm = double.parse(totalKm.toStringAsFixed(2));
     });
@@ -205,6 +219,9 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
     return ((double.parse(currentTakenSteps) / double.parse(stepsGoal)) * 100);
   }
 
+  /*
+
+  * */
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<StepViewModel>.reactive(
@@ -213,7 +230,7 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
           viewModel.currentStep();
         },
         builder: (context, model, child) {
-          if(mounted) {
+          if (mounted) {
             model.currentStep();
           }
           return Row(
@@ -223,7 +240,8 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
                 icon: 'assets/exercise/foot_white.svg',
                 title2: '',
                 title3: currentTakenSteps, //model.steps,
-                title4: "Goal: $stepsGoal",//"Goal: ${model.stepsGoal.floor().toString()}",
+                title4:
+                    "Goal: $stepsGoal", //"Goal: ${model.stepsGoal.floor().toString()}",
                 textColor: Colors.white,
                 press: () async {
                   //go to well-being setup screen
@@ -232,7 +250,12 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
                   // Navigator.pushNamed(context, SleepScreen.routeName);
                 },
                 color: Color(MyColors.primaryColor),
-                child: CaloriesSlider(getPointerValue(), icon: "assets/exercise/foot_white.svg", text: "", height: 40.0,), //ExerciseSlider(),
+                child: CaloriesSlider(
+                  getPointerValue(),
+                  icon: "assets/exercise/foot_white.svg",
+                  text: "",
+                  height: 40.0,
+                ), //ExerciseSlider(),
               ),
               SizedBox(width: SizeConfig.screenWidth * 0.03),
               ExerciseSummaryCard(

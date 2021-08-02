@@ -27,6 +27,7 @@ import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:readmore/readmore.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'community_challenge_details.dart';
 
@@ -435,21 +436,37 @@ class _PageState extends State<ChallengePage> {
 
   StorageSystem ss = new StorageSystem();
 
+  int maxUsers = 20;
+
+  String cdT = "";
+  BehaviorSubject<String> countDownStartTime;
+  StreamSubscription<String> streamSubscription;
+  bool challengePaid = false;
+  int challengesCount = 0;
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    if(streamSubscription != null) {
+      streamSubscription.cancel();
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    //get general challenges
-    FirebaseFirestore.instance.collection("challenges").get().then((query) {
-      if (query.size == 0) return;
-      query.docs.forEach((chan) {
-        VirtualChallenge vc = VirtualChallenge.fromSnapshot(chan.data());
-        setState(() {
-          challenges.add(vc);
-        });
+    countDownStartTime = new BehaviorSubject<String>();
+    streamSubscription = countDownStartTime.listen((value) {
+      setState(() {
+        cdT = value;
       });
     });
+
+    getMaxUsersForChallenges();
+
+    getGeneralChallenges();
 
     //get user challenges
     FirebaseFirestore.instance
@@ -470,11 +487,33 @@ class _PageState extends State<ChallengePage> {
     setupInitWallet();
   }
 
+  Future<void> getGeneralChallenges() async {
+    //get general challenges
+    QuerySnapshot query = await FirebaseFirestore.instance.collection("challenges").where("challenge_type", isEqualTo: "Community").get();
+    if (query.size == 0) return;
+    challenges.clear();
+    // print("size = ${query.size}");
+    query.docs.forEach((chan) {
+      VirtualChallenge vc = VirtualChallenge.fromSnapshot(chan.data());
+      setState(() {
+        challenges.add(vc);
+      });
+    });
+    getListOfActiveChallenges();
+  }
+
   setupInitWallet() async {
     addresses = await walletServices.getUserAddresses();
     Map<String, dynamic> resp =
         await walletServices.getTokenBalance(addresses["public"]);
     crlxBalance = resp["crl"];
+  }
+
+  getMaxUsersForChallenges() async {
+    DocumentSnapshot query = await FirebaseFirestore.instance.collection("db").doc("global-settings").get();
+    Map<String, dynamic> dt = query.data();
+    maxUsers = dt["max_challenge_users"];
+    // print("max = $maxUsers");
   }
 
   @override
@@ -484,26 +523,19 @@ class _PageState extends State<ChallengePage> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
+          leading: InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Icon(Icons.arrow_back_ios)),
           elevation: 0,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Icon(Icons.arrow_back_ios)),
-              Text(
-                'Challenges',
-                style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      fontSize: getProportionateScreenWidth(15),
-                    ),
-              ),
-              // SvgPicture.asset(
-              //     "assets/icons/clarity_notification-outline-badged.svg",
-              //     height: 22.0),
-            ],
+          title: Text(
+            'Challenges',
+            style: Theme.of(context).textTheme.bodyText1.copyWith(
+              fontSize: getProportionateScreenWidth(15),
+            ),
           ),
+          centerTitle: true,
         ),
         body: ModalProgressHUD(
             inAsyncCall: _inAsyncCall,
@@ -588,13 +620,13 @@ class _PageState extends State<ChallengePage> {
                                       fontSize: getProportionateScreenWidth(20),
                                       color: Color(MyColors.titleTextColor))),
                           SizedBox(height: 20),
-                          (challenges.isEmpty) ? SizedBox() : Text('No challenges available yet!',
+                          (challengesCount == 0) ? Text('No challenges available yet!',
                               style: Theme.of(context)
                                   .textTheme
                                   .subtitle1
                                   .copyWith(
                                   fontSize: getProportionateScreenWidth(15),
-                                  color: Color(MyColors.titleTextColor))),
+                                  color: Color(MyColors.titleTextColor))) : SizedBox(),
                           ...buildChallengesList(),
                           SizedBox(
                             height: 10,
@@ -736,15 +768,57 @@ class _PageState extends State<ChallengePage> {
     return findChan.isNotEmpty;
   }
 
+  //convert the user created timezone to local time
+  String getConvertedDateTime(String date, String timeZone) {
+    return new GeneralUtils().returnFormattedDate(date, timeZone, returnAgo: false);
+  }
+
+  void getListOfActiveChallenges() {
+    int count = 0;
+    bool hasStarted = false, hasEnded = false;
+    challenges.forEach((ch) {
+      DateTime today = DateTime.now();
+      DateTime start = DateTime.parse(getConvertedDateTime(ch.start_date,ch.time_zone)); //getConvertedDateTime(ch.start_date,ch.time_zone)
+      DateTime end = DateTime.parse(getConvertedDateTime(ch.end_date,ch.time_zone)); //getConvertedDateTime(ch.end_date,ch.time_zone)
+
+      int diffStart = today.difference(start).inMilliseconds;
+      int diffEnd = end.difference(today).inMilliseconds;
+
+      hasStarted = diffStart > 0;
+      hasEnded = diffEnd < 0;
+
+      if (!hasEnded) {
+        count = count + 1;
+      }
+    });
+    setState(() {
+      challengesCount = count;
+    });
+  }
+
   List<Widget> buildChallengesList() {
     List<Widget> chans = [];
 
     challenges.forEach((ch) {
+      List<dynamic> paidUsers = ch.paid_user;
+      bool poolChallengePaidFor = true;
+
+      if(ch.funding_type == "Pool") {
+        poolChallengePaidFor = paidUsers.contains(user.uid);
+        // ss.getItem("poolChallengePaidFor-${ch.id}").then((getPoolChallengeData) {
+        //   if(getPoolChallengeData == null) {
+        //     getPoolChallengeData = "";
+        //   }
+        //   poolChallengePaidFor = getPoolChallengeData == "true";
+        //   print(poolChallengePaidFor);
+        // });
+      }
+
       bool hasStarted = false, hasEnded = false;
 
       DateTime today = DateTime.now();
-      DateTime start = DateTime.parse(ch.start_date);
-      DateTime end = DateTime.parse(ch.end_date);
+      DateTime start = DateTime.parse(getConvertedDateTime(ch.start_date,ch.time_zone)); //getConvertedDateTime(ch.start_date,ch.time_zone)
+      DateTime end = DateTime.parse(getConvertedDateTime(ch.end_date,ch.time_zone)); //getConvertedDateTime(ch.end_date,ch.time_zone)
 
       int diffStart = today.difference(start).inMilliseconds;
       int diffEnd = end.difference(today).inMilliseconds;
@@ -853,6 +927,8 @@ class _PageState extends State<ChallengePage> {
                                     if (time == null) {
                                       return Text('Finished');
                                     }
+                                    final t = "${time.days ?? 0}D:${time.hours ?? 0}H:${time.min ?? 0}M:${time.sec ?? 0}S";
+                                    countDownStartTime.add(t);
                                     return Text(
                                         'Starting in ${time.days ?? 0}D:${time.hours ?? 0}H:${time.min ?? 0}M:${time.sec ?? 0}S',
                                         style: Theme.of(context)
@@ -869,7 +945,7 @@ class _PageState extends State<ChallengePage> {
                                 )
                           : SizedBox(),
                       SizedBox(
-                        width: 30,
+                        width: 20,
                       ),
                       (hasJoinedChallenge)
                           ? Text(
@@ -888,9 +964,26 @@ class _PageState extends State<ChallengePage> {
               ),
               isThreeLine: true,
             )));
+        (ch.funding_type == "Pool" && !poolChallengePaidFor) ? chans.add(
+            Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                height: 40.0,
+                  child: DefaultButton(
+                    press: () {
+                      // Navigator.pushNamed(
+                      //     context, StartWeekend.routeName);
+                      payForChallenge(ch);
+                    },
+                    loading: false,
+                    fontSize: 8,
+                    text: 'You have $cdT to add ${ch.reward_value} CRL to the challenge wallet. Click to Add.',// tokens to participate in this challenge
+                  )),
+            )
+        ) : SizedBox();
         chans.add(
           (hasStarted && !hasEnded)
-              ? (!hasJoinedChallenge)
+              ? (!hasJoinedChallenge && poolChallengePaidFor)
                   ? Align(
                       alignment: Alignment.centerRight,
                       child: Container(
@@ -917,16 +1010,77 @@ class _PageState extends State<ChallengePage> {
         );
       }
     });
-
     return chans;
   }
 
-  Future<void> joinChallenge(VirtualChallenge ch) async {
+  Future<void> payForChallenge(VirtualChallenge ch) async {
     //check max
-    if (ch.max_user >= 15) { //50
+    if (ch.max_user >= maxUsers) { //50
       new GeneralUtils().displayAlertDialog(context, "Attention",
           "Sorry the maximum number of users to join this challenge has been reached.");
       return;
+    }
+      bool getResp = await new GeneralUtils().displayReturnedValueAlertDialog(
+          context,
+          "Attention",
+          "${ch.reward_value} CRL is required to join this challenge. Add Token?");
+      if (!getResp) return;
+
+      double crlx = double.parse(crlxBalance);
+      double chanValue = double.parse(ch.reward_value);
+
+      if (crlxBalance == "0" || crlx < chanValue) {
+        new GeneralUtils().displayAlertDialog(context, "Attention",
+            "Sorry, you do not have enough CRL to join this challenge.");
+        return;
+      }
+
+      setState(() {
+        _inAsyncCall = true;
+      });
+
+      //deduct and join challenge
+      Map<String, dynamic> resp = await walletServices.transferAdmin(
+          addresses["public"],
+          "${ch.reward_value} CRL has been deducted from your wallet for joining the challenge '${ch.title}'.",
+          ch.reward_value);//crlx
+
+      setState(() {
+        _inAsyncCall = false;
+      });
+
+      if(!resp["status"]) {
+        new GeneralUtils().displayAlertDialog(context, "Attention", resp["message"]);
+        return;
+      }
+
+      //store challenge paid locally
+      // await ss.setPrefItem("poolChallengePaidFor-${ch.id}", "true", isStoreOnline: false);
+
+      //update challenge data
+      await FirebaseFirestore.instance
+          .collection("challenges")
+          .doc(ch.id)
+          .update({
+        "max_user": FieldValue.increment(1),
+        "winner_amount": FieldValue.increment(chanValue),
+        "paid_user": FieldValue.arrayUnion([user.uid])
+      });
+
+      await getGeneralChallenges();
+
+    new GeneralUtils().displayAlertDialog(context, "Success",
+        "Thank you for your interest. You can join this challenge once it starts in $cdT");
+  }
+
+  Future<void> joinChallenge(VirtualChallenge ch) async {
+    if(ch.funding_type == "Sponsor") {
+      //check max
+      if (ch.max_user >= maxUsers) { //50
+        new GeneralUtils().displayAlertDialog(context, "Attention",
+            "Sorry the maximum number of users to join this challenge has been reached.");
+        return;
+      }
     }
 
     String currentCH = await ss.getItem("currentChallenge");
@@ -937,56 +1091,22 @@ class _PageState extends State<ChallengePage> {
       return;
     }
 
-    if (ch.challenge_type == "Pool") {
-      bool getResp = await new GeneralUtils().displayReturnedValueAlertDialog(
-          context,
-          "Attention",
-          "${ch.reward_value} CRLX is required to join this challenge. Continue?");
-      if (!getResp) return;
+    //if pool code was here before
 
-      double crlx = double.parse(crlxBalance);
-      double chanValue = double.parse(ch.reward_value);
+    setState(() {
+      _inAsyncCall = true;
+    });
 
-      if (crlxBalance == "0" || crlx < chanValue) {
-        new GeneralUtils().displayAlertDialog(context, "Attention",
-            "Sorry, you do not have enough CRLX to join this challenge.");
-        return;
-      }
-
-      setState(() {
-        _inAsyncCall = true;
-      });
-
-      //deduct and join challenge
-      await walletServices.transferAdmin(
-          addresses["public"],
-          "${ch.reward_value} CRLX has been deducted from your wallet for being a sponsor.",
-          ch.reward_value);
-
+    if(ch.funding_type == "Sponsor") {
       //update challenge data
       await FirebaseFirestore.instance
           .collection("challenges")
           .doc(ch.id)
           .update({
         "max_user": FieldValue.increment(1),
-        "winner_amount": FieldValue.increment(chanValue)
       });
-
-      postJoinChallenge(ch);
-      return;
     }
 
-    setState(() {
-      _inAsyncCall = true;
-    });
-
-    //update challenge data
-    await FirebaseFirestore.instance
-        .collection("challenges")
-        .doc(ch.id)
-        .update({
-      "max_user": FieldValue.increment(1),
-    });
 
     postJoinChallenge(ch);
   }
@@ -1003,6 +1123,7 @@ class _PageState extends State<ChallengePage> {
         ? "https://firebasestorage.googleapis.com/v0/b/coraltrackerapp.appspot.com/o/default_avatar.png?alt=media&token=f7fcf422-1853-4c7c-9b3a-bb5204c3a94f"
         : json["picture"];
 
+    String timeZone = await new GeneralUtils().currentTimeZone();
     VirtualChallengeActivities vca = new VirtualChallengeActivities(
         id,
         user.uid,
@@ -1011,7 +1132,7 @@ class _PageState extends State<ChallengePage> {
         image,
         new DateTime.now().toString(),
         FieldValue.serverTimestamp(),
-        ch.msgId);
+        ch.msgId, timeZone);
     await FirebaseFirestore.instance
         .collection("challenges")
         .doc(ch.id)
@@ -1031,7 +1152,7 @@ class _PageState extends State<ChallengePage> {
         .set(ch.toJSON());
 
     //add users to challenge collection
-    VirtualChallengeMembers vcm = new VirtualChallengeMembers(
+    final vcm = new VirtualChallengeMembers(
         id,
         user.uid,
         (json["lastname"] == "") ? "${json["firstname"]}" : "${json["lastname"]}", //${json["firstname"]}
@@ -1042,12 +1163,13 @@ class _PageState extends State<ChallengePage> {
         0,
         0,
         0,
-        0);
+        0,
+        0, false);
     await FirebaseFirestore.instance
         .collection("challenges")
         .doc(ch.id)
         .collection("joined-users")
-        .doc(id) //use user id ??
+        .doc(id) //use id ??
         .set(vcm.toJSON());
 
     new GeneralUtils()
@@ -1057,6 +1179,8 @@ class _PageState extends State<ChallengePage> {
     ch.timestamp = "";
     await ss.setPrefItem("currentChallenge", jsonEncode(ch.toJSON()));
     await ss.setPrefItem("user_ch_id", id);
+
+    await getGeneralChallenges();
 
     setState(() {
       _inAsyncCall = false;

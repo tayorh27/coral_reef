@@ -75,6 +75,10 @@ class StepService {
     // if (!mounted) return;
   }
 
+  void stopCounting() {
+    // _stepCountStream
+  }
+
   saveSteps(Map<dynamic, dynamic> payload) async {
     final User user = auth.currentUser;
     final result = await firebaseFirestore

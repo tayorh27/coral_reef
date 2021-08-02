@@ -38,10 +38,10 @@ class _GChatScrollingOptions extends State<GChatScrollingOptions> {
               selected: selectedMenu == "G-chat", onTap: () {
                 changeMenu('G-chat', context);
               }),
-          topScrollElement(context, "Blog post",
-              selected: selectedMenu == "Blog post", onTap: () {
-                changeMenu('Blog post', context);
-              }),
+          // topScrollElement(context, "Filter",
+          //     selected: selectedMenu == "Filter", onTap: () {
+          //       changeMenu('filter', context);
+          //     }),
           // topScrollElement(context, "Job opportunities",
           //     selected: selectedMenu == "Job opportunities", onTap: () {
           //       changeMenu('Job opportunities', context);

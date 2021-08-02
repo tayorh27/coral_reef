@@ -24,7 +24,12 @@ class ChallengeStepService {
   ChallengeStepService(BuildContext context, {this.onStepChange}) {
     ss = new StorageSystem();
     this.context = context;
+    print("iRunning2");
     initPlatformState();
+  }
+
+  bool isPaused() {
+    return stepStreamSubscription.isPaused;
   }
 
   void stopCounting() {
@@ -43,6 +48,7 @@ class ChallengeStepService {
   }
 
   void onStepCount(StepCount event) {
+    print("i am counting step: ${event.toString()}");
     /// Handle step count changed
     int steps = event.steps;
     DateTime timeStamp = event.timeStamp;
@@ -68,6 +74,10 @@ class ChallengeStepService {
     // new GeneralUtils().showToast(context, "onStep number: $steps");
     //calculate km based on steps
     double distance = double.parse(((mSteps.toDouble() * 78) / 100000).toStringAsFixed(2));
+
+    if(distance < 0) {
+      distance = distance * -1;
+    }
 
     onStepChange(mSteps, distance, timeStamp);
   }

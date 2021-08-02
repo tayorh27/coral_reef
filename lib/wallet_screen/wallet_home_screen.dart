@@ -198,52 +198,55 @@ class _WalletHomeScreen extends State<WalletHomeScreen> {
                                   Column(
                                     children: [
                                       SizedBox(height: 30,),
-                                      InkWell(
-                                        onTap: () async {
-                                          if(crlxBalance == "0") {
-                                            return;
-                                          }
-                                          setState(() {
-                                            _inAsyncCall = true;
-                                          });
-                                          dynamic result = await walletServices.convertCRLXToCRL(addresses["public"], "100");
-                                          setState(() {
-                                            _inAsyncCall = false;
-                                          });
-                                          bool success = result["status"];
-                                          if(!success) {
-                                            new GeneralUtils().displayAlertDialog(context, "Attention", result["message"]);
-                                            return;
-                                          }
-                                          await new GeneralUtils().displayAlertDialog(context, "Transaction Sent", result["message"]);
-                                        },
-                                        child: Container(
-                                            height: 40.0,
-                                            width: double.infinity,
-                                            padding: EdgeInsets.all(10.0),
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(10.0),
-                                              color: Color(MyColors.lightBackground),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.max,
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Text("Convert XCRL Token to CRL", style: Theme.of(context).textTheme.bodyText1.copyWith(
-                                                    color: Color(MyColors.titleTextColor),
-                                                    fontSize: getProportionateScreenWidth(11)
-                                                ),),
-                                                Icon(Icons.arrow_forward_ios_rounded,),
-                                              ],)
+                                      Visibility(
+                                        visible: false,
+                                        child: InkWell(
+                                          onTap: () async {
+                                            if(crlxBalance == "0") {
+                                              return;
+                                            }
+                                            setState(() {
+                                              _inAsyncCall = true;
+                                            });
+                                            dynamic result = await walletServices.convertCRLXToCRL(addresses["public"], "100");
+                                            setState(() {
+                                              _inAsyncCall = false;
+                                            });
+                                            bool success = result["status"];
+                                            if(!success) {
+                                              new GeneralUtils().displayAlertDialog(context, "Attention", result["message"]);
+                                              return;
+                                            }
+                                            await new GeneralUtils().displayAlertDialog(context, "Transaction Sent", result["message"]);
+                                          },
+                                          child: Container(
+                                              height: 40.0,
+                                              width: double.infinity,
+                                              padding: EdgeInsets.all(10.0),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(10.0),
+                                                color: Color(MyColors.lightBackground),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text("Convert XCRL Token to CRL", style: Theme.of(context).textTheme.bodyText1.copyWith(
+                                                      color: Color(MyColors.titleTextColor),
+                                                      fontSize: getProportionateScreenWidth(11)
+                                                  ),),
+                                                  Icon(Icons.arrow_forward_ios_rounded,),
+                                                ],)
+                                          ),
                                         ),
                                       ),
-                                      SizedBox(height: 10,),
-                                      buildToken("CRL", "Coral", "assets/images/seashell-crl.svg", balance),
+                                      // SizedBox(height: 10,),
+                                      buildToken("CRL", "Coral", "assets/images/logo2.png", balance),//assets/images/seashell-crl.svg
                                       Divider(thickness: 2.0,),
                                       buildToken("ZIL", "Zilliqa", "assets/images/zilliqa-zil-logo.png", zilBalance),
                                       Divider(thickness: 2.0,),
-                                      buildToken("XCRL", "Coral", "assets/images/logo2.png", crlxBalance),
-                                      Divider(thickness: 2.0,),
+                                      // buildToken("XCRL", "Coral", "assets/images/logo2.png", crlxBalance),
+                                      // Divider(thickness: 2.0,),
                                     ],
                                   ),
                                   (transactions.isEmpty) ? Container(

@@ -77,7 +77,7 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
     QuerySnapshot query = await FirebaseFirestore.instance
         .collection("comments")
         .where("gchat_id", isEqualTo: widget.gChat.id)
-    .where("", isEqualTo: "")
+    // .where("main_comment_id", isEqualTo: "")
         .orderBy("timestamp", descending: true).get();
 
     if(!mounted) return;
@@ -143,7 +143,7 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
                         avatarData: widget.gChat.user_avatar,
                       ),
                       title: Container(
-                        padding: EdgeInsets.only(top: 10.0),
+                        padding: EdgeInsets.only(top: 8.0),
                         child: Text(widget.gChat.username,
                             style: Theme.of(context).textTheme.bodyText1.copyWith(
                                 color: Color(MyColors.titleTextColor),

@@ -19,9 +19,13 @@ class Body extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(height: 40.0),
-                CoralBackButton(onPress: (){
-                  Navigator.of(context).pop();
-                },),
+                Row(
+                  children: [
+                    CoralBackButton(onPress: (){
+                      Navigator.of(context).pop();
+                    },),
+                  ],
+                ),
                 SizedBox(height: 40.0),
                 Logo(),
                 SizedBox(height: SizeConfig.screenHeight * 0.01),

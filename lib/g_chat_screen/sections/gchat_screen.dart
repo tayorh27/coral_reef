@@ -53,6 +53,24 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
   StreamSubscription<QuerySnapshot> gchatsList;
   ScrollController _scrollController = new ScrollController();
 
+  List<String> topics = [
+    "Sex life",
+    "Relationships",
+    "My body",
+    "Health",
+    "Period and cycle",
+    "Parenting",
+    "Pregnancy",
+    "Entertainment",
+    "Harmony",
+    "Trying to conceive"
+  ];
+
+  List<String> selectedTopics = [];
+
+  final _scafoldKey = GlobalKey<ScaffoldState>();
+  PersistentBottomSheetController bottomSheet;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -171,185 +189,199 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: ListView.builder(
-              controller: _scrollController,
-              itemBuilder: (context, index) {
+                  controller: _scrollController,
+                  itemBuilder: (context, index) {
 
-                bool liked = hasLikedPost(index);
+                    bool liked = hasLikedPost(index);
 
-                Map<String, dynamic> mediaInfo = chats[index].images[0]; //get the first index of uploaded media
-                String fileType = mediaInfo["fileType"]; //get the media type
-                String postMediaUrl = mediaInfo["url"];
-                String thumbImage = (fileType == "image") ? mediaInfo["url"] : (fileType == "video") ? mediaInfo["thumbnailUrl"] : "";//
+                    Map<String, dynamic> mediaInfo = chats[index].images[0]; //get the first index of uploaded media
+                    String fileType = mediaInfo["fileType"]; //get the media type
+                    String postMediaUrl = mediaInfo["url"];
+                    String thumbImage = (fileType == "image") ? mediaInfo["url"] : (fileType == "video") ? mediaInfo["thumbnailUrl"] : "";//
 
-                return Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    (index > 0) ? SizedBox(
-                      height: 30.0,
-                    ): Text(""),
-                    ListTile(
-                      leading: GChatUserAvatar(
-                        40.0,
-                        avatarData: chats[index].user_avatar,
-                      ),
-                      title: Container(
-                        padding: EdgeInsets.only(top: 10.0),
-                        child: Text(chats[index].username,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1
-                                .copyWith(
+                    return Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        (index > 0) ? SizedBox(
+                          height: 30.0,
+                        ): Text(""),
+                        ListTile(
+                          leading: GChatUserAvatar(
+                            40.0,
+                            avatarData: chats[index].user_avatar,
+                          ),
+                          title: Container(
+                            padding: EdgeInsets.only(top: 8.0),
+                            child: Text(chats[index].username,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1
+                                    .copyWith(
                                     color: Color(MyColors.titleTextColor),
                                     fontSize: getProportionateScreenWidth(13))),
-                      ),
-                      subtitle: Text(
-                        new GeneralUtils().returnFormattedDate(chats[index].created_date, chats[index].time_zone),
-                        style: Theme.of(context).textTheme.subtitle1.copyWith(
+                          ),
+                          subtitle: Text(
+                            new GeneralUtils().returnFormattedDate(chats[index].created_date, chats[index].time_zone),
+                            style: Theme.of(context).textTheme.subtitle1.copyWith(
                               color: Color(MyColors.titleTextColor),
                               fontSize: getProportionateScreenWidth(10),
                             ),
-                      ),
-                      trailing: TextButton(
-                        onPressed: () {
-                          onReportClick(index);
-                        },
-                        child: Text("Report",
-                          style: Theme.of(context).textTheme.subtitle1.copyWith(
-                            color: Color(MyColors.accentColor),
-                            fontSize: getProportionateScreenWidth(12),
+                          ),
+                          trailing: TextButton(
+                            onPressed: () {
+                              onReportClick(index);
+                            },
+                            child: Text("Report",
+                              style: Theme.of(context).textTheme.subtitle1.copyWith(
+                                color: Color(MyColors.accentColor),
+                                fontSize: getProportionateScreenWidth(12),
+                              ),
+                            ),
+                          ),
+                          isThreeLine: true,
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          margin: EdgeInsets.only(left: 15.0, top: 10.0),
+                          child:Text(chats[index].title,
+                              style: Theme.of(context).textTheme.bodyText1.copyWith(
+                                  color: Color(MyColors.titleTextColor),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: getProportionateScreenWidth(15))),
+                        ),
+                        Container(
+                            margin: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 10.0),
+                            width: MediaQuery.of(context).size.width,
+                            child:Text(truncate(chats[index].body, 150, omission: "...", position: TruncatePosition.end),
+                                overflow: TextOverflow.clip,
+                                style: Theme.of(context).textTheme.subtitle1.copyWith(
+                                    color: Color(MyColors.titleTextColor),
+                                    fontSize: getProportionateScreenWidth(13)))
+                        ),
+                        (chats[index].body.length > 150) ? ListTile(
+                          leading: Text("Continue reading",
+                              style: Theme.of(context).textTheme.subtitle1.copyWith(
+                                  color: Color(MyColors.primaryColor),
+                                  fontSize: getProportionateScreenWidth(13))),
+                          onTap: () async {
+                            String getLikeID = "";
+                            if(hasLikedPost(index)) {
+                              getLikeID = getLikeIDForPost(index);
+                            }
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => GChatSinglePostView(chats[index], liked, getLikeID)),
+                            );
+                            setState(() {
+                              mText = "mText";
+                            });
+                          },
+                        ) : SizedBox(),
+                        // Container(
+                        //   width: MediaQuery.of(context).size.width,
+                        //   height: 300.0,
+                        //   decoration: BoxDecoration(
+                        //     image: DecorationImage(image: NetworkImage(postImage),fit: BoxFit.cover),
+                        //   ),
+                        // ),
+                        (fileType == "image" || fileType == "gif") ? ImageDisplayWidget(postMediaUrl) : (fileType == "video") ? VideoDisplayWidget(postMediaUrl, thumbImage) : Container(),//for docs,
+                        SizedBox(
+                          height: 20.0,
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(left: 15.0, right: 15.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              InkWell(
+                                child: (!liked) ? Icon(Icons.favorite_border_rounded, size: 24.0, color: Color(MyColors.titleTextColor),) :
+                                Icon(Icons.favorite, size: 24.0, color: Colors.redAccent,),
+                                onTap: (){
+                                  onLikeButtonClick(index);
+                                },
+                              ),
+
+                              Text(gServices.shortenLargeNumber(num: double.parse("${chats[index].number_of_likes}"), digits: 1),//"${}",
+                                  style: Theme.of(context).textTheme.subtitle1.copyWith(
+                                      color: Color(MyColors.titleTextColor),
+                                      fontSize: getProportionateScreenWidth(15))),
+                              SizedBox(
+                                width: 10.0,
+                              ),
+                              Icon(Icons.mode_comment_outlined, size: 24.0,),
+
+                              Text(gServices.shortenLargeNumber(num: double.parse("${chats[index].number_of_comments}"), digits: 1),
+                                  style: Theme.of(context).textTheme.subtitle1.copyWith(
+                                      color: Color(MyColors.titleTextColor),
+                                      fontSize: getProportionateScreenWidth(15))),
+                            ],
                           ),
                         ),
-                      ),
-                      isThreeLine: true,
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.only(left: 15.0, top: 10.0),
-                      child:Text(chats[index].title,
-                          style: Theme.of(context).textTheme.bodyText1.copyWith(
-                              color: Color(MyColors.titleTextColor),
-                              fontWeight: FontWeight.bold,
-                              fontSize: getProportionateScreenWidth(15))),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 10.0),
-                      width: MediaQuery.of(context).size.width,
-                      child:Text(truncate(chats[index].body, 150, omission: "...", position: TruncatePosition.end),
-                          overflow: TextOverflow.clip,
-                          style: Theme.of(context).textTheme.subtitle1.copyWith(
-                              color: Color(MyColors.titleTextColor),
-                              fontSize: getProportionateScreenWidth(13)))
-                    ),
-                    (chats[index].body.length > 150) ? ListTile(
-                      leading: Text("Continue reading",
-                          style: Theme.of(context).textTheme.subtitle1.copyWith(
-                              color: Color(MyColors.primaryColor),
-                              fontSize: getProportionateScreenWidth(13))),
-                      onTap: () async {
-                        String getLikeID = "";
-                        if(hasLikedPost(index)) {
-                          getLikeID = getLikeIDForPost(index);
-                        }
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => GChatSinglePostView(chats[index], liked, getLikeID)),
-                        );
-                        setState(() {
-                          mText = "mText";
-                        });
-                      },
-                    ) : SizedBox(),
-                    // Container(
-                    //   width: MediaQuery.of(context).size.width,
-                    //   height: 300.0,
-                    //   decoration: BoxDecoration(
-                    //     image: DecorationImage(image: NetworkImage(postImage),fit: BoxFit.cover),
-                    //   ),
-                    // ),
-                    (fileType == "image" || fileType == "gif") ? ImageDisplayWidget(postMediaUrl) : (fileType == "video") ? VideoDisplayWidget(postMediaUrl, thumbImage) : Container(),//for docs,
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: 15.0, right: 15.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          InkWell(
-                            child: (!liked) ? Icon(Icons.favorite_border_rounded, size: 24.0, color: Color(MyColors.titleTextColor),) :
-                            Icon(Icons.favorite, size: 24.0, color: Colors.redAccent,),
-                            onTap: (){
-                              onLikeButtonClick(index);
+                        SizedBox(
+                          height: 20.0,
+                        ),
+                        (chats[index].recent_comments == []) ? SizedBox() : RecentPostComment(chats[index].recent_comments),
+                        (chats[index].recent_comments == []) ? SizedBox() : SizedBox(
+                          height: 0.0,
+                        ),
+                        (chats[index].number_of_comments > 3) ? Center(
+                          child: TextButton(
+                            onPressed: () async {
+                              String getLikeID = "";
+                              if(hasLikedPost(index)) {
+                                getLikeID = getLikeIDForPost(index);
+                              }
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => GChatSinglePostView(chats[index], liked, getLikeID)),
+                              );
+                              setState(() {
+                                mText = "mText";
+                              });
                             },
+                            child: Text("View ${chats[index].number_of_comments - 3} more comments.",
+                                style: Theme.of(context).textTheme.subtitle1.copyWith(
+                                    color: Color(MyColors.primaryColor),
+                                    fontSize: getProportionateScreenWidth(13))),
                           ),
-
-                          Text(gServices.shortenLargeNumber(num: double.parse("${chats[index].number_of_likes}"), digits: 1),//"${}",
-                              style: Theme.of(context).textTheme.subtitle1.copyWith(
-                                  color: Color(MyColors.titleTextColor),
-                                  fontSize: getProportionateScreenWidth(15))),
-                          SizedBox(
-                            width: 10.0,
-                          ),
-                          Icon(Icons.mode_comment_outlined, size: 24.0,),
-
-                          Text(gServices.shortenLargeNumber(num: double.parse("${chats[index].number_of_comments}"), digits: 1),
-                              style: Theme.of(context).textTheme.subtitle1.copyWith(
-                                  color: Color(MyColors.titleTextColor),
-                                  fontSize: getProportionateScreenWidth(15))),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    (chats[index].recent_comments == []) ? SizedBox() : RecentPostComment(chats[index].recent_comments),
-                    (chats[index].recent_comments == []) ? SizedBox() : SizedBox(
-                      height: 0.0,
-                    ),
-                    (chats[index].number_of_comments > 3) ? Center(
-                      child: TextButton(
-                        onPressed: () async {
-                          String getLikeID = "";
-                          if(hasLikedPost(index)) {
-                            getLikeID = getLikeIDForPost(index);
-                          }
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => GChatSinglePostView(chats[index], liked, getLikeID)),
-                          );
+                        ) : SizedBox(),
+                        PostComment(GChatUserAvatar(
+                          40.0,
+                          avatarData: chats[index].user_avatar,
+                        ), chats[index].id, onCreateComment: (comment) {
+                          print(comment.message);
                           setState(() {
-                            mText = "mText";
+                            chats[index].recent_comments.insert(0, comment.toJSON());
                           });
-                        },
-                        child: Text("View ${chats[index].number_of_comments - 3} more comments.",
-                            style: Theme.of(context).textTheme.subtitle1.copyWith(
-                                color: Color(MyColors.primaryColor),
-                                fontSize: getProportionateScreenWidth(13))),
-                      ),
-                    ) : SizedBox(),
-                    PostComment(GChatUserAvatar(
-                      40.0,
-                      avatarData: chats[index].user_avatar,
-                    ), chats[index].id, onCreateComment: (comment) {
-                      print(comment.message);
-                      setState(() {
-                        chats[index].recent_comments.insert(0, comment.toJSON());
-                      });
-                    },),
-                    Divider(
-                      height: 1.0,
-                      color: Colors.grey[200],
-                    ),
-                  ],
-                );
-              },
-              itemCount: chats.length,
-              scrollDirection: Axis.vertical,
-            ),
+                        },),
+                        Divider(
+                          height: 1.0,
+                          color: Colors.grey[200],
+                        ),
+                      ],
+                    );
+                  },
+                  itemCount: chats.length,
+                  scrollDirection: Axis.vertical,
+                ),
           );
+  }
+
+  showBottomSheet() {
+
+  }
+
+  Widget topFilterLayout() {
+    return Container(
+      child: Column(
+        children: [
+          TextButton(onPressed: (){}, child: Text("Filter by Topic"))
+        ],
+      ),
+    );
   }
 
   /**

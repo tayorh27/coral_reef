@@ -20,14 +20,17 @@ class ExerciseTrackerScreen extends StatefulWidget {
 }
 
 class _ExerciseTrackerScreen extends State<ExerciseTrackerScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return ViewModelBuilder<StepViewModel>.reactive(
+  /*
+  ViewModelBuilder<StepViewModel>.reactive(
         viewModelBuilder: () => StepViewModel(),
         onModelReady: (viewModel) {
           viewModel.currentStep();
         },
-        builder: (context, model, child) => SafeArea(
+        builder: (context, model, child) =>
+   * */
+  @override
+  Widget build(BuildContext context) {
+    return  SafeArea(
               child: SizedBox(
                 width: double.infinity,
                 child: Padding(
@@ -52,7 +55,7 @@ class _ExerciseTrackerScreen extends State<ExerciseTrackerScreen> {
                   ),
                 ),
               ),
-            ));
+            );
   }
 }
 

@@ -129,7 +129,7 @@ class AuthService {
       onComplete(credential.user, "success", "firebase", null);
     }).catchError((err) {
       onComplete(null, "error", "firebase", null);
-      new GeneralUtils().displayAlertDialog(context, 'Error', 'An error occurred. Please try again.');
+      new GeneralUtils().displayAlertDialog(context, 'Error', 'Invalid email address or password. Please try again.');
     });
   }
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -95,7 +96,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // notificationAppLaunchDetails = await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
   await Firebase.initializeApp();
-  await AndroidAlarmManager.initialize();
+  if(Platform.isAndroid) {
+    await AndroidAlarmManager.initialize();
+  }
   // Set the background messaging handler early on, as a named top-level function
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -218,6 +221,7 @@ class _MyApp extends State<MyApp> {
         new DailyNotificationServices(flutterLocalNotificationsPlugin);
     // setupSteps();
     checkIfCurrentChallengeHasEnded();
+    //re-add
     setupLocator().then((value) {
       final StepService stepService = locator<StepService>();
       stepService.initPlatformState();
@@ -252,6 +256,7 @@ class _MyApp extends State<MyApp> {
     // });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      // print(message.notification.title);
       // print("small icon = ${message.notification.android?.smallIcon}");
       RemoteNotification notification = message.notification;
       AndroidNotification android = message.notification?.android;
@@ -287,7 +292,7 @@ class _MyApp extends State<MyApp> {
 
   getToken() {
     FirebaseMessaging.instance.getToken().then((token) {
-      print(token);
+      print("token is $token");
     });
   }
 

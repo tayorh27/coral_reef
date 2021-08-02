@@ -187,6 +187,10 @@ class GeneralUtils {
   }
 
   Future<void> saveNotification(String title, String message) async {
+    List<String> months = ["January", "February", "March", "April", "May","June","July","August","September","October","November","December"];
+    List<String> days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    final date = DateTime.now();
+
     String id = FirebaseDatabase.instance.reference().push().key;
     await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("notifications").doc(id).set(
         {
@@ -194,7 +198,8 @@ class GeneralUtils {
           "title": title,
           "message": message,
           "created_date": getCurrentDateTime(),
-          "timestamp": FieldValue.serverTimestamp()
+          "timestamp": FieldValue.serverTimestamp(),
+          "header": "${days[date.weekday - 1]} - ${date.day} ${months[date.month - 1]}, ${date.year}"
         });
   }
 
@@ -279,7 +284,7 @@ class GeneralUtils {
     // print(r.body);
   }
 
-  String returnFormattedDate(String createdDate, String timeZone) {
+  String returnFormattedDate(String createdDate, String timeZone, {bool returnAgo = true}) {
 
     if(timeZone == null) {
       return returnFormattedDateWithoutTimeZone(createdDate);
@@ -292,7 +297,9 @@ class GeneralUtils {
     }
 
     if(timeZone == userCurrentTimeZone.last) {
-      return returnFormattedDateWithoutTimeZone(createdDate);
+      if(returnAgo) {
+        return returnFormattedDateWithoutTimeZone(createdDate);
+      }
     }
 
     // print(userCurrentTimeZone.last);
@@ -313,6 +320,9 @@ class GeneralUtils {
     }
     // print(newDT2.toString());
 
+    if(!returnAgo) {
+      return newDT.toString();
+    }
     return returnFormattedDateWithoutTimeZone(newDT2.toString());
   }
 

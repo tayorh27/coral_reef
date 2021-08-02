@@ -7,6 +7,7 @@ import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/default_button.dart';
+import 'package:coral_reef/constants.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/active_challenge/track_challenge_activities.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/chal_participants.dart';
@@ -97,7 +98,8 @@ class _PageState extends State<CommunityChallengeDetails> {
   }
 
   StorageSystem ss = new StorageSystem();
-  bool isTrackAllowed = false;
+  bool isTrackAllowed = true;
+
 
   @override
   void initState() {
@@ -168,7 +170,19 @@ class _PageState extends State<CommunityChallengeDetails> {
               fontSize: getProportionateScreenWidth(15),
             ),
           ),
-          centerTitle: true,
+          centerTitle: false,
+          actions: [
+            TextButton(
+              child: Text("Track Your Challenge", style: Theme.of(context).textTheme.bodyText1.copyWith(
+                color: Color(MyColors.primaryColor),
+                fontSize: 14.0
+              ),),
+              onPressed: () {
+                Navigator.pushNamed(
+                    context, TrackChallengeActivities.routeName, arguments: ch);
+              },
+            ),
+          ],
         ),
         body: SingleChildScrollView(
             child: Container(
@@ -184,7 +198,7 @@ class _PageState extends State<CommunityChallengeDetails> {
                           Column(
                             children: [
                               Text(
-                                "${ch.reward_value} XCRL to be won for \n${ch.distance}Km ${ch.activity_type} challenge.\n",
+                                "${(ch.funding_type == "Sponsor") ? ch.reward_value : ch.winner_amount} CRL to be won for \n${ch.distance}Km ${ch.activity_type} challenge.\n",
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context).textTheme.bodyText1.copyWith(
                                   color: Color(MyColors.primaryColor),
@@ -276,7 +290,7 @@ class _PageState extends State<CommunityChallengeDetails> {
                         height: 20,
                       ),
                       SvgPicture.asset("assets/exercise/track_race.svg"),
-                      (isTrackAllowed) ? Align(
+                      Align(
                         alignment: Alignment.center,
                         child: Container(
                             width: 190,
@@ -290,7 +304,8 @@ class _PageState extends State<CommunityChallengeDetails> {
                               fontSize: 12,
                               text: 'Track Your Challenge',
                             )),
-                      ) : Text(""),
+                      ),
+                          // (isTrackAllowed) ? : Text(""),
                       SizedBox(
                         height: 30,
                       ),
@@ -299,13 +314,53 @@ class _PageState extends State<CommunityChallengeDetails> {
                     ]))));
   }
 
+  Map<String, dynamic> isUserAWinner(String uid) {
+    Map<String, dynamic> result = new Map();
+    if(ch.funding_type == "Sponsor") {
+      if(ch.winner_reward_type == "First Winner Only" && ch.winner_rewarded) {
+        List<dynamic> winners = ch.winners;
+        if(winners.contains(uid)) {
+          result["id"] = uid;
+          result["position"] = 1;
+        }
+      }else if(ch.winner_reward_type == "Top 3 Winners") {
+        List<dynamic> winners = ch.winners;
+        int position = winners.indexWhere((element) => element == uid);
+        if(position >= 0 ) {
+          result["id"] = uid;
+          result["position"] = position+1;
+        }
+      }
+    }else { //this is a pool challenge
+      if(ch.winner_rewarded) {
+        List<dynamic> winners = ch.winners;
+        if(winners.contains(uid)) {
+          result["id"] = uid;
+          result["position"] = 1;
+        }
+      }
+    }
+    return result;
+  }
+
+  Widget winnersBadge(String uid) {
+    Map<String, dynamic> winnersCheck = isUserAWinner(uid);
+    if(winnersCheck.isEmpty) {
+      return SizedBox();
+    }
+    String imageAsset = "";
+    if(winnersCheck["position"] == 1) {
+      imageAsset = "assets/icons/gold.svg";
+    }else if(winnersCheck["position"] == 2) {
+      imageAsset = "assets/icons/silver.svg";
+    }else {
+      imageAsset = "assets/icons/bronze.svg";
+    }
+    return SvgPicture.asset(imageAsset, width: 25.0, height: 25.0,);
+  }
+
   List<Widget> buildMembersLayout() {
     List<Widget> memWidget = [];
-
-
-
-
-
 
     // members.sort((a, b) => b.time_taken.compareTo(a.time_taken));
 
@@ -335,7 +390,15 @@ class _PageState extends State<CommunityChallengeDetails> {
                       SizedBox(
                         width: 5,
                       ),
-                      CircleAvatar(backgroundImage: NetworkImage(mem.image)),
+                      Stack(
+                        clipBehavior: Clip.hardEdge,
+                        alignment: Alignment.bottomRight,
+                        fit: StackFit.passthrough,
+                        children: [
+                          CircleAvatar(backgroundImage: NetworkImage(mem.image)),
+                          winnersBadge(mem.user_uid),
+                        ],
+                      ),
                       SizedBox(
                         width: 5,
                       ),
@@ -409,7 +472,7 @@ class _PageState extends State<CommunityChallengeDetails> {
               fontSize: getProportionateScreenWidth(12),
             ),
           ),
-          subtitle: Text(new GeneralUtils().returnFormattedDate(act.created_date, ""),
+          subtitle: Text(new GeneralUtils().returnFormattedDate(act.created_date, act.time_zone), //time_zone
               style: Theme.of(context)
               .textTheme
               .bodyText1
@@ -476,6 +539,7 @@ class _PageState extends State<CommunityChallengeDetails> {
   getChallengeActivities() async {
     QuerySnapshot query = await FirebaseFirestore.instance.collection("challenges").doc(ch.id).collection("activities").limit(5).orderBy("timestamp", descending: true).get();
     if(query.docs.isEmpty) return;
+    activities.clear();
     query.docs.forEach((act) {
       VirtualChallengeActivities vca = VirtualChallengeActivities.fromSnapshot(act.data());
       if(!mounted) return;

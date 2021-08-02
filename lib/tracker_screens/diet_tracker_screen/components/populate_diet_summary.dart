@@ -72,7 +72,7 @@ class _PopulateDietSummary extends State<PopulateDietSummary> {
 
     String goal = await ss.getItem("caloriesGoal") ?? "0";
     String current = await ss.getItem("caloriesCurrent_$formatDate") ?? "0";
-
+    if(!mounted) return;
     setState(() {
       caloriesGoal = goal;
       currentTakenCalories = current;

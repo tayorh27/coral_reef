@@ -30,10 +30,11 @@ class GChatServices {
       String body,
       File file,
       String fileType,
-      File thumbnail}) async {
+      File thumbnail, List<String> topics}) async {
     Map<String, dynamic> draft = new Map();
     draft["title"] = title;
     draft["body"] = body;
+    draft["topics"] = topics.join(",");
     draft["fileType"] = fileType;
     draft["file"] = (file == null) ? "" : file.path;
     draft["thumbnail"] = (thumbnail == null) ? "" : thumbnail.path;
