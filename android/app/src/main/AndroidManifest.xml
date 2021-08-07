@@ -12,7 +12,7 @@
 <!--    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />-->
 
     <application
-        android:label="Coral Reef"
+        android:label="CoralApp"
         android:icon="@mipmap/ic_coral_reef_cover">
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCRrfbYY6rhh2qfMPo-My7y_gUfsl2eP14"/>

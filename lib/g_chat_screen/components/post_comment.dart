@@ -93,7 +93,7 @@ class _PostComment extends State<PostComment> {
       sending = true;
     });
     // String main_comment_id = (replyToUser.isEmpty) ? "" : commentID ?? "";
-    GChatComment com = await gChatServices.submitPostComment(_controllerMessage.text, widget.gchatID, "");
+    GChatComment com = await gChatServices.submitPostComment(_controllerMessage.text, widget.gchatID, "", "");
     widget.onCreateComment(com);
     _controllerMessage.clear();
 

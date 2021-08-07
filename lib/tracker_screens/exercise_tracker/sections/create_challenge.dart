@@ -8,6 +8,7 @@ import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/constants.dart';
 import 'package:coral_reef/size_config.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/share_challenge_screen.dart';
 import 'package:coral_reef/wallet_screen/services/wallet_service.dart';
 import 'package:direct_select/direct_select.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -1085,6 +1086,9 @@ class _PageState extends State<CreateChallengePage> {
 
     try {
       String timeZone = await new GeneralUtils().currentTimeZone();
+      final friendsList = (challengeType == "Friends") ? [user.uid] : [];
+      final joinCode = id.substring(2,8).toUpperCase();
+
       VirtualChallenge vc = new VirtualChallenge(
           id,
           user.uid,
@@ -1098,10 +1102,10 @@ class _PageState extends State<CreateChallengePage> {
           challengeFundingType,
           challengeFundingValue,
           new DateTime.now().toString(),
-          "link",
+          "https://coralreef.page.link/y1E4",
           json["msgId"],
-          FieldValue.serverTimestamp(), 0, "pending",winnerAmount, id.substring(2,8),0,0,
-          challengeWinnerRewardType, sharingAmount, false,false,false,false,[], timeZone, []
+          FieldValue.serverTimestamp(), 0, "pending",winnerAmount, joinCode, 0,0,
+          challengeWinnerRewardType, sharingAmount, false,false,false,false,[], timeZone, [], friendsList
       );
       await FirebaseFirestore.instance.collection("challenges").doc(id).set(
           vc.toJSON());
@@ -1110,7 +1114,12 @@ class _PageState extends State<CreateChallengePage> {
         _loading = false;
       });
       new GeneralUtils().showToast(context, "Challenge created.");
-      Navigator.of(context).pop();
+      if(challengeType == "Community") {
+        Navigator.of(context).pop();
+        return;
+      }
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (BuildContext context) => new ShareChallenge(controller.text, controllerDetails.text, "https://coralreef.page.link/y1E4", joinCode)));
     }catch (err) {
       setState(() {
         _loading = false;

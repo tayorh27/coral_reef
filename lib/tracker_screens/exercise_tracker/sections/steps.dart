@@ -153,7 +153,7 @@ class _PageState extends State<Steps> {
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<StepViewModel>.reactive(
+    return (Platform.isAndroid) ? ViewModelBuilder<StepViewModel>.reactive(
         viewModelBuilder: () => StepViewModel(),
         onModelReady: (viewModel) {
           viewModel.currentStep();
@@ -163,210 +163,214 @@ class _PageState extends State<Steps> {
             model.currentStep();
           }
           model.currentStep();
-          return Scaffold(
-              backgroundColor: Colors.white,
-              appBar: DietHeader("Steps").appBar(context),
-              body: SafeArea(
-               child: SingleChildScrollView(
-                 child: Padding(
-                   padding: EdgeInsets.all(30.0),
-                   child: Column(
-                     mainAxisAlignment: MainAxisAlignment.start,
-                     crossAxisAlignment: CrossAxisAlignment.start,
-                     children: [
-                       Container(
-                           padding: EdgeInsets.all(20),
-                           child: Column(
-                               crossAxisAlignment: CrossAxisAlignment.center,
-                               mainAxisAlignment: MainAxisAlignment.center,
-                               children: [
-                                 Column(
-                                   crossAxisAlignment: CrossAxisAlignment.center,
-                                   mainAxisAlignment: MainAxisAlignment.center,
-                                   children: [
-                                     Text(
-                                       'Goal',
-                                       style:
-                                       Theme
-                                           .of(context)
-                                           .textTheme
-                                           .bodyText1
-                                           .copyWith(
-                                         fontSize: getProportionateScreenWidth(18),
-                                       ),
-                                     ),
-                                     SizedBox(
-                                       height: 10,
-                                     ),
-                                     Text(stepsGoal,
-                                         style: Theme
-                                             .of(context)
-                                             .textTheme
-                                             .subtitle1
-                                             .copyWith(
-                                             color: Color(MyColors.primaryColor),
-                                             fontSize: getProportionateScreenWidth(25),
-                                             fontWeight: FontWeight.bold)),
-                                     Padding(
-                                       padding: EdgeInsets.all(20.0),
-                                       child:  SfRadialGauge(
-                                           axes: <RadialAxis>[
-                                             RadialAxis(
-                                                 interval: 10,
-                                                 startAngle: 0,
-                                                 endAngle: 360,
-                                                 showTicks: false,
-                                                 showLabels: false,
-                                                 axisLineStyle: AxisLineStyle(thickness: 30, color: Color(MyColors.stroke2Color).withOpacity(0.2)),
-                                                 pointers: <GaugePointer>[
-                                                   RangePointer(
-                                                       value: getPointerValue() > 100 ? 100 : getPointerValue(),
-                                                       width: 30,
-                                                       color: Color(MyColors.stroke2Color),
-                                                       enableAnimation: true,
-                                                       cornerStyle: CornerStyle.bothCurve)
-                                                 ],
-                                                 annotations: <GaugeAnnotation>[
-                                                   GaugeAnnotation(
-                                                       widget: Container(
-                                                         width: 200.0,
-                                                         height: 200.0,
-                                                         child:  Column(
-                                                           crossAxisAlignment:
-                                                           CrossAxisAlignment.center,
-                                                           mainAxisAlignment: MainAxisAlignment
-                                                               .center,
-                                                           children: [
-                                                             SvgPicture.asset(
-                                                               "assets/exercise/purple_foot.svg",
-                                                               height: 40.0,
-                                                             ),
-                                                             SizedBox(
-                                                               height: 10,
-                                                             ),
-                                                             Text(currentTakenSteps,
-                                                                 style: Theme
-                                                                     .of(context)
-                                                                     .textTheme
-                                                                     .subtitle1
-                                                                     .copyWith(
-                                                                     color: Colors.black,
-                                                                     fontSize:
-                                                                     getProportionateScreenWidth(
-                                                                         20),
-                                                                     fontWeight: FontWeight.bold)),
-                                                             SizedBox(
-                                                               height: 10,
-                                                             ),
-                                                             Text("Steps",
-                                                                 style: Theme
-                                                                     .of(context)
-                                                                     .textTheme
-                                                                     .subtitle1
-                                                                     .copyWith(
-                                                                     color: Colors.black,
-                                                                     fontSize:
-                                                                     getProportionateScreenWidth(
-                                                                         15),
-                                                                     fontWeight: FontWeight.bold)),
-                                                           ],
-                                                         )
-                                                       ),
-                                                       angle: 270,
-                                                       positionFactor: 0.1)
-                                                 ])
-                                           ]),
-                                     ),
-                                     Container(
-                                         padding: EdgeInsets.all(0),
-                                         child: Row(
-                                           mainAxisAlignment:
-                                           MainAxisAlignment.spaceBetween,
-                                           children: [
-                                             Column(
-                                               children: [
-                                                 SvgPicture.asset(
-                                                   "assets/exercise/fire.svg",
-                                                   height: 40.0,
-                                                 ),
-                                                 Text(
-                                                     (double.parse(currentTakenSteps) / 63.4)
-                                                         .floor()
-                                                         .toString() +
-                                                         "kcal",
-                                                     style: Theme
-                                                         .of(context)
-                                                         .textTheme
-                                                         .subtitle1
-                                                         .copyWith(
-                                                       color: Color(MyColors.titleTextColor),
-                                                       fontSize:
-                                                       getProportionateScreenWidth(
-                                                           15),
-                                                     )),
-                                               ],
-                                             ),
-                                             Column(children: [
-                                               SvgPicture.asset(
-                                                 "assets/exercise/location.svg",
-                                                 height: 40.0,
-                                               ),
-                                               Text(
-                                                   (double.parse(currentTakenSteps) * 0.000762)
-                                                       .roundToDouble()
-                                                       .toString() +
-                                                       'km',
-                                                   style: Theme
-                                                       .of(context)
-                                                       .textTheme
-                                                       .subtitle1
-                                                       .copyWith(
-                                                     color: Color(MyColors.titleTextColor),
-                                                     fontSize:
-                                                     getProportionateScreenWidth(
-                                                         15),
-                                                   )),
-                                             ]),
-                                             Column(children: [
-                                               SvgPicture.asset(
-                                                 "assets/exercise/time.svg",
-                                                 height: 40.0,
-                                               ),
-                                               Text(
-                                                   (double.parse(currentTakenSteps) / 100)
-                                                       .round()
-                                                       .toString() +
-                                                       "Min",
-                                                   style: Theme
-                                                       .of(context)
-                                                       .textTheme
-                                                       .subtitle1
-                                                       .copyWith(
-                                                     color: Color(MyColors.titleTextColor),
-                                                     fontSize:
-                                                     getProportionateScreenWidth(
-                                                         15),
-                                                   )),
-                                             ]),
-                                           ],
-                                         )),
-                                     SizedBox(
-                                       height: 50,
-                                     ),
-                                     DefaultButton(
-                                       text: 'Set daily goal',
-                                       press: displayDialog,
-                                     )
-                                   ],
-                                 )
-                               ]))
-                     ],
-                   ),
-                 ),
-               ),
-              )
-          );
+          return bodyLayout();
         }
+    ) : bodyLayout();
+  }
+
+  Widget bodyLayout() {
+    return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: DietHeader("Steps").appBar(context),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(30.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Goal',
+                                  style:
+                                  Theme
+                                      .of(context)
+                                      .textTheme
+                                      .bodyText1
+                                      .copyWith(
+                                    fontSize: getProportionateScreenWidth(18),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text(stepsGoal,
+                                    style: Theme
+                                        .of(context)
+                                        .textTheme
+                                        .subtitle1
+                                        .copyWith(
+                                        color: Color(MyColors.primaryColor),
+                                        fontSize: getProportionateScreenWidth(25),
+                                        fontWeight: FontWeight.bold)),
+                                Padding(
+                                  padding: EdgeInsets.all(20.0),
+                                  child:  SfRadialGauge(
+                                      axes: <RadialAxis>[
+                                        RadialAxis(
+                                            interval: 10,
+                                            startAngle: 0,
+                                            endAngle: 360,
+                                            showTicks: false,
+                                            showLabels: false,
+                                            axisLineStyle: AxisLineStyle(thickness: 30, color: Color(MyColors.stroke2Color).withOpacity(0.2)),
+                                            pointers: <GaugePointer>[
+                                              RangePointer(
+                                                  value: getPointerValue() > 100 ? 100 : getPointerValue(),
+                                                  width: 30,
+                                                  color: Color(MyColors.stroke2Color),
+                                                  enableAnimation: true,
+                                                  cornerStyle: CornerStyle.bothCurve)
+                                            ],
+                                            annotations: <GaugeAnnotation>[
+                                              GaugeAnnotation(
+                                                  widget: Container(
+                                                      width: 200.0,
+                                                      height: 200.0,
+                                                      child:  Column(
+                                                        crossAxisAlignment:
+                                                        CrossAxisAlignment.center,
+                                                        mainAxisAlignment: MainAxisAlignment
+                                                            .center,
+                                                        children: [
+                                                          SvgPicture.asset(
+                                                            "assets/exercise/purple_foot.svg",
+                                                            height: 40.0,
+                                                          ),
+                                                          SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                          Text(currentTakenSteps,
+                                                              style: Theme
+                                                                  .of(context)
+                                                                  .textTheme
+                                                                  .subtitle1
+                                                                  .copyWith(
+                                                                  color: Colors.black,
+                                                                  fontSize:
+                                                                  getProportionateScreenWidth(
+                                                                      20),
+                                                                  fontWeight: FontWeight.bold)),
+                                                          SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                          Text("Steps",
+                                                              style: Theme
+                                                                  .of(context)
+                                                                  .textTheme
+                                                                  .subtitle1
+                                                                  .copyWith(
+                                                                  color: Colors.black,
+                                                                  fontSize:
+                                                                  getProportionateScreenWidth(
+                                                                      15),
+                                                                  fontWeight: FontWeight.bold)),
+                                                        ],
+                                                      )
+                                                  ),
+                                                  angle: 270,
+                                                  positionFactor: 0.1)
+                                            ])
+                                      ]),
+                                ),
+                                Container(
+                                    padding: EdgeInsets.all(0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          children: [
+                                            SvgPicture.asset(
+                                              "assets/exercise/fire.svg",
+                                              height: 40.0,
+                                            ),
+                                            Text(
+                                                (double.parse(currentTakenSteps) / 63.4)
+                                                    .floor()
+                                                    .toString() +
+                                                    "kcal",
+                                                style: Theme
+                                                    .of(context)
+                                                    .textTheme
+                                                    .subtitle1
+                                                    .copyWith(
+                                                  color: Color(MyColors.titleTextColor),
+                                                  fontSize:
+                                                  getProportionateScreenWidth(
+                                                      15),
+                                                )),
+                                          ],
+                                        ),
+                                        Column(children: [
+                                          SvgPicture.asset(
+                                            "assets/exercise/location.svg",
+                                            height: 40.0,
+                                          ),
+                                          Text(
+                                              (double.parse(currentTakenSteps) * 0.000762)
+                                                  .roundToDouble()
+                                                  .toString() +
+                                                  'km',
+                                              style: Theme
+                                                  .of(context)
+                                                  .textTheme
+                                                  .subtitle1
+                                                  .copyWith(
+                                                color: Color(MyColors.titleTextColor),
+                                                fontSize:
+                                                getProportionateScreenWidth(
+                                                    15),
+                                              )),
+                                        ]),
+                                        Column(children: [
+                                          SvgPicture.asset(
+                                            "assets/exercise/time.svg",
+                                            height: 40.0,
+                                          ),
+                                          Text(
+                                              (double.parse(currentTakenSteps) / 100)
+                                                  .round()
+                                                  .toString() +
+                                                  "Min",
+                                              style: Theme
+                                                  .of(context)
+                                                  .textTheme
+                                                  .subtitle1
+                                                  .copyWith(
+                                                color: Color(MyColors.titleTextColor),
+                                                fontSize:
+                                                getProportionateScreenWidth(
+                                                    15),
+                                              )),
+                                        ]),
+                                      ],
+                                    )),
+                                SizedBox(
+                                  height: 50,
+                                ),
+                                DefaultButton(
+                                  text: 'Set daily goal',
+                                  press: displayDialog,
+                                )
+                              ],
+                            )
+                          ]))
+                ],
+              ),
+            ),
+          ),
+        )
     );
   }
 

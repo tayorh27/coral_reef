@@ -1,20 +1,29 @@
+import 'dart:async';
+
 import 'package:coral_reef/ListItem/model_gchat_comment.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/constants.dart';
 import 'package:coral_reef/g_chat_screen/services/gchat_services.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 
 class SinglePostComment extends StatefulWidget {
   final Widget leadingWidget;
   final String gchatID;
   final Function(GChatComment comment) onCreateComment;
-
-  SinglePostComment(this.leadingWidget, this.gchatID, {this.onCreateComment});
+  final Function(bool hide) popupReplyField;
+  SinglePostComment(this.leadingWidget, this.gchatID, {this.onCreateComment, this.popupReplyField});
 
   @override
   State<StatefulWidget> createState() => _SinglePostComment();
 }
+
+
+
+// void triggerPopupReplyField(bool float) {
+//   controller.add(float);
+// }
 
 class _SinglePostComment extends State<SinglePostComment> {
 
@@ -26,31 +35,46 @@ class _SinglePostComment extends State<SinglePostComment> {
 
   bool sending = false;
 
-  String replyToUser = "";
-  String commentID = "";
+  bool isReplyTo = false;
+  GChatComment mainCommentData;
+
+  Stream stream = universalController.stream;
+  StreamSubscription<Map<String, dynamic>> streamSubscription;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     gChatServices = new GChatServices(context);
-    alertPost.listen((value) {
-      if(value.isNotEmpty) {
-        replyToUser = value[0];
-        commentID = value[1];
-        setState(() {
-          _controllerMessage.text = "@$replyToUser";
-          focusNode.requestFocus();
-        });
-      }
+    streamSubscription = stream.listen((event) {
+      if(event == null) return;
+      if(!mounted) return;
+      print("streaming: $event");
+      setState(() {
+        isReplyTo = true;
+        mainCommentData = GChatComment.fromSnapshot(event["mainComment"]);
+        _controllerMessage.text = "@${event["username"]} ";
+      });
+      focusNode.requestFocus();
     });
+    // alertPost.listen((value) {{id: -MZ_ZJAZ8fkwto4AC8e7, main_comment_id: , gchat_id: -MZ_2oImajtvl87psiYk, user_uid: LBLJwbE6WwZSYigYyNs0ftEhBmk2, main_comment_user_uid: null, username: royking, avatar: {selectedAvatar: avatar5, selectedColor: 4294941584}, message: Alright. Sooooo excited...
+    //   if(value.isNotEmpty) {
+    //     replyToUser = value[0];
+    //     commentID = value[1];
+    //     setState(() {
+    //       _controllerMessage.text = "@$replyToUser";
+    //       focusNode.requestFocus();
+    //     });
+    //   }
+    // });
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    alertPost.close();
+    // alertPost.close();
+    streamSubscription.cancel();
   }
 
   @override
@@ -105,12 +129,15 @@ class _SinglePostComment extends State<SinglePostComment> {
     setState(() {
       sending = true;
     });
-    String main_comment_id = (replyToUser.isEmpty) ? "" : commentID ?? "";
-    GChatComment com = await gChatServices.submitPostComment(_controllerMessage.text, widget.gchatID, main_comment_id);
+
+    String main_comment_id = (!isReplyTo) ? "" : mainCommentData.id; //|| !_controllerMessage.text.startsWith("@")
+    String replyUserID = (!isReplyTo) ? user.uid : mainCommentData.user_uid;
+    GChatComment com = await gChatServices.submitPostComment(_controllerMessage.text, widget.gchatID, main_comment_id, replyUserID);
     widget.onCreateComment(com);
     _controllerMessage.clear();
-    alertPost.drain();
     setState(() {
+      universalController.add(null);
+      isReplyTo = false;
       sending = false;
     });
   }

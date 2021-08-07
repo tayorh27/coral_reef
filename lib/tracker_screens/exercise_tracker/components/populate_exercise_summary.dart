@@ -224,7 +224,7 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
   * */
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<StepViewModel>.reactive(
+    return (Platform.isAndroid) ? ViewModelBuilder<StepViewModel>.reactive(
         viewModelBuilder: () => StepViewModel(),
         onModelReady: (viewModel) {
           viewModel.currentStep();
@@ -233,50 +233,54 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
           if (mounted) {
             model.currentStep();
           }
-          return Row(
-            children: [
-              ExerciseSummaryCard(
-                title: 'Steps',
-                icon: 'assets/exercise/foot_white.svg',
-                title2: '',
-                title3: currentTakenSteps, //model.steps,
-                title4:
-                    "Goal: $stepsGoal", //"Goal: ${model.stepsGoal.floor().toString()}",
-                textColor: Colors.white,
-                press: () async {
-                  //go to well-being setup screen
-                  await Navigator.pushNamed(context, Steps.routeName);
-                  getStepsLocalData();
-                  // Navigator.pushNamed(context, SleepScreen.routeName);
-                },
-                color: Color(MyColors.primaryColor),
-                child: CaloriesSlider(
-                  getPointerValue(),
-                  icon: "assets/exercise/foot_white.svg",
-                  text: "",
-                  height: 40.0,
-                ), //ExerciseSlider(),
-              ),
-              SizedBox(width: SizeConfig.screenWidth * 0.03),
-              ExerciseSummaryCard(
-                title: 'Track activities',
-                icon: 'assets/exercise/race_track.svg',
-                title2: '',
-                title3: 'Activities: $totalChallenge',
-                title4: 'Total km: $totalKm',
-                textColor: Color(MyColors.primaryColor),
-                press: () {
-                  // Navigator.pushNamed(context, TrackActivities.routeName);
-                },
-                color: Colors.purpleAccent.withOpacity(0.1),
-                child: SvgPicture.asset(
-                  "assets/exercise/race_track.svg",
-                  height: 100,
-                  color: Color(MyColors.primaryColor),
-                ),
-              ),
-            ],
-          );
-        });
+          return bodyLayout();
+        }) : bodyLayout();
+  }
+
+  Widget bodyLayout() {
+    return Row(
+      children: [
+        ExerciseSummaryCard(
+          title: 'Steps',
+          icon: 'assets/exercise/foot_white.svg',
+          title2: '',
+          title3: currentTakenSteps, //model.steps,
+          title4:
+          "Goal: $stepsGoal", //"Goal: ${model.stepsGoal.floor().toString()}",
+          textColor: Colors.white,
+          press: () async {
+            //go to well-being setup screen
+            await Navigator.pushNamed(context, Steps.routeName);
+            getStepsLocalData();
+            // Navigator.pushNamed(context, SleepScreen.routeName);
+          },
+          color: Color(MyColors.primaryColor),
+          child: CaloriesSlider(
+            getPointerValue(),
+            icon: "assets/exercise/foot_white.svg",
+            text: "",
+            height: 40.0,
+          ), //ExerciseSlider(),
+        ),
+        SizedBox(width: SizeConfig.screenWidth * 0.03),
+        ExerciseSummaryCard(
+          title: 'Track activities',
+          icon: 'assets/exercise/race_track.svg',
+          title2: '',
+          title3: 'Activities: $totalChallenge',
+          title4: 'Total km: $totalKm',
+          textColor: Color(MyColors.primaryColor),
+          press: () {
+            // Navigator.pushNamed(context, TrackActivities.routeName);
+          },
+          color: Colors.purpleAccent.withOpacity(0.1),
+          child: SvgPicture.asset(
+            "assets/exercise/race_track.svg",
+            height: 100,
+            color: Color(MyColors.primaryColor),
+          ),
+        ),
+      ],
+    );
   }
 }

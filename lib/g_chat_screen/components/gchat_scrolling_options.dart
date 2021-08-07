@@ -1,6 +1,7 @@
 
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
+import 'package:coral_reef/constants.dart';
 import 'package:flutter/material.dart';
 
 import '../../size_config.dart';
@@ -38,10 +39,11 @@ class _GChatScrollingOptions extends State<GChatScrollingOptions> {
               selected: selectedMenu == "G-chat", onTap: () {
                 changeMenu('G-chat', context);
               }),
-          // topScrollElement(context, "Filter",
-          //     selected: selectedMenu == "Filter", onTap: () {
-          //       changeMenu('filter', context);
-          //     }),
+          topScrollElement(context, "Filter",
+              selected: selectedMenu == "Filter", onTap: () {
+                // changeMenu('filter', context);
+                showBottomSheetController.add(true);
+              }),
           // topScrollElement(context, "Job opportunities",
           //     selected: selectedMenu == "Job opportunities", onTap: () {
           //       changeMenu('Job opportunities', context);

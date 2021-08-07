@@ -8,6 +8,7 @@ import 'package:coral_reef/shared_screens/gchat_user_avatar.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:readmore/readmore.dart';
+import 'dart:io';
 
 import '../../size_config.dart';
 
@@ -116,7 +117,7 @@ class _RecentPostComment extends State<RecentPostComment> {
               moreStyle: Theme.of(context).textTheme.headline2.copyWith(fontSize: 14.0, color: Color(MyColors.primaryColor)),
               lessStyle: Theme.of(context).textTheme.headline2.copyWith(fontSize: 14.0, color: Color(MyColors.primaryColor)),
             ),
-            isThreeLine: true,
+            isThreeLine: Platform.isAndroid,
           )
       );
     });

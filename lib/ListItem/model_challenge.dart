@@ -11,6 +11,7 @@ class VirtualChallenge {
   bool winner_rewarded, first_rewarded, second_rewarded, third_rewarded;
   dynamic paid_user;
   String time_zone;
+  dynamic friends_list;
 
 
   VirtualChallenge(this.id, this.user_uid, this.challenge_type,
@@ -18,7 +19,7 @@ class VirtualChallenge {
       this.funding_type, this.reward_value, this.created_date, this.link, this.msgId, this.timestamp,
       this.max_user, this.status, this.winner_amount, this.join_code, this.time_taken, this.km_covered,
       this.winner_reward_type, this.share_amount, this.winner_rewarded, this.first_rewarded,
-      this.second_rewarded, this.third_rewarded, this.paid_user, this.time_zone, this.winners);
+      this.second_rewarded, this.third_rewarded, this.paid_user, this.time_zone, this.winners, this.friends_list);
 
   Map<String, dynamic> toJSON() {
     return {
@@ -53,6 +54,7 @@ class VirtualChallenge {
       "paid_user": paid_user,
       "time_zone": time_zone,
       "winners": winners,
+      "friends_list": friends_list,
     };
   }
 
@@ -88,6 +90,7 @@ class VirtualChallenge {
     paid_user = data["paid_user"];
     time_zone = data["time_zone"];
     winners = data["winners"];
+    friends_list = data["friends_list"];
   }
 }
 

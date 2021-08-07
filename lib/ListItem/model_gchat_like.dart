@@ -12,7 +12,7 @@ class GChatLike {
       'id':id,
       'gchat_id':gchat_id,
       'comment_id':comment_id,
-      'like_type':like_type,
+      'like_type':like_type, //gchat or comment
       'user_uid':user_uid,
       'username':username,
       'avatar':avatar,

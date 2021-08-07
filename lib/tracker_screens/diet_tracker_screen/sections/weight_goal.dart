@@ -391,7 +391,7 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          width: 200.0,
+                          width: 170.0,
                           child: TextFormField(
                             keyboardType: TextInputType.number,
                             obscureText: false,

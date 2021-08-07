@@ -153,7 +153,7 @@ class GChatServices {
     return "${num.ceil()}";
   }
 
-  Future<GChatComment> submitPostComment(String comment, String gchat_id, String main_comment_id) async {
+  Future<GChatComment> submitPostComment(String comment, String gchat_id, String main_comment_id, String replyUserID) async {
 
     String key = FirebaseDatabase.instance.reference().push().key;
 
@@ -171,10 +171,10 @@ class GChatServices {
     String username = topicsData["username"];
 
     String timeZone = await new GeneralUtils().currentTimeZone();
-    if(main_comment_id.isEmpty) {
-      main_comment_id = key; //in case of new comments
-    }
-    GChatComment gChatComment = new GChatComment(key, main_comment_id, gchat_id, json["uid"], username, avatarData, comment, new DateTime.now().toString(), json["msgId"], FieldValue.serverTimestamp(), timeZone, 0);
+    // if(main_comment_id.isEmpty) {
+    //   main_comment_id = key; //in case of new comments
+    // }
+    GChatComment gChatComment = new GChatComment(key, main_comment_id, gchat_id, json["uid"], replyUserID, username, avatarData, comment, new DateTime.now().toString(), json["msgId"], FieldValue.serverTimestamp(), timeZone, 0);
 
     await FirebaseFirestore.instance.collection("comments").doc(key).set(gChatComment.toJSON());
 

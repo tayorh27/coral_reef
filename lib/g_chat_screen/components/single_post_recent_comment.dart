@@ -14,7 +14,8 @@ import '../../size_config.dart';
 class SinglePostPostComment extends StatefulWidget {
 
   final List<GChatComment> recentComments;
-  SinglePostPostComment(this.recentComments);
+  final List<GChatComment> allPostComments;
+  SinglePostPostComment(this.recentComments, this.allPostComments);
 
   @override
   State<StatefulWidget> createState() => _SinglePostPostComment();
@@ -52,6 +53,8 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
     // int index = 0;
 
     comments.forEach((com) {
+      //get the replies under this comment
+      List<GChatComment> repliesComment = getRepliesFromComments(com.id);
       mComments.add(
           ListTile(
             leading: GChatUserAvatar(
@@ -107,14 +110,15 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
                             color: Colors.grey,
                             fontSize: getProportionateScreenWidth(12))),
                     Visibility(
-                      visible: false,
+                      visible: true,
                       child: Container(
                         margin: EdgeInsets.only(left: (com.number_of_likes == null || com.number_of_likes <= 0) ? 0.0 : 20.0),
                         child: InkWell(onTap: (){
-                          List<String> post = [com.username, com.main_comment_id];
-                          // print("reply @${com.username}");
-                          // alertPost.
-                          alertPost.add(post);
+                          // List<String> post = [com.username, com.main_comment_id];
+                          Map<String, dynamic> data = new Map();
+                          data["username"] = com.username;
+                          data["mainComment"] = com.toJSON();
+                          universalController.add(data);
                         }, child: Text("Reply",
                             style: Theme.of(context)
                                 .textTheme
@@ -124,6 +128,7 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
                                 fontSize: getProportionateScreenWidth(12))),),
                       ),
                     ),
+            SizedBox(width: 10,),
                     Container(
                       margin: EdgeInsets.only(left: (com.number_of_likes == null || com.number_of_likes <= 0) ? 0.0 : 20.0, top: 3.0),
                       child: InkWell(
@@ -135,11 +140,130 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
                               userLikeRecords.remove(commentID);
                             });
                             await operationAfterLikeButton("remove", commentID);
+                            // setState(() {});
                           }else {
                             setState(() {
                               userLikeRecords.add(commentID);
                             });
                             await operationAfterLikeButton("add", commentID);
+                            // setState(() {});
+                          }
+                        },
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+            isThreeLine: true,
+          )
+      );
+      if(repliesComment.isNotEmpty) {
+        mComments.add(loadRepliesComments(repliesComment, com));
+      }
+
+    });
+    return mComments;
+  }
+
+  //display replies comments
+  Widget loadRepliesComments(List<GChatComment> repliesComment, GChatComment mainComment) {
+    List<Widget> mComments = [];
+
+    // int index = 0;
+
+    repliesComment.forEach((com) {
+      mComments.add(
+          ListTile(
+            leading: GChatUserAvatar(
+              40.0,
+              avatarData: com.avatar,
+            ),
+            title: Container(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(com.username,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyText1
+                            .copyWith(
+                            color: Color(MyColors.titleTextColor),
+                            fontSize: getProportionateScreenWidth(13))),
+                    Text(
+                      new GeneralUtils().returnFormattedDate(com.created_date, com.time_zone),
+                      style: Theme.of(context).textTheme.subtitle1.copyWith(
+                        color: Color(MyColors.titleTextColor),
+                        fontSize: getProportionateScreenWidth(10),
+                      ),
+                    ),
+                  ],
+                )) ,
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ReadMoreText(
+                  com.message,
+                  trimLines: 3,
+                  colorClickableText: Color(MyColors.primaryColor),
+                  trimMode: TrimMode.Line,
+                  trimCollapsedText: 'more',
+                  trimExpandedText: 'less',
+                  style: Theme.of(context).textTheme.subtitle1.copyWith(fontSize: 14.0, color: Color(MyColors.titleTextColor)),
+                  moreStyle: Theme.of(context).textTheme.headline2.copyWith(fontSize: 14.0, color: Color(MyColors.primaryColor)),
+                  lessStyle: Theme.of(context).textTheme.headline2.copyWith(fontSize: 14.0, color: Color(MyColors.primaryColor)),
+                ),
+                SizedBox(height: 10.0,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    (com.number_of_likes == null || com.number_of_likes <= 0) ? SizedBox() : Text("${com.number_of_likes} ${(com.number_of_likes == 1) ? "like" : "likes"}",
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyText1
+                            .copyWith(
+                            color: Colors.grey,
+                            fontSize: getProportionateScreenWidth(12))),
+                    Visibility(
+                      visible: true,
+                      child: Container(
+                        margin: EdgeInsets.only(left: (com.number_of_likes == null || com.number_of_likes <= 0) ? 0.0 : 20.0),
+                        child: InkWell(onTap: (){
+                          Map<String, dynamic> data = new Map();
+                          data["username"] = com.username;
+                          data["mainComment"] = mainComment.toJSON();
+                          universalController.add(data);
+                        }, child: Text("Reply",
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText1
+                                .copyWith(
+                                color: Colors.grey,
+                                fontSize: getProportionateScreenWidth(12))),),
+                      ),
+                    ),
+                    SizedBox(width: 10,),
+                    Container(
+                      margin: EdgeInsets.only(left: (com.number_of_likes == null || com.number_of_likes <= 0) ? 0.0 : 20.0, top: 3.0),
+                      child: InkWell(
+                        child: userLikeRecords.contains(com.id) ? Icon(Icons.favorite, size: 14.0, color: Colors.redAccent,) : Icon(Icons.favorite_border, size: 14.0,),
+                        onTap: () async {
+                          String commentID = com.id;
+                          if(userLikeRecords.contains(commentID)) {
+                            setState(() {
+                              userLikeRecords.remove(commentID);
+                            });
+                            await operationAfterLikeButton("remove", commentID);
+                            // setState(() {});
+                          }else {
+                            setState(() {
+                              userLikeRecords.add(commentID);
+                            });
+                            await operationAfterLikeButton("add", commentID);
+                            // setState(() {});
                           }
                         },
                       ),
@@ -153,7 +277,12 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
       );
       // index = index + 1;
     });
-    return mComments;
+    return Container(
+      padding: EdgeInsets.only(left: 20.0, right: 20.0),
+      child: Column(
+        children: mComments,
+      ),
+    );
   }
 
   Future<void> operationAfterLikeButton(String action, String commentID) async {
@@ -176,6 +305,11 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
     });
     await gChatServices.saveLikeData(key, null, "comment", commentID);
     await gChatServices.updateCommentNumberOfLikesByID(commentID, 1);
+  }
+
+  List<GChatComment> getRepliesFromComments(String commentID) {
+    final query = widget.allPostComments.where((element) => element.main_comment_id == commentID).toList();
+    return (query.isEmpty) ? [] : query;
   }
 }
 

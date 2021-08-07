@@ -86,6 +86,15 @@ class StepViewModel extends BaseModel {
   }
 
   Future<void> doStepsOperation(int steps, DateTime timestamp) async {
+    // String running = await ss.getItem("running") ?? "";
+    // String statusCH = await ss.getItem("statusCH") ?? "";
+    // if(running.isNotEmpty && statusCH == "play") {
+    //   if(Platform.isIOS) {
+    //     String getStepsCount = await new ExerciseService().getStepsCount(steps, timestamp);
+    //
+    //     return;
+    //   }
+    // }
 
     String goal = await ss.getItem("stepsGoal") ?? "0";
     String getStepsCount = await new ExerciseService().getStepsCount(steps, timestamp);

@@ -222,10 +222,13 @@ class _MyApp extends State<MyApp> {
     // setupSteps();
     checkIfCurrentChallengeHasEnded();
     //re-add
-    setupLocator().then((value) {
-      final StepService stepService = locator<StepService>();
-      stepService.initPlatformState();
-    });
+    if(Platform.isAndroid) {
+      setupLocator().then((value) {
+        final StepService stepService = locator<StepService>();
+        stepService.initPlatformState();
+      });
+    }
+
 
     var initializationSettingsAndroid =
         AndroidInitializationSettings("@mipmap/ic_coral_reef_cover");

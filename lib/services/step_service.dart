@@ -42,9 +42,6 @@ class StepService {
       stepCallback(getStepsCount);
     }
     new ExerciseService().updateStepsTakenCount(int.parse(getStepsCount), double.parse(goal).ceil(), timestamp);
-
-    //do more with this.
-    // print("steps na = $mSteps");
   }
 
   void onPedestrianStatusChanged(PedestrianStatus event) {

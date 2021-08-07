@@ -182,11 +182,14 @@ class _MoodSection extends State<MoodSection> {
                                                               svgColor: Color(MyColors.stroke1Color),
                                                             ),
                                                           ),
-                                                          Text('$currentMood',textAlign: TextAlign.center,
-                                                            style: Theme.of(context).textTheme.headline1.copyWith(
-                                                              color: Colors.black,
-                                                              fontSize: getProportionateScreenWidth(27),
-                                                            ),),
+                                                          Container(
+                                                            margin: EdgeInsets.only(left: 20.0),
+                                                            child: Text('$currentMood',textAlign: TextAlign.center,
+                                                              style: Theme.of(context).textTheme.headline1.copyWith(
+                                                                color: Colors.black,
+                                                                fontSize: getProportionateScreenWidth(27),
+                                                              ),),
+                                                          )
                                                         ],
                                                       ),
                                                     )

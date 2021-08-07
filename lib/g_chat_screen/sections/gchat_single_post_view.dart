@@ -38,6 +38,7 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
   ScrollController _scrollController = new ScrollController();
 
   List<GChatComment> comments = [];
+  List<GChatComment> allComments = [];
 
   Map<String, dynamic> mediaInfo;
   String fileType = "";
@@ -49,12 +50,15 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
 
   StreamSubscription<QuerySnapshot> commentList;
 
+  int nLikes = 0;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
     setState(() {
+      nLikes = widget.gChat.number_of_likes;
       postLikeID = widget.likeID;
       liked = widget.gLiked;
       mediaInfo =
@@ -73,37 +77,43 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
     getPostComment();
   }
 
-  getPostComment() async {
-    QuerySnapshot query = await FirebaseFirestore.instance
+  getPostComment() {
+    // QuerySnapshot query = await
+    commentList = FirebaseFirestore.instance
         .collection("comments")
         .where("gchat_id", isEqualTo: widget.gChat.id)
     // .where("main_comment_id", isEqualTo: "")
-        .orderBy("timestamp", descending: true).get();
+        .orderBy("timestamp", descending: true).snapshots().listen((query) {
+      if(!mounted) return;
 
-    if(!mounted) return;
+      // print("I dey here");
 
-    // print("I dey here");
+      // setState(() {
+      //   comments = [];
+      // });
 
-    // setState(() {
-    //   comments = [];
-    // });
-
-    if (query.size > 0) {
-      query.docs.forEach((commentQ) {
-        GChatComment gComment = GChatComment.fromSnapshot(commentQ.data());
-        // print(gComment);
-        setState(() {
-          comments.add(gComment);
+      if (query.size > 0) {
+        comments.clear();
+        allComments.clear();
+        query.docs.forEach((commentQ) {
+          GChatComment gComment = GChatComment.fromSnapshot(commentQ.data());
+          // print(gComment);
+          allComments.add(gComment);
+          if(gComment.main_comment_id == null || gComment.main_comment_id == "") {
+            setState(() {
+              comments.add(gComment);
+            });
+          }
         });
-      });
-    }
+      }
+    });
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    // commentList.cancel();
+    if(commentList != null) commentList.cancel();
   }
 
   @override
@@ -207,7 +217,7 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
                           ),
                           Text(
                               gServices.shortenLargeNumber(
-                                  num: double.parse("${widget.gChat.number_of_likes}"),
+                                  num: double.parse("$nLikes"), //{widget.gChat.number_of_likes}
                                   digits: 1), //"${}",
                               style: Theme.of(context).textTheme.subtitle1.copyWith(
                                   color: Color(MyColors.titleTextColor),
@@ -234,7 +244,7 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
                     ),
                     (comments.isEmpty) ? SizedBox() : Column(
                       children: [
-                        SinglePostPostComment(comments),
+                        SinglePostPostComment(comments, allComments),
                         SizedBox(height: 100.0,)
                       ],
                     ),
@@ -276,12 +286,14 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
     if (liked) {
       //user has liked the post and wants to unlike
       setState(() {
+        nLikes = nLikes - 1;
         liked = false;
       });
       await gServices.removeLikeData(postLikeID);
     } else {
       String key = FirebaseDatabase.instance.reference().push().key;
       setState(() {
+        nLikes = nLikes + 1;
         liked = true;
         postLikeID = key;
       });

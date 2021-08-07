@@ -7,17 +7,20 @@ import 'package:coral_reef/ListItem/model_gchat.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/storage.dart';
+import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/constants.dart';
 import 'package:coral_reef/g_chat_screen/components/image_display_widget.dart';
 import 'package:coral_reef/g_chat_screen/components/post_comment.dart';
 import 'package:coral_reef/g_chat_screen/components/recent_comments.dart';
 import 'package:coral_reef/g_chat_screen/components/report_dialog.dart';
 import 'package:coral_reef/g_chat_screen/components/shimmer_effects.dart';
+import 'package:coral_reef/g_chat_screen/components/topics_selection.dart';
 import 'package:coral_reef/g_chat_screen/components/video_display_widget.dart';
 import 'package:coral_reef/g_chat_screen/services/gchat_services.dart';
+import 'package:coral_reef/shared_screens/EmptyScreen.dart';
 import 'package:coral_reef/shared_screens/gchat_user_avatar.dart';
 import 'package:extended_image/extended_image.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/firebase_database.dart' as db;
 import 'package:flutter/material.dart';
 import 'package:truncate/truncate.dart';
 import 'package:video_player/video_player.dart';
@@ -53,6 +56,9 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
   StreamSubscription<QuerySnapshot> gchatsList;
   ScrollController _scrollController = new ScrollController();
 
+  Stream stream = showBottomSheetController.stream;
+  StreamSubscription<bool> streamSubscription;
+
   List<String> topics = [
     "Sex life",
     "Relationships",
@@ -67,6 +73,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
   ];
 
   List<String> selectedTopics = [];
+  int gchatLimit = 50;
 
   final _scafoldKey = GlobalKey<ScaffoldState>();
   PersistentBottomSheetController bottomSheet;
@@ -82,8 +89,10 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
         if(_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange) {
           print("bottom");
           widget.hideFloatingButton(true);
+          gchatLimit = gchatLimit + 5;
+          getGChats();
         }else {
-          print("bottom");
+          // print("bottom");
           widget.hideFloatingButton(false);
         }
       }
@@ -91,6 +100,13 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
 
     // getUserLikesData();
     getAllLikesData();
+
+    streamSubscription = stream.listen((event) {
+      if(event == null) return;
+      if(event) {
+        displayBottomSheetDialog();
+      }
+    });
 
     // imageNetwork.resolve(new ImageConfiguration()).addListener(
     //     new ImageStreamListener((ImageInfo image, bool synchronousCall) {
@@ -103,7 +119,16 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
   }
   
   getGChats() async {
-    gchatsList = FirebaseFirestore.instance.collection("gchats").where("visibility", isEqualTo: "published").orderBy("timestamp", descending: true).snapshots().listen((event) async {
+    // print("here here here: $gchatLimit");
+    if(gchatsList != null) {
+      gchatsList.cancel();
+      gchatsList = null;
+    }
+    Query gChatQuery = FirebaseFirestore.instance.collection("gchats").where("visibility", isEqualTo: "published").orderBy("timestamp", descending: true).limit(gchatLimit);
+    if(selectedTopics.isNotEmpty) {
+      gChatQuery = FirebaseFirestore.instance.collection("gchats").where("visibility", isEqualTo: "published").where("topics", arrayContainsAny: selectedTopics).orderBy("timestamp", descending: true).limit(gchatLimit);
+    }
+    gchatsList = gChatQuery.snapshots().listen((event) async {
       if(!mounted) return;
       
       setState(() {
@@ -177,7 +202,11 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    gchatsList.cancel();
+    if(gchatsList != null) gchatsList.cancel();
+    if(streamSubscription != null) {
+      showBottomSheetController.add(false);
+      streamSubscription.cancel();
+    }
   }
 
   @override
@@ -185,7 +214,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
     // TODO: implement build
     return (!hasLoadedContent)
         ? ShimmerEffects(LoadingGChat(), 1.7)
-        : Container(
+        : (chats.isEmpty) ? EmptyScreen("No data to display.") : Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: ListView.builder(
@@ -206,7 +235,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                       children: [
                         (index > 0) ? SizedBox(
                           height: 30.0,
-                        ): Text(""),
+                        ): SizedBox(),
                         ListTile(
                           leading: GChatUserAvatar(
                             40.0,
@@ -244,7 +273,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                         ),
                         Container(
                           width: MediaQuery.of(context).size.width,
-                          margin: EdgeInsets.only(left: 15.0, top: 10.0),
+                          margin: EdgeInsets.only(left: 15.0, top: 0.0), //10.0
                           child:Text(chats[index].title,
                               style: Theme.of(context).textTheme.bodyText1.copyWith(
                                   color: Color(MyColors.titleTextColor),
@@ -370,18 +399,90 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
           );
   }
 
-  showBottomSheet() {
-
-  }
-
-  Widget topFilterLayout() {
-    return Container(
-      child: Column(
-        children: [
-          TextButton(onPressed: (){}, child: Text("Filter by Topic"))
-        ],
-      ),
-    );
+  //display topics to be selected by the user
+  displayBottomSheetDialog() {
+    showModalBottomSheet(context: context, builder: (context) {
+      List<Widget> tops = [];
+      topics.forEach((opt) {
+        tops.add(TopicsSelection(
+          text: opt,
+          selected: (selectedTopics.contains(opt)) ? true : false,
+          onTap: () {
+            if (selectedTopics.contains(opt)) {
+              setState(() {
+                selectedTopics.remove(opt);
+              });
+            } else {
+              setState(() {
+                selectedTopics.add(opt);
+              });
+            }
+            print(selectedTopics);
+            Navigator.pop(context);
+            displayBottomSheetDialog();
+          },
+        ));
+      });
+      return Container(
+        height: 220.0,
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text("Filter by:",
+                    style: Theme.of(context)
+                        .textTheme
+                        .subtitle1
+                        .copyWith(color: Color(MyColors.primaryColor), fontSize: 16.0),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20.0,),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 50.0,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: tops,
+                ),
+              ),
+              SizedBox(height: 20.0,),
+              Row(
+                children: [
+                  Container(
+                    width: 120.0,
+                    height: 40.0,
+                    child: DefaultButton2(text: "Submit", press: () {
+                      Navigator.pop(context);
+                      if(selectedTopics.isNotEmpty) {
+                        getGChats();
+                      }
+                    },),
+                  ),
+                  SizedBox(width: 20.0,),
+                  TextButton(onPressed: (){
+                    setState(() {
+                      selectedTopics.clear();
+                      Navigator.pop(context);
+                      getGChats();
+                    });
+                  }, child: Text("Reset",
+                    style: Theme.of(context)
+                        .textTheme
+                        .subtitle1
+                        .copyWith(color: Color(MyColors.primaryColor), fontSize: 16.0),
+                  ))
+                ],
+              )
+            ],
+          ),
+        ),
+      );
+    });
   }
 
   /**
@@ -419,7 +520,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
       });
       await gServices.removeLikeData(findLike["like_id"]);
     } else {
-      String key = FirebaseDatabase.instance.reference().push().key;
+      String key = db.FirebaseDatabase.instance.reference().push().key;
       //save the likes per post
       Map<String, dynamic> likeMap = new Map();
       likeMap["like_id"] = key;

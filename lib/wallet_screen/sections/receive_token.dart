@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:clipboard/clipboard.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/general.dart';
@@ -55,10 +57,16 @@ class _ReceiveWallet extends State<ReceiveWallet> {
                       ),
                     ),
                     SizedBox(width: 20.0),
-                    Text("Receive", style: Theme.of(context).textTheme.headline2.copyWith(
-                      color: Color(MyColors.titleTextColor),
-                      fontSize: getProportionateScreenWidth(20),
-                    ),)
+                    Container(
+                      margin: EdgeInsets.only(top: (Platform.isAndroid) ? 0.0 : 6.0),
+                      child: Text(
+                        "Receive",
+                        style: Theme.of(context).textTheme.headline2.copyWith(
+                          color: Color(MyColors.titleTextColor),
+                          fontSize: getProportionateScreenWidth(20),
+                        ),
+                      ),
+                    )
                   ],
                 ),
                 Container(

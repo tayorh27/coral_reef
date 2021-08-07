@@ -15,8 +15,8 @@ class CoralBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: getProportionateScreenHeight(30),
-      width: getProportionateScreenWidth(30),
+      height: getProportionateScreenHeight(35),
+      width: getProportionateScreenWidth(35),
       child: InkWell(
         onTap: (onPress == null) ? () {Navigator.of(context).pop(false);} : onPress,
         child: Row(

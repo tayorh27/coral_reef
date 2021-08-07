@@ -78,7 +78,7 @@ class _PopulateCardTiles extends State<PopulateCardTiles> {
         SizedBox(width: SizeConfig.screenWidth * 0.03),
         SleepMoodCard(
             title: 'Mood',
-            icon: currentMood == "" ? "Set Mood" : 'assets/well_being/${currentMood.toLowerCase()}.svg',
+            icon: currentMood == "Set Mood" ? "assets/well_being/meh.svg" : 'assets/well_being/${currentMood.toLowerCase()}.svg',
             title2: '',
             title3: 'Current Mood',
             title4: currentMood,

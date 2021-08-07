@@ -96,6 +96,7 @@ class MyChallengeService {
 
     String goal = await ss.getItem("stepsGoal") ?? "0";
     String current = await ss.getItem("stepsCurrent_$formatDate") ?? "0";
+    // String current = await ss.getItem("challengeStepsCurrent_$formatDate") ?? "0";
 
     currentTakenSteps = current;
   }
@@ -118,11 +119,13 @@ class MyChallengeService {
 
     int calculatedSteps = 0;
 
-    if(gcs > sss) {
-      calculatedSteps = gcs - sss;
-    }else {
-      calculatedSteps = gcs + sss;
-    }
+    calculatedSteps = gcs - sss;
+
+    // if(gcs > sss) {
+    //   calculatedSteps = gcs - sss;
+    // }else {
+    //   calculatedSteps = gcs + sss;
+    // }
     double distance = double.parse(((calculatedSteps.toDouble() * 78) / 100000).toStringAsFixed(2));
 
     if(distance < 0) {

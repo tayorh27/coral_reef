@@ -10,10 +10,12 @@ import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/constants.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/active_challenge/track_challenge_activities.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/components/join_challenge_dialog.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/challenge_details.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/coral_rewards.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/create_challenge.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/past_challenges.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/share_challenge_screen.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/start_community.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/start_weekdays.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/start_weekend.dart';
@@ -28,6 +30,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:readmore/readmore.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:swipe_refresh/swipe_refresh.dart';
 
 import 'community_challenge_details.dart';
 
@@ -426,6 +429,7 @@ class _PageState extends State<ChallengePage> {
 
   List<VirtualChallenge> challenges = [];
   List<VirtualChallenge> myChallenges = [];
+  
 
   bool _inAsyncCall = false;
 
@@ -443,20 +447,25 @@ class _PageState extends State<ChallengePage> {
   StreamSubscription<String> streamSubscription;
   bool challengePaid = false;
   int challengesCount = 0;
+  String picture = "";
+
+  StreamSubscription<QuerySnapshot> streamChallenges;
+  StreamSubscription<QuerySnapshot> streamFriendsChallenges;
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    if(streamSubscription != null) {
-      streamSubscription.cancel();
-    }
+    if(streamSubscription != null) streamSubscription.cancel();
+    if(streamChallenges != null) streamChallenges.cancel();
+    if(streamFriendsChallenges != null) streamFriendsChallenges.cancel();
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getUerData();
     countDownStartTime = new BehaviorSubject<String>();
     streamSubscription = countDownStartTime.listen((value) {
       setState(() {
@@ -466,7 +475,7 @@ class _PageState extends State<ChallengePage> {
 
     getMaxUsersForChallenges();
 
-    getGeneralChallenges();
+    getGeneralChallenges(false);
 
     //get user challenges
     FirebaseFirestore.instance
@@ -487,19 +496,56 @@ class _PageState extends State<ChallengePage> {
     setupInitWallet();
   }
 
-  Future<void> getGeneralChallenges() async {
-    //get general challenges
-    QuerySnapshot query = await FirebaseFirestore.instance.collection("challenges").where("challenge_type", isEqualTo: "Community").get();
-    if (query.size == 0) return;
-    challenges.clear();
-    // print("size = ${query.size}");
-    query.docs.forEach((chan) {
-      VirtualChallenge vc = VirtualChallenge.fromSnapshot(chan.data());
-      setState(() {
-        challenges.add(vc);
-      });
+  getUerData() async {
+    String user = await ss.getItem("user");
+    dynamic json = jsonDecode(user);
+    setState(() {
+      picture = json["picture"];
     });
-    getListOfActiveChallenges();
+  }
+
+  Future<void> getGeneralChallenges(bool openPage, {VirtualChallenge virtualChallenge}) async {
+    //get general challenges QuerySnapshot query = await
+    if(streamChallenges != null) {
+      streamChallenges.cancel();
+      streamChallenges = null;
+    }
+    streamChallenges = FirebaseFirestore.instance.collection("challenges").where("challenge_type", isEqualTo: "Community").snapshots().listen((query) {
+      if (query.size == 0) return;
+      challenges.clear();
+      // print("size = ${query.size}");
+      query.docs.forEach((chan) {
+        VirtualChallenge vc = VirtualChallenge.fromSnapshot(chan.data());
+        setState(() {
+          challenges.add(vc);
+        });
+      });
+      if(openPage) {
+        //goto active challenge
+        Navigator.pushNamed(context, TrackChallengeActivities.routeName,
+            arguments: virtualChallenge);
+        return;
+      }
+      getJoinedChallengesByFriends();
+      // getListOfActiveChallenges();
+    });
+  }
+
+  void getJoinedChallengesByFriends() {
+    //get challenges
+    FirebaseFirestore.instance.collection("challenges").where("challenge_type", isEqualTo: "Friends").where("friends_list", arrayContains: user.uid).get().then((query) {
+      if (query.size == 0) {
+        getListOfActiveChallenges();
+        return;
+      }
+      query.docs.forEach((chan) {
+        VirtualChallenge vc = VirtualChallenge.fromSnapshot(chan.data());
+        setState(() {
+          challenges.add(vc);
+        });
+      });
+      getListOfActiveChallenges();
+    });
   }
 
   setupInitWallet() async {
@@ -536,6 +582,17 @@ class _PageState extends State<ChallengePage> {
             ),
           ),
           centerTitle: true,
+          actions: [
+            Padding(padding: EdgeInsets.only(right: 10.0), child: TextButton(onPressed: (){
+              getGeneralChallenges(false);
+            }, child: Text(
+              'Refresh List',
+              style: Theme.of(context).textTheme.bodyText1.copyWith(
+                  fontSize: getProportionateScreenWidth(13),
+                  color: Color(MyColors.primaryColor)
+              ),
+            )),)
+          ],
         ),
         body: ModalProgressHUD(
             inAsyncCall: _inAsyncCall,
@@ -582,21 +639,35 @@ class _PageState extends State<ChallengePage> {
                                       width: 20,
                                     ),
                                     Visibility(
-                                      visible: false,
+                                      visible: true,
                                       child: InkWell(
                                           onTap: () {
-                                            Navigator.pushNamed(context,
-                                                CreateChallengePage.routeName);
+                                            openJoinChallenge();
                                           },
                                           child: Column(
                                             children: [
-                                              SvgPicture.asset(
-                                                  "assets/exercise/dp.svg",
-                                                  height: 50.0),
+                                              Stack(
+                                                children: [
+                                                  //dp.svg
+                                                  Container(
+                                                    width: 50,
+                                                    height: 50,
+                                                    child: (picture == null || picture.isEmpty) ? CircleAvatar(backgroundImage: AssetImage("assets/images/default_avatar.png"),) : CircleAvatar(backgroundImage: NetworkImage(picture),),
+                                                  ),
+                                                  Container(
+                                                    child: SvgPicture.asset(
+                                                        "assets/exercise/foot.svg",
+                                                        height: 25.0),
+                                                  ),
+                                                ],
+                                                fit: StackFit.passthrough,
+                                                clipBehavior: Clip.hardEdge,
+                                                alignment: Alignment.bottomRight,
+                                              ),
                                               SizedBox(
                                                 height: 10,
                                               ),
-                                              Text('Weekend ch...',
+                                              Text('Join',
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .bodyText1
@@ -633,6 +704,8 @@ class _PageState extends State<ChallengePage> {
                           ),
                           GestureDetector(
                               onTap: () {
+                                // Navigator.of(context).pushReplacement(MaterialPageRoute(
+                                //     builder: (BuildContext context) => new ShareChallenge("","","https://coralreef.page.link/y1E4", "ASDF1234")));
                                 Navigator.pushNamed(
                                     context, CoralRewards.routeName);
                               },
@@ -759,7 +832,19 @@ class _PageState extends State<ChallengePage> {
                                   ),
                                 ])),
                               ))
-                        ])))));
+                        ]))
+            )
+        )
+    );
+  }
+
+  openJoinChallenge() async {
+    JoinChallengeDialog joinDialog = new JoinChallengeDialog(context);
+    final res = await joinDialog.displayEnterCodeDialog(context, "Attention", "Please enter the challenge code.");
+    // print("my res = $res");
+    if(res) {
+      await getGeneralChallenges(false);
+    }
   }
 
   bool checkIfChallengeExist(String chanID) {
@@ -1067,7 +1152,7 @@ class _PageState extends State<ChallengePage> {
         "paid_user": FieldValue.arrayUnion([user.uid])
       });
 
-      await getGeneralChallenges();
+      await getGeneralChallenges(false);
 
     new GeneralUtils().displayAlertDialog(context, "Success",
         "Thank you for your interest. You can join this challenge once it starts in $cdT");
@@ -1180,15 +1265,13 @@ class _PageState extends State<ChallengePage> {
     await ss.setPrefItem("currentChallenge", jsonEncode(ch.toJSON()));
     await ss.setPrefItem("user_ch_id", id);
 
-    await getGeneralChallenges();
+    await getGeneralChallenges(true, virtualChallenge: ch);
+
+    if(!mounted) return;
 
     setState(() {
       _inAsyncCall = false;
     });
-
-    //goto active challenge
-    Navigator.pushNamed(context, TrackChallengeActivities.routeName,
-        arguments: ch);
   }
 }
 

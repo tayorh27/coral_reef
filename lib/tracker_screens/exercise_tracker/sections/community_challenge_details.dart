@@ -316,6 +316,9 @@ class _PageState extends State<CommunityChallengeDetails> {
 
   Map<String, dynamic> isUserAWinner(String uid) {
     Map<String, dynamic> result = new Map();
+    if(ch.winner_rewarded == null || ch.funding_type == null || ch.winners == null || ch.winner_reward_type == null) {
+      return result;
+    }
     if(ch.funding_type == "Sponsor") {
       if(ch.winner_reward_type == "First Winner Only" && ch.winner_rewarded) {
         List<dynamic> winners = ch.winners;
