@@ -89,7 +89,7 @@ class _PageState extends State<PastChallenges> {
 
       double percentDistance = ((coveredDistance / requiredDistance) * 100) / 100;
 
-      print(ch.toJSON());
+      // print(ch.toJSON());
 
       pastWidgets.add(InkWell(
           onTap: () async {

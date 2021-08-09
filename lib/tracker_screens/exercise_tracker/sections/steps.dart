@@ -62,12 +62,16 @@ class _PageState extends State<Steps> {
 
     setState(() {
       stepsGoal = goal;
-      currentTakenSteps = current;
+      currentTakenSteps = (current.startsWith("-")) ? current.substring(1) : current;
     });
   }
 
   double getPointerValue() {
-    return ((double.parse(currentTakenSteps) / double.parse(stepsGoal)) * 100);
+    double c = double.parse(currentTakenSteps);
+    if(c < 0) {
+      c = c * -1;
+    }
+    return ((c / double.parse(stepsGoal)) * 100);
   }
 
   // _showGoalDialog(StepViewModel model) {

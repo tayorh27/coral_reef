@@ -121,6 +121,20 @@ class MyChallengeService {
 
     calculatedSteps = gcs - sss;
 
+    // String onPaused = await ss.getItem("pausedSteps") ?? "0";
+    // String onResumed = await ss.getItem("resumedSteps") ?? "0";
+    //
+    // print("calculatedSteps = $calculatedSteps");
+    // print("onPaused = $onPaused");
+    // print("onResumed = $onResumed");
+    //
+    // int onP = int.parse(onPaused);
+    // int onR = int.parse(onResumed);
+    //
+    // calculatedSteps = (calculatedSteps - onR) + onP;
+
+    // =======================================================
+
     // if(gcs > sss) {
     //   calculatedSteps = gcs - sss;
     // }else {
@@ -130,6 +144,7 @@ class MyChallengeService {
 
     if(distance < 0) {
       distance = distance * -1;
+      calculatedSteps = calculatedSteps * -1;
     }
 
     Map<String, dynamic> data = new Map();

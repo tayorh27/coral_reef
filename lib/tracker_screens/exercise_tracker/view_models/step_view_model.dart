@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:coral_reef/Utils/helpers.dart';
@@ -29,6 +30,29 @@ class StepViewModel extends BaseModel {
 
   Stream<StepCount> _stepCountStream;
   Stream<PedestrianStatus> _pedestrianStatusStream;
+
+  // StreamSubscription<StepCount> stepStreamSubscription;
+  // StreamSubscription<PedestrianStatus> statusStreamSubscription;
+  //
+  // bool isPaused() {
+  //   return stepStreamSubscription.isPaused;
+  // }
+  //
+  // void stopCounting() {
+  //   stepStreamSubscription.cancel();
+  //   statusStreamSubscription.cancel();
+  // }
+  //
+  // void pauseCounting() {
+  //   stepStreamSubscription.pause();
+  //   statusStreamSubscription.pause();
+  // }
+  //
+  // void resumeCounting() {
+  //   stepStreamSubscription.resume();
+  //   statusStreamSubscription.resume();
+  // }
+
 
   void onPedestrianStatusError(error) {
     print('onPedestrianStatusError: $error');
@@ -111,11 +135,22 @@ class StepViewModel extends BaseModel {
   currentStep() {
     getStepsGoal();
     _pedestrianStatusStream = Pedometer.pedestrianStatusStream;
+    _stepCountStream = Pedometer.stepCountStream;
+
     _pedestrianStatusStream
         .listen(onPedestrianStatusChanged)
         .onError(onPedestrianStatusError);
-    _stepCountStream = Pedometer.stepCountStream;
     _stepCountStream.listen(onStepCount).onError(onStepCountError);
+
+    _pedestrianStatusStream = Pedometer.pedestrianStatusStream;
+    _stepCountStream = Pedometer.stepCountStream;
+
+    /// Listen to streams and handle errors
+    // stepStreamSubscription = _stepCountStream.listen(onStepCount);
+    // stepStreamSubscription.onError(onStepCountError);
+    //
+    // statusStreamSubscription = _pedestrianStatusStream.listen(onPedestrianStatusChanged);
+    // statusStreamSubscription.onError(onPedestrianStatusError);
 
     //notifyListeners();
   }

@@ -25,6 +25,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart' as geo;
 import 'package:location/location.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:permission_handler/permission_handler.dart' as ph;
 import 'package:screen/screen.dart';
 
@@ -83,7 +84,7 @@ class _PageState extends State<TrackChallengeActivities> {
   Set<Marker> _markers = {};
   Completer<GoogleMapController> _controller = Completer();
   String actionButton = 'go';
-  bool counting = false;
+  bool counting = false, _inAsyncCall = false;
   final interval = const Duration(seconds: 1);
 
   final int timerMaxSeconds = 3;
@@ -513,7 +514,12 @@ class _PageState extends State<TrackChallengeActivities> {
             ),
           ),
         ),
-        body: counting
+        body: ModalProgressHUD(
+    inAsyncCall: _inAsyncCall,
+    opacity: 0.6,
+    progressIndicator: CircularProgressIndicator(),
+    color: Color(MyColors.titleTextColor),
+    child: counting
             ? Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -835,6 +841,10 @@ class _PageState extends State<TrackChallengeActivities> {
                         InkWell(
                             onTap: () async {
                               await ss.setPrefItem("statusCH", "play");
+                              // if(Platform.isAndroid) {
+                              //   Map<String, dynamic> data = await myChallengeService.getCurrentSteps();
+                              //   await ss.setPrefItem("resumedSteps", "${data["steps"]}");
+                              // }
                               // if(_locationSubscription != null) _locationSubscription.resume();
                               if(challengeStepService != null) challengeStepService.resumeCounting();
                               preSetupLocationPermission();
@@ -851,6 +861,9 @@ class _PageState extends State<TrackChallengeActivities> {
                     : InkWell(
                     onTap: () async {
                       await ss.setPrefItem("statusCH", "pause");
+                      // if(Platform.isAndroid) {
+                      //   await ss.setPrefItem("pausedSteps", "$totalSteps");
+                      // }
                       // if(_locationSubscription != null) _locationSubscription.pause();
                       if(_timerSubscription != null) _timerSubscription.cancel();
                       if(challengeStepService != null) challengeStepService.pauseCounting();
@@ -865,16 +878,16 @@ class _PageState extends State<TrackChallengeActivities> {
                       ),
                     ))
               ]),
-            )));
+            ))));
   }
 
   currentChallengeEnded(bool success) async {
     // FlutterBackgroundService().sendData(
     //   {"action": "stopService"},
     // );
-    // setState(() {
-    //
-    // });
+    setState(() {
+      _inAsyncCall = true;
+    });
     new GeneralUtils().showToast(context, "Please wait...");
     String getStartLocation = await ss.getItem("startPosition");
     await ss.deletePref("currentChallenge");
@@ -924,6 +937,9 @@ class _PageState extends State<TrackChallengeActivities> {
     await exerciseService.logActivity(ch, activityText);
     String text = (success) ? "You have successfully completed your challenge." : "Thank you for participating.";
     new GeneralUtils().showToast(context, text);
+    setState(() {
+      _inAsyncCall = false;
+    });
     if(getStartLocation == null) {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (BuildContext context) => new HomeScreen()));

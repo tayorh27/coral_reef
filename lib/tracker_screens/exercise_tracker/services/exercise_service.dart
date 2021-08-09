@@ -263,15 +263,17 @@ class ExerciseService {
 
     await ss.setPrefItem("stepsCurrent_$formatDate", "$value", isStoreOnline: false);
 
-    String running = await ss.getItem("running") ?? "";
-    String statusCH = await ss.getItem("statusCH") ?? "";
-
-    // if(running.isNotEmpty && statusCH == "pause") {
-    //   await ss.setPrefItem("challengeStepsPause_$formatDate", "$value", isStoreOnline: false);
-    // }
-
-    // if(running.isNotEmpty && statusCH == "play") {
-    //   await ss.setPrefItem("challengeStepsCurrent_$formatDate", "$value", isStoreOnline: false);
+    // String running = await ss.getItem("running") ?? "";
+    // String statusCH = await ss.getItem("statusCH") ?? "";
+    //
+    // if(running == null) {
+    //   await ss.setPrefItem(
+    //       "stepsCurrent_$formatDate", "$value", isStoreOnline: false);
+    // }else {
+    //   if(running.isNotEmpty && statusCH == "play") {
+    //     await ss.setPrefItem(
+    //         "stepsCurrent_$formatDate", "$value", isStoreOnline: false);
+    //   }
     // }
 
     await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("steps").doc(id).set(wd.toJSON());

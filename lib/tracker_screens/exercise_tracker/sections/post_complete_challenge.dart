@@ -63,10 +63,10 @@ class _PostCompleteChallenge extends State<PostCompleteChallenge> {
   }
 
   void setStartMapPin() async {
-    // startIcon = await BitmapDescriptor.fromAssetImage(
-    //     ImageConfiguration(devicePixelRatio: 7.5, size: Size(2, 2)),
-    //     'assets/exercise/start.png');
-    startIcon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet);
+    startIcon = await BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(devicePixelRatio: 2.5),
+            'assets/exercise/details_pin.png');
+    // startIcon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
   }
 
   void setStopMapPin() async {
@@ -94,7 +94,7 @@ class _PostCompleteChallenge extends State<PostCompleteChallenge> {
         markerId: markerId,
         position: position,
         infoWindow: InfoWindow(title: infoWindow, snippet: ''),
-        icon: BitmapDescriptor.defaultMarker,
+        icon: descriptor,
         alpha: 1.0,
         draggable: false);
     _markers[markerId] = marker;

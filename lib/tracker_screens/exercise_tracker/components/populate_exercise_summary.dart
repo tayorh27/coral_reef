@@ -187,7 +187,7 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
     if (!mounted) return;
     setState(() {
       stepsGoal = goal;
-      currentTakenSteps = current;
+      currentTakenSteps = (current.startsWith("-")) ? current.substring(1) : current;
     });
   }
 
@@ -216,7 +216,11 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
   }
 
   double getPointerValue() {
-    return ((double.parse(currentTakenSteps) / double.parse(stepsGoal)) * 100);
+    double c = double.parse(currentTakenSteps);
+    if(c < 0) {
+      c = c * -1;
+    }
+    return ((c / double.parse(stepsGoal)) * 100);
   }
 
   /*

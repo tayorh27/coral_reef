@@ -72,7 +72,7 @@ class _ExerciseInsightCard extends State<ExerciseInsightCard> {
 
     setState(() {
       stepsGoal = goal;
-      currentTakenSteps = current;
+      currentTakenSteps = (current.startsWith("-")) ? current.substring(1) : current;
     });
   }
 
