@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:coral_reef/ListItem/model_gchat_comment.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/general.dart';
@@ -30,6 +32,7 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
   bool sending = false;
 
   List<GChatComment> comments = [];
+  String deviceLocale = Platform.localeName.split("_")[0].toLowerCase();
 
   @override
   void initState() {
@@ -55,6 +58,9 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
     comments.forEach((com) {
       //get the replies under this comment
       List<GChatComment> repliesComment = getRepliesFromComments(com.id);
+      String gLocale = com.locale ?? "";
+      Map<String, dynamic> translated = com.translated;
+
       mComments.add(
           ListTile(
             leading: GChatUserAvatar(
@@ -102,6 +108,15 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    (gLocale == "" || deviceLocale == gLocale) ? SizedBox() : InkWell(onTap: (){
+                      setState(() {
+                        com.message = translated[deviceLocale];
+                      });
+                    }, child: Text("See translation",
+                        style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Color(MyColors.titleTextColor),
+                            fontSize: getProportionateScreenWidth(12))),),
+                    SizedBox(width: (gLocale == "" || deviceLocale == gLocale) ? 0.0 : 20.0,),
                     (com.number_of_likes == null || com.number_of_likes <= 0) ? SizedBox() : Text("${com.number_of_likes} ${(com.number_of_likes == 1) ? "like" : "likes"}",
                         style: Theme.of(context)
                             .textTheme
@@ -156,6 +171,17 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
               ],
             ),
             isThreeLine: true,
+              onLongPress: (com.user_uid != user.uid) ? null : () async {
+                //check if user created the comment
+                if(com.user_uid != user.uid) return;
+                final confirm = await new GeneralUtils().displayReturnedValueAlertDialog(context, "Attention", "Are you sure you want to delete this comment?", confirmText: "YES");
+                if(confirm) {
+                  await gChatServices.removeCommentFromGChat(com.toJSON(), com.id, com.gchat_id);
+                  setState(() {
+                    comments.remove(com);
+                  });
+                }
+              }
           )
       );
       if(repliesComment.isNotEmpty) {
@@ -173,6 +199,8 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
     // int index = 0;
 
     repliesComment.forEach((com) {
+      String gLocale = com.locale ?? "";
+      Map<String, dynamic> translated = com.translated;
       mComments.add(
           ListTile(
             leading: GChatUserAvatar(
@@ -220,6 +248,15 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    (gLocale == "" || deviceLocale == gLocale) ? SizedBox() : InkWell(onTap: (){
+                      setState(() {
+                        com.message = translated[deviceLocale];
+                      });
+                    }, child: Text("See translation",
+                        style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Color(MyColors.titleTextColor),
+                            fontSize: getProportionateScreenWidth(12))),),
+                    SizedBox(width: (gLocale == "" || deviceLocale == gLocale) ? 0.0 : 20.0,),
                     (com.number_of_likes == null || com.number_of_likes <= 0) ? SizedBox() : Text("${com.number_of_likes} ${(com.number_of_likes == 1) ? "like" : "likes"}",
                         style: Theme.of(context)
                             .textTheme
@@ -273,6 +310,17 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
               ],
             ),
             isThreeLine: true,
+              onLongPress: (com.user_uid != user.uid) ? null : () async {
+                //check if user created the comment
+                if(com.user_uid != user.uid) return;
+                final confirm = await new GeneralUtils().displayReturnedValueAlertDialog(context, "Attention", "Are you sure you want to delete this comment?", confirmText: "YES");
+                if(confirm) {
+                  await gChatServices.removeCommentFromGChat(com.toJSON(), com.id, com.gchat_id);
+                  setState(() {
+                    repliesComment.remove(com);
+                  });
+                }
+              }
           )
       );
       // index = index + 1;

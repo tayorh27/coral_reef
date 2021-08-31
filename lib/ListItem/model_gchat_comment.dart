@@ -6,10 +6,10 @@ class GChatComment {
       message, created_date, username;
   int number_of_likes;
   dynamic avatar, msgId;
-  dynamic timestamp;//link**
-  String time_zone;
+  dynamic timestamp, translated;//link**
+  String time_zone, locale;
 
-  GChatComment(this.id, this.main_comment_id, this.gchat_id, this.user_uid, this.main_comment_user_uid, this.username, this.avatar, this.message, this.created_date, this.msgId, this.timestamp, this.time_zone, this.number_of_likes);
+  GChatComment(this.id, this.main_comment_id, this.gchat_id, this.user_uid, this.main_comment_user_uid, this.username, this.avatar, this.message, this.created_date, this.msgId, this.timestamp, this.time_zone, this.number_of_likes, this.locale);
 
   Map<String, dynamic> toJSON() {
     return {
@@ -25,7 +25,9 @@ class GChatComment {
       'msgId':msgId,
       'timestamp':timestamp,
       'time_zone':time_zone,
-      'number_of_likes':number_of_likes
+      'number_of_likes':number_of_likes,
+      'locale':locale,
+      'translated':translated
     };
   }
 
@@ -43,6 +45,8 @@ class GChatComment {
     timestamp = data['timestamp'];
     time_zone = data['time_zone'];
     number_of_likes = data['number_of_likes'];
+    locale = data['locale'];
+    translated = data['translated'];
   }
 }
 

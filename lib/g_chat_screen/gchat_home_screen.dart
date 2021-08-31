@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/g_chat_screen/components/gchat_header.dart';
 import 'package:coral_reef/g_chat_screen/sections/blog_post_screen.dart';
 import 'package:coral_reef/g_chat_screen/sections/create_new_gchat.dart';
+import 'package:coral_reef/g_chat_screen/sections/gchat_my_posts.dart';
 import 'package:coral_reef/g_chat_screen/sections/gchat_screen.dart';
 import 'package:coral_reef/g_chat_screen/sections/job_opportunities.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +34,7 @@ class _GChatHomeScreen extends State<GChatHomeScreen> {
       updateHideFloat(hideFloat);
     })},
     {"screen_name": "Blog post", "screen_class": BlogPostScreen()},
+    {"screen_name": "My Posts", "screen_class": GChatMyPosts()},
     // {
     //   "screen_name": "Job opportunities",
     //   "screen_class": JobOpportunitiesScreen()

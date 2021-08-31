@@ -19,6 +19,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:giphy_picker/giphy_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:image_downloader/image_downloader.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:video_compress/video_compress.dart';
 
@@ -26,6 +27,8 @@ import '../../size_config.dart';
 
 class CreateNewGChat extends StatefulWidget {
   static final routeName = "create-new-gchat";
+  final GChat mChat;
+  CreateNewGChat({this.mChat});
 
   @override
   State<StatefulWidget> createState() => _CreateNewGChat();
@@ -34,6 +37,8 @@ class CreateNewGChat extends StatefulWidget {
 class _CreateNewGChat extends State<CreateNewGChat> {
 
   bool isVisible = false, published = false;
+
+  GChat editGChat;
 
   GChatServices gServices;
 
@@ -70,7 +75,8 @@ class _CreateNewGChat extends State<CreateNewGChat> {
     "Trying to conceive"
   ];
 
-  List<String> selectedTopics = [];
+  List<dynamic> selectedTopics = [];
+  bool isEdited = false;
 
   @override
   void initState() {
@@ -86,7 +92,9 @@ class _CreateNewGChat extends State<CreateNewGChat> {
             disablePublishBtn = true;
           });
         });
+  }
 
+  void restoreDraft() {
     //restore draft if exists.
     gServices.restoreDraft().then((value) {
       if(value != null){
@@ -105,17 +113,71 @@ class _CreateNewGChat extends State<CreateNewGChat> {
     });
   }
 
+  Future<void> loadGChatToEdit() async {
+    if(editGChat == null) {
+      restoreDraft();
+      return;
+    }
+
+    if(editGChat != null) {
+      setState(() {
+        _inAsyncCall = true;
+      });
+      Map<String, dynamic> mediaInfo = editGChat.images[0];
+      try {
+        setState(() {
+          _controllerTitle.text = editGChat.title;
+          _controllerBody.text = editGChat.body;
+          selectedTopics = editGChat.topics;
+          isVisible = true;
+          fileType = mediaInfo["fileType"];
+          if(fileType == "gif") {
+            gifURL = mediaInfo["url"];
+            _inAsyncCall = false;
+          }
+        });
+
+        if(fileType == "video"){
+          //download image and save locally
+          var imageId = await ImageDownloader.downloadImage(mediaInfo["thumbnailUrl"], destination: AndroidDestinationType.directoryDCIM);
+          if (imageId != null) {
+            var path = await ImageDownloader.findPath(imageId);
+            setState(() {
+              thumbnail = File(path);
+              _inAsyncCall = false;
+            });
+          }
+        }else {
+          var imageId2 = await ImageDownloader.downloadImage(mediaInfo["url"], destination: AndroidDestinationType.directoryDCIM);
+          if (imageId2 != null) {
+            var path2 = await ImageDownloader.findPath(imageId2);
+            setState(() {
+              thumbnail = File(path2);
+              postFile = File(path2);
+              _inAsyncCall = false;
+            });
+          }
+        }
+      } on PlatformException catch (error) {
+        print(error);
+      }
+    }
+  }
+
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    if(!published) {
-      if (_controllerTitle.text.isNotEmpty || _controllerBody.text.isNotEmpty) {
-        gServices.saveDraft(title: _controllerTitle.text,
-            body: _controllerBody.text,
-            file: postFile,
-            fileType: fileType,
-            thumbnail: thumbnail);
+    if(editGChat == null) {
+      if (!published) {
+        if (_controllerTitle.text.isNotEmpty ||
+            _controllerBody.text.isNotEmpty) {
+          gServices.saveDraft(title: _controllerTitle.text,
+              body: _controllerBody.text,
+              file: postFile,
+              fileType: fileType,
+              thumbnail: thumbnail);
+        }
       }
     }
     _subscription.unsubscribe();
@@ -124,6 +186,11 @@ class _CreateNewGChat extends State<CreateNewGChat> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    editGChat = ModalRoute.of(context).settings.arguments as GChat;
+    if(!isEdited) {
+      isEdited = true;
+      loadGChatToEdit();
+    }
     return Scaffold(
         backgroundColor: Colors.white,
         body: ModalProgressHUD(
@@ -180,7 +247,7 @@ class _CreateNewGChat extends State<CreateNewGChat> {
                                       onPressed: (disablePublishBtn) ? null : () {
                                         publicPost();
                                       },
-                                      child: Text("Publish",
+                                      child: Text((editGChat == null) ? "Publish" : "Update",
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodyText2
@@ -205,7 +272,7 @@ class _CreateNewGChat extends State<CreateNewGChat> {
                                 width: 20.0,
                               ),
                               Container(
-                                height: 80.0,
+                                height: 100.0,
                                 width:
                                     MediaQuery.of(context).size.width - 130.0,
                                 padding: EdgeInsets.only(top: 20.0),
@@ -213,6 +280,9 @@ class _CreateNewGChat extends State<CreateNewGChat> {
                                   keyboardType: TextInputType.text,
                                   controller: _controllerTitle,
                                   maxLines: 1,
+                                  maxLength: 40,
+                                  maxLengthEnforcement: MaxLengthEnforcement
+                                      .enforced,
                                   textCapitalization:
                                       TextCapitalization.sentences,
                                   decoration: InputDecoration(
@@ -343,17 +413,25 @@ class _CreateNewGChat extends State<CreateNewGChat> {
                             child: Container(
                               child: Row(
                                 children: [
-                                  Container(
-                                    width: 70.0,
-                                    height: 50.0,
-                                    margin: EdgeInsets.only(right: 20.0),
-                                    decoration: BoxDecoration(
+                                  InkWell(
+                                    onTap: () {
+                                      if(fileType == "image") {
+                                        //re-crop image
+                                        cropImageFileAndCompress(postFile);
+                                      }
+                                    },
+                                    child: Container(
+                                      width: 70.0,
+                                      height: 50.0,
+                                      margin: EdgeInsets.only(right: 20.0),
+                                      decoration: BoxDecoration(
                                         // color: Colors.grey,
                                         image: DecorationImage(
                                             image: (fileType == "document") ? AssetImage(
                                                 "assets/icons/icons8-file-96.png") : (fileType == "gif") ? NetworkImage(gifURL) : (thumbnail != null) ? FileImage(thumbnail) : AssetImage(
                                                 "assets/icons/icons8-file-96.png")
                                         ),
+                                      ),
                                     ),
                                   ),
                                   Container(
@@ -417,36 +495,39 @@ class _CreateNewGChat extends State<CreateNewGChat> {
     if (result != null) {
       print(result.paths);
       File file = File(result.files.first.path);
-
-      File croppedFile = await ImageCropper.cropImage(
-          sourcePath: file.path,
-          aspectRatioPresets: [
-            CropAspectRatioPreset.square,
-            // CropAspectRatioPreset.ratio3x2,
-            // CropAspectRatioPreset.original,
-            // CropAspectRatioPreset.ratio4x3,
-            // CropAspectRatioPreset.ratio16x9
-          ],
-          androidUiSettings: AndroidUiSettings(
-              toolbarTitle: 'Crop Image',
-              toolbarColor: Color(MyColors.primaryColor),
-              toolbarWidgetColor: Colors.white,
-              initAspectRatio: CropAspectRatioPreset.square,
-              lockAspectRatio: false),
-          iosUiSettings: IOSUiSettings(
-            minimumAspectRatio: 1.0,
-          )
-      );
-
-      //compress image
-
-      postFile = await gServices.compressAndGetFile(croppedFile);
-      setState(() {
-        isVisible = true;
-        fileType = "image";
-        thumbnail = postFile;
-      });
+      cropImageFileAndCompress(file);
     }
+  }
+
+  Future<void> cropImageFileAndCompress(File file) async {
+    File croppedFile = await ImageCropper.cropImage(
+        sourcePath: file.path,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          // CropAspectRatioPreset.ratio3x2,
+          // CropAspectRatioPreset.original,
+          // CropAspectRatioPreset.ratio4x3,
+          // CropAspectRatioPreset.ratio16x9
+        ],
+        androidUiSettings: AndroidUiSettings(
+            toolbarTitle: 'Crop Image',
+            toolbarColor: Color(MyColors.primaryColor),
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: false),
+        iosUiSettings: IOSUiSettings(
+          minimumAspectRatio: 1.0,
+        )
+    );
+
+    //compress image
+
+    postFile = await gServices.compressAndGetFile(croppedFile);
+    setState(() {
+      isVisible = true;
+      fileType = "image";
+      thumbnail = postFile;
+    });
   }
 
   onVideoSelectionPressed() async {
@@ -558,13 +639,33 @@ class _CreateNewGChat extends State<CreateNewGChat> {
         thumbnailUrl = await gServices.uploadFileToStorage(thumbnail);
       }
 
-      //get dynamic link
-      String dynamicLink = await gServices.createDynamicLink(key, _controllerTitle.text, _controllerBody.text, fileUrl);
-
       Map<String, dynamic> mediaInfo = new Map();
       mediaInfo["fileType"] = fileType;
       mediaInfo["url"] = fileUrl;
       mediaInfo["thumbnailUrl"] = thumbnailUrl;
+
+      //update gchat data
+      if(editGChat != null) {
+        await FirebaseFirestore.instance.collection("gchats").doc(editGChat.id).update(
+            {
+              "title":_controllerTitle.text,
+              "body":_controllerBody.text,
+              "images":[mediaInfo],
+              "topics":selectedTopics,
+              "edited": true,
+              "modified": new DateTime.now().toString()
+            });
+        setState(() {
+          _inAsyncCall = false;
+          published = true;
+        });
+        new GeneralUtils().showToast(context, "Post updated.");
+        Navigator.of(context).pop();
+        return;
+      }
+
+      //get dynamic link
+      String dynamicLink = await gServices.createDynamicLink(key, _controllerTitle.text, _controllerBody.text, fileUrl);
 
       //get user data
       String user = await ss.getItem('user');
@@ -581,10 +682,11 @@ class _CreateNewGChat extends State<CreateNewGChat> {
       // List<dynamic> _topics = topicsData["selectedTopics"];
 
       String timeZone = await new GeneralUtils().currentTimeZone();
+      String locale = Platform.localeName.split("_")[0].toLowerCase();
 
       //populate gchat model
       GChat gChat = new GChat(key, json["uid"], username, avatarData, _controllerTitle.text, _controllerBody.text,
-          [mediaInfo], 0, 0, 0, 0, [], new DateTime.now().toString(), FieldValue.serverTimestamp(), selectedTopics, false, dynamicLink, "published", timeZone);
+          [mediaInfo], 0, 0, 0, 0, [], new DateTime.now().toString(), FieldValue.serverTimestamp(), selectedTopics, false, dynamicLink, "published", timeZone, locale);
 
 
       await FirebaseFirestore.instance.collection("gchats").doc(key).set(gChat.toJSON());

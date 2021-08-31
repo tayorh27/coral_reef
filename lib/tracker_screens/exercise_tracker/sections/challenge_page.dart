@@ -397,7 +397,7 @@ class _PageState extends State<ChallengePage> {
                                       height: 20,
                                     ),
                                     Text(
-                                      'Invite friends and family to join',
+                                      'Invite friends, colleagues, and family to join your challenge',
                                       style: Theme.of(context)
                                           .textTheme
                                           .subtitle1
@@ -410,7 +410,7 @@ class _PageState extends State<ChallengePage> {
                                               fontWeight: FontWeight.w500),
                                     ),
                                     Text(
-                                      'your challenge',
+                                      '',
                                       style: Theme.of(context)
                                           .textTheme
                                           .subtitle1

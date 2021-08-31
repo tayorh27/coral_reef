@@ -101,7 +101,7 @@ class GeneralUtils {
   }
 
   Future<bool> displayReturnedValueAlertDialog(
-      BuildContext context, String _title, String _body) async {
+      BuildContext context, String _title, String _body, {String confirmText = "OK"}) async {
     return showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -141,7 +141,7 @@ class GeneralUtils {
               },
             ),
             new TextButton(
-              child: new Text('OK', style: TextStyle(color: Color(MyColors.primaryColor)),),
+              child: new Text(confirmText, style: TextStyle(color: Color(MyColors.primaryColor)),),
               onPressed: () {
                 Navigator.of(context).pop(true);
               },

@@ -118,6 +118,17 @@ class _RecentPostComment extends State<RecentPostComment> {
               lessStyle: Theme.of(context).textTheme.headline2.copyWith(fontSize: 14.0, color: Color(MyColors.primaryColor)),
             ),
             isThreeLine: Platform.isAndroid,
+            onLongPress: (com["user_uid"] != user.uid) ? null : () async {
+              //check if user created the comment
+              if(com["user_uid"] != user.uid) return;
+              final confirm = await new GeneralUtils().displayReturnedValueAlertDialog(context, "Attention", "Are you sure you want to delete this comment?", confirmText: "YES");
+              if(confirm) {
+                await gChatServices.removeRecentCommentFromGChat(com, com["gchat_id"]);
+                setState(() {
+                  comments.remove(com);
+                });
+              }
+            },
           )
       );
     });

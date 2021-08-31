@@ -98,7 +98,7 @@ class _PageState extends State<CommunityChallengeDetails> {
   }
 
   StorageSystem ss = new StorageSystem();
-  bool isTrackAllowed = true;
+  bool isTrackAllowed = false;
 
 
   @override
@@ -528,6 +528,7 @@ class _PageState extends State<CommunityChallengeDetails> {
     }
 
     List<VirtualChallengeMembers> newMembersList = [];
+    List<VirtualChallengeMembers> winnerMembersList = [];
 
     // print("top = ${topMembers.length}");
 
@@ -536,7 +537,33 @@ class _PageState extends State<CommunityChallengeDetails> {
     }
     newMembersList.addAll(buildMembers);
 
-    members = newMembersList;
+    winnerMembersList = newMembersList;
+
+    //check for winners
+    newMembersList.forEach((mm) {
+      int positionIndex = determineUserPosition(mm.user_uid);
+      if(positionIndex > -1) {
+        winnerMembersList.remove(mm);
+        winnerMembersList.insert(positionIndex, mm);
+      }
+    });
+
+    members = winnerMembersList;
+  }
+
+  int determineUserPosition(String uid) {
+    int index = -1;
+    Map<String, dynamic> winnersCheck = isUserAWinner(uid);
+    if(winnersCheck.isEmpty) {
+      return index;
+    }
+    if(winnersCheck["position"] == 1) {
+      return 0;
+    }else if(winnersCheck["position"] == 2) {
+      return 1;
+    }else {
+      return 2;
+    }
   }
 
   getChallengeActivities() async {

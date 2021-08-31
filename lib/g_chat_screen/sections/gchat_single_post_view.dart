@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/ListItem/model_gchat.dart';
@@ -51,12 +52,14 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
   StreamSubscription<QuerySnapshot> commentList;
 
   int nLikes = 0;
+  String deviceLocale = Platform.localeName.split("_")[0].toLowerCase();
+  String gLocale = "";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    gLocale = widget.gChat.locale ?? "";
     setState(() {
       nLikes = widget.gChat.number_of_likes;
       postLikeID = widget.likeID;
@@ -180,11 +183,18 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
                     Container(
                         margin: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 10.0),
                         width: MediaQuery.of(context).size.width,
-                        child: Text(widget.gChat.body,
+                        child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start,children: [Text(widget.gChat.body,
                             overflow: TextOverflow.clip,
                             style: Theme.of(context).textTheme.subtitle1.copyWith(
                                 color: Color(MyColors.titleTextColor),
-                                fontSize: getProportionateScreenWidth(13)))),
+                                fontSize: getProportionateScreenWidth(13))),
+                          (gLocale == "" || deviceLocale == gLocale) ? SizedBox() : InkWell(onTap: (){
+                            translateGChatBodyText(deviceLocale);
+                          }, child: Text("See translation",
+                              style: Theme.of(context).textTheme.headline2.copyWith(
+                                  color: Color(MyColors.titleTextColor),
+                                  fontSize: getProportionateScreenWidth(13))),)
+                        ])),
                     (fileType == "image" || fileType == "gif")
                         ? ImageDisplayWidget(postMediaUrl)
                         : (fileType == "video")
@@ -242,7 +252,7 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
                     SizedBox(
                       height: 20.0,
                     ),
-                    (comments.isEmpty) ? SizedBox() : Column(
+                    (comments.isEmpty) ? SizedBox(height: 100.0,) : Column(
                       children: [
                         SinglePostPostComment(comments, allComments),
                         SizedBox(height: 100.0,)
@@ -279,6 +289,13 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
 
       )
     );
+  }
+
+  translateGChatBodyText(String deviceLocal) {
+    Map<String, dynamic> translated = widget.gChat.translated;
+    setState(() {
+      widget.gChat.body = translated[deviceLocal];
+    });
   }
 
   onLikeButtonClick() async {

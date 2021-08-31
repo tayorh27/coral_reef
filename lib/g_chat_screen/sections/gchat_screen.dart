@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/ListItem/model_gchat_like.dart';
@@ -89,7 +90,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
         if(_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange) {
           print("bottom");
           widget.hideFloatingButton(true);
-          gchatLimit = gchatLimit + 5;
+          gchatLimit = gchatLimit + 20;
           getGChats();
         }else {
           // print("bottom");
@@ -220,7 +221,8 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
             child: ListView.builder(
                   controller: _scrollController,
                   itemBuilder: (context, index) {
-
+                    String deviceLocale = Platform.localeName.split("_")[0].toLowerCase();
+                    String gLocale = chats[index].locale ?? "";
                     bool liked = hasLikedPost(index);
 
                     Map<String, dynamic> mediaInfo = chats[index].images[0]; //get the first index of uploaded media
@@ -270,6 +272,9 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                             ),
                           ),
                           isThreeLine: true,
+                          onTap: (){
+                            displaySinglePostScreen(index, liked);
+                          },
                         ),
                         Container(
                           width: MediaQuery.of(context).size.width,
@@ -283,11 +288,18 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                         Container(
                             margin: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 10.0),
                             width: MediaQuery.of(context).size.width,
-                            child:Text(truncate(chats[index].body, 150, omission: "...", position: TruncatePosition.end),
+                            child:Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start,children: [Text(truncate(chats[index].body, 150, omission: "...", position: TruncatePosition.end),
                                 overflow: TextOverflow.clip,
                                 style: Theme.of(context).textTheme.subtitle1.copyWith(
                                     color: Color(MyColors.titleTextColor),
-                                    fontSize: getProportionateScreenWidth(13)))
+                                    fontSize: getProportionateScreenWidth(13))),
+                              (gLocale == "" || deviceLocale == gLocale) ? SizedBox() : InkWell(onTap: (){
+                                translateGChatBodyText(index, deviceLocale);
+                              }, child: Text("See translation",
+                                  style: Theme.of(context).textTheme.headline2.copyWith(
+                                      color: Color(MyColors.titleTextColor),
+                                      fontSize: getProportionateScreenWidth(13))),)
+                            ])
                         ),
                         (chats[index].body.length > 150) ? ListTile(
                           leading: Text("Continue reading",
@@ -295,17 +307,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                                   color: Color(MyColors.primaryColor),
                                   fontSize: getProportionateScreenWidth(13))),
                           onTap: () async {
-                            String getLikeID = "";
-                            if(hasLikedPost(index)) {
-                              getLikeID = getLikeIDForPost(index);
-                            }
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => GChatSinglePostView(chats[index], liked, getLikeID)),
-                            );
-                            setState(() {
-                              mText = "mText";
-                            });
+                            displaySinglePostScreen(index, liked);
                           },
                         ) : SizedBox(),
                         // Container(
@@ -359,17 +361,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                         (chats[index].number_of_comments > 3) ? Center(
                           child: TextButton(
                             onPressed: () async {
-                              String getLikeID = "";
-                              if(hasLikedPost(index)) {
-                                getLikeID = getLikeIDForPost(index);
-                              }
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => GChatSinglePostView(chats[index], liked, getLikeID)),
-                              );
-                              setState(() {
-                                mText = "mText";
-                              });
+                              displaySinglePostScreen(index, liked);
                             },
                             child: Text("View ${chats[index].number_of_comments - 3} more comments.",
                                 style: Theme.of(context).textTheme.subtitle1.copyWith(
@@ -397,6 +389,20 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                   scrollDirection: Axis.vertical,
                 ),
           );
+  }
+
+  Future<void> displaySinglePostScreen(int index, bool liked) async {
+    String getLikeID = "";
+    if(hasLikedPost(index)) {
+      getLikeID = getLikeIDForPost(index);
+    }
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => GChatSinglePostView(chats[index], liked, getLikeID)),
+    );
+    setState(() {
+      mText = "mText";
+    });
   }
 
   //display topics to be selected by the user
@@ -482,6 +488,13 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
           ),
         ),
       );
+    });
+  }
+
+  translateGChatBodyText(int index, String deviceLocale) {
+    Map<String, dynamic> translated = chats[index].translated;
+    setState(() {
+      chats[index].body = translated[deviceLocale];
     });
   }
 

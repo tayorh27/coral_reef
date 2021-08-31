@@ -30,11 +30,11 @@ class GChatServices {
       String body,
       File file,
       String fileType,
-      File thumbnail, List<String> topics}) async {
+      File thumbnail, List<dynamic> topics}) async {
     Map<String, dynamic> draft = new Map();
     draft["title"] = title;
     draft["body"] = body;
-    draft["topics"] = topics.join(",");
+    draft["topics"] = (topics == null) ? "" : topics.join(",");
     draft["fileType"] = fileType;
     draft["file"] = (file == null) ? "" : file.path;
     draft["thumbnail"] = (thumbnail == null) ? "" : thumbnail.path;
@@ -171,10 +171,11 @@ class GChatServices {
     String username = topicsData["username"];
 
     String timeZone = await new GeneralUtils().currentTimeZone();
+    String locale = Platform.localeName.split("_")[0].toLowerCase();
     // if(main_comment_id.isEmpty) {
     //   main_comment_id = key; //in case of new comments
     // }
-    GChatComment gChatComment = new GChatComment(key, main_comment_id, gchat_id, json["uid"], replyUserID, username, avatarData, comment, new DateTime.now().toString(), json["msgId"], FieldValue.serverTimestamp(), timeZone, 0);
+    GChatComment gChatComment = new GChatComment(key, main_comment_id, gchat_id, json["uid"], replyUserID, username, avatarData, comment, new DateTime.now().toString(), json["msgId"], FieldValue.serverTimestamp(), timeZone, 0, locale);
 
     await FirebaseFirestore.instance.collection("comments").doc(key).set(gChatComment.toJSON());
 
@@ -187,4 +188,28 @@ class GChatServices {
           "number_of_likes" : FieldValue.increment(increment)
         });
   }
+
+  Future<void> removeRecentCommentFromGChat(dynamic comment, String gchatID) async {
+    await FirebaseFirestore.instance.collection("gchats").doc(gchatID).update(
+        {
+          "recent_comments" : FieldValue.arrayRemove([comment]),
+          "number_of_comments": FieldValue.increment(-1)
+        });
+  }
+
+  Future<void> removeCommentFromGChat(dynamic comment, String commentID, String gchatID) async {
+    await FirebaseFirestore.instance.collection("comments").doc(commentID).delete();
+    await FirebaseFirestore.instance.collection("gchats").doc(gchatID).update(
+        {
+          "recent_comments" : FieldValue.arrayRemove([comment]),
+          "number_of_comments": FieldValue.increment(-1)
+        });
+  }
+
+  Future<void> deleteGChat(String gchatID) async {
+    await FirebaseFirestore.instance.collection("gchats").doc(gchatID).update({
+      "visibility": "banned"
+    }); //should it be deleted or banned?
+  }
+
 }

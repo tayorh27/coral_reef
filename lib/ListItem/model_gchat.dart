@@ -1,10 +1,10 @@
 class GChat {
-  String id, user_uid, username, title, body, created_date, link, visibility;
+  String id, user_uid, username, title, body, created_date, link, visibility, locale;
   int number_of_likes,
       number_of_comments,
       number_of_reports,
       number_of_impressions;
-  dynamic user_avatar, images, recent_comments, timestamp, topics;
+  dynamic user_avatar, images, recent_comments, timestamp, topics,translated;
   String time_zone;
   bool rewarded_token;
 
@@ -27,7 +27,7 @@ class GChat {
       this.rewarded_token,
       this.link,
       this.visibility,
-      this.time_zone);
+      this.time_zone, this.locale);
 
   Map<String, dynamic> toJSON() {
     return {
@@ -49,7 +49,9 @@ class GChat {
       'rewarded_token': rewarded_token,
       'link': link,
       'visibility': visibility,
-      'time_zone': time_zone
+      'time_zone': time_zone,
+      'locale': locale,
+      'translated': translated
     };
   }
 
@@ -73,5 +75,7 @@ class GChat {
     link = data['link'];
     visibility = data['visibility'];
     time_zone = data['time_zone'];
+    locale = data['locale'];
+    translated = data['translated'];
   }
 }
