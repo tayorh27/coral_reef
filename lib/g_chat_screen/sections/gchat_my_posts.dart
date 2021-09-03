@@ -77,8 +77,7 @@ class _GChatMyPosts extends State<GChatMyPosts> {
   List<String> selectedTopics = [];
   int gchatLimit = 50;
 
-  final _scafoldKey = GlobalKey<ScaffoldState>();
-  PersistentBottomSheetController bottomSheet;
+  Map<String, dynamic> gAvatar = new Map();
 
   @override
   void initState() {
@@ -107,6 +106,18 @@ class _GChatMyPosts extends State<GChatMyPosts> {
       if(event == null) return;
       if(event) {
         displayBottomSheetDialog();
+      }
+    });
+
+    //get current user avartar
+    gAvatar["selectedAvatar"] = "avatar1";
+    gAvatar["selectedColor"] = 0xFFB0BEFF;
+
+    ss.getItem("avatar").then((value) {
+      if(value != null) {
+        setState(() {
+          gAvatar = jsonDecode(value);
+        });
       }
     });
 
@@ -367,7 +378,7 @@ class _GChatMyPosts extends State<GChatMyPosts> {
               ) : SizedBox(),
               PostComment(GChatUserAvatar(
                 40.0,
-                avatarData: chats[index].user_avatar,
+                avatarData: gAvatar, //chats[index].user_avatar,
               ), chats[index].id, onCreateComment: (comment) {
                 print(comment.message);
                 setState(() {

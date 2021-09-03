@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -55,10 +56,29 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
   String deviceLocale = Platform.localeName.split("_")[0].toLowerCase();
   String gLocale = "";
 
+  Map<String, dynamic> gAvatar = new Map();
+
+  int commentLimit = 50;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    // _scrollController.addListener(() {
+    //   if(_scrollController.hasClients) {
+    //     if(_scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange) {
+    //       print("bottom");
+    //       // widget.hideFloatingButton(true);
+    //       commentLimit = commentLimit + 20;
+    //       getPostComment();
+    //     }else {
+    //       // print("bottom");
+    //       // widget.hideFloatingButton(false);
+    //     }
+    //   }
+    // });
+
     gLocale = widget.gChat.locale ?? "";
     setState(() {
       nLikes = widget.gChat.number_of_likes;
@@ -78,9 +98,25 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
     gServices = GChatServices(context);
 
     getPostComment();
+
+    //get current user avartar
+    gAvatar["selectedAvatar"] = "avatar1";
+    gAvatar["selectedColor"] = 0xFFB0BEFF;
+
+    ss.getItem("avatar").then((value) {
+      if(value != null) {
+        setState(() {
+          gAvatar = jsonDecode(value);
+        });
+      }
+    });
   }
 
   getPostComment() {
+    // if(commentList != null) {
+    //   commentList.cancel();
+    //   commentList = null;
+    // }
     // QuerySnapshot query = await
     commentList = FirebaseFirestore.instance
         .collection("comments")
@@ -122,6 +158,7 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    print(gAvatar);
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.transparent, leading: Container(
         margin: EdgeInsets.only(left: 15.0, top: 20.0, bottom: 0.0),
@@ -273,10 +310,10 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
                   SinglePostComment( //handles rxdart
                       GChatUserAvatar(
                         40.0,
-                        avatarData: widget.gChat.user_avatar,
+                        avatarData: gAvatar, //widget.gChat.user_avatar,
                       ),
                       widget.gChat.id, onCreateComment: (comment) {
-                        print(comment.message);
+                        // print(comment.message);
                         setState(() {
                           comments.insert(0, comment);
                         });
@@ -293,6 +330,7 @@ class _GChatSinglePostView extends State<GChatSinglePostView> {
 
   translateGChatBodyText(String deviceLocal) {
     Map<String, dynamic> translated = widget.gChat.translated;
+    if(translated[deviceLocal] == null) return;
     setState(() {
       widget.gChat.body = translated[deviceLocal];
     });

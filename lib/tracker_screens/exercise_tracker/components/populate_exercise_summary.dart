@@ -153,7 +153,7 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
     exerciseService = new ExerciseService();
     getStepsLocalData();
     setupSteps();
-    getChallenges();
+    getActivities();
     // stepService = new StepService(stepCallback: (steps) {
     //   print("hello word = $steps");
     //   setState(() {
@@ -191,11 +191,11 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
     });
   }
 
-  getChallenges() async {
+  getActivities() async {
     QuerySnapshot query = await FirebaseFirestore.instance
         .collection("users")
         .doc(user.uid)
-        .collection("my-challenges")
+        .collection("my-activities")
         .get();
     if (query.docs.isEmpty) return;
 
@@ -275,7 +275,7 @@ class _PopulateDietSummary extends State<PopulateExerciseSummary> {
           title4: 'Total km: $totalKm',
           textColor: Color(MyColors.primaryColor),
           press: () {
-            // Navigator.pushNamed(context, TrackActivities.routeName);
+            Navigator.pushNamed(context, TrackActivities.routeName);
           },
           color: Colors.purpleAccent.withOpacity(0.1),
           child: SvgPicture.asset(

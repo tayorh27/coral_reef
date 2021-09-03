@@ -97,7 +97,7 @@ class _PageState extends State<TrackChallengeActivities> {
 
   ExerciseService exerciseService;
 
-  ChallengeStepService challengeStepService;
+  // ChallengeStepService challengeStepService; // for ios
 
   MyChallengeService myChallengeService;
 
@@ -135,8 +135,6 @@ class _PageState extends State<TrackChallengeActivities> {
     return position;
   }
 
-
-
   @override
   void initState() {
     super.initState();
@@ -166,33 +164,28 @@ class _PageState extends State<TrackChallengeActivities> {
   }
 
   setupPhysicalActivityTracking() async {
-    // String startTime = await ss.getItem("startTime");
-    // DateTime st = DateTime.parse(startTime);
     if(Platform.isAndroid) {
       if (await ph.Permission.activityRecognition
           .request()
           .isGranted) {
-        // print("i dey here");
         _physicalActivityEnabled = true;
-        if(Platform.isAndroid) {
-          continuePhysicalActivitySetupAndroid();
-        }else {
-          continuePhysicalActivitySetupIOS();
-        }
+        // if(Platform.isAndroid) {
+        //   continuePhysicalActivitySetupAndroid();
+        // }else {
+        //   continuePhysicalActivitySetupIOS();
+        // }
         // return;
       }
-      // _physicalActivityEnabled = true;
-      // continuePhysicalActivitySetup();
     }else {
       if (await ph.Permission.sensors
           .request()
           .isGranted) {
         _physicalActivityEnabled = true;
-        if(Platform.isAndroid) {
-          continuePhysicalActivitySetupAndroid();
-        }else {
-          continuePhysicalActivitySetupIOS();
-        }
+        // if(Platform.isAndroid) {
+        //   continuePhysicalActivitySetupAndroid();
+        // }else {
+        //   continuePhysicalActivitySetupIOS();
+        // }
       }
     }
   }
@@ -263,7 +256,7 @@ class _PageState extends State<TrackChallengeActivities> {
   }
 
   Future<void> continuePhysicalActivitySetupIOS() async {
-    challengeStepService = new ChallengeStepService(
+    ChallengeStepService challengeStepService = new ChallengeStepService(
         context, onStepChange: (steps, distance, timestamp) async {
       String running = await ss.getItem("running");
       String init_step_count = await ss.getItem("init_step_count");
@@ -313,11 +306,54 @@ class _PageState extends State<TrackChallengeActivities> {
     // double lng = sp["longitude"];
 
     // double distance = ExerciseService.distance(lat, result.latitude, lng, result.longitude); later
+    double distance = await myChallengeService.calculateGPSDistance(result);
+
+    print("$distance");
 
     // Map<String, dynamic> userLocation = new Map();
     // userLocation["latitude"] = result.latitude;
     // userLocation["longitude"] = result.longitude;
     // await ss.setPrefItem("currentPosition", jsonEncode(userLocation), isStoreOnline: false);
+
+    // String startTime = await ss.getItem("startTime");
+    // if(startTime == null) return;
+    //
+    // DateTime st = DateTime.parse(startTime);
+    //
+    // String currentTime = await ss.getItem("currentTime");
+    // DateTime ct = DateTime.parse(currentTime);
+    //
+    // // DateTime today = DateTime.now();
+    // int diff = ct.difference(st).inSeconds;
+    //
+    // await ss.setPrefItem("currentTime", ct.add(Duration(seconds: 1)).toString());
+
+    if(!mounted) return;
+
+    setState(() {
+      distanceCovered = distance;
+      // userTime = diff;
+      // timeCovered = ExerciseService.formatTimeCovered(st, ct.add(Duration(seconds: 1)));
+    });
+
+    if(ch == null) return;
+
+    // await exerciseService.updateUserChallengeDataTime(ch, diff);
+
+    // if(distance == double.parse(ch.distance) / 2) {
+    //   String activityText = "has completed ${double.parse(ch.distance) / 2} km.";
+    //   await exerciseService.logActivity(ch, activityText);
+    // }
+    //
+    if(distance >= double.parse(ch.distance)) {
+      currentChallengeEnded(true);
+    }
+
+  }
+
+  Future<void> updateChallengeTime() async {
+    String running = await ss.getItem("running");
+    if(running == null) return;
 
     String startTime = await ss.getItem("startTime");
     if(startTime == null) return;
@@ -330,12 +366,11 @@ class _PageState extends State<TrackChallengeActivities> {
     // DateTime today = DateTime.now();
     int diff = ct.difference(st).inSeconds;
 
-    await ss.setPrefItem("currentTime", ct.add(Duration(seconds: 1)).toString());
+    await ss.setPrefItem("currentTime", ct.add(Duration(seconds: 1)).toString(), isStoreOnline: false);
 
     if(!mounted) return;
 
     setState(() {
-      // distanceCovered = distance;
       userTime = diff;
       timeCovered = ExerciseService.formatTimeCovered(st, ct.add(Duration(seconds: 1)));
     });
@@ -343,30 +378,13 @@ class _PageState extends State<TrackChallengeActivities> {
     if(ch == null) return;
 
     await exerciseService.updateUserChallengeDataTime(ch, diff);
-    //
-    // if(distance == double.parse(ch.distance) / 2) {
-    //   String activityText = "has completed ${double.parse(ch.distance) / 2} km.";
-    //   await exerciseService.logActivity(ch, activityText);
-    // }
-    //
-    // if(distance >= double.parse(ch.distance)) {
-    //   currentChallengeEnded(true);
-    // }
-
   }
 
   Future<void> preSetupLocationPermission() async {
-    _timerSubscription = new Timer.periodic(Duration(seconds: 5), (callback){
-      // print("paused: ${challengeStepService.isPaused()}");
-      // if(challengeStepService.isPaused()) {
-      //   challengeStepService.resumeCounting();
-      // }
-      updateChallengeForegroundData(null);
-      if(Platform.isAndroid) {
-        continuePhysicalActivitySetupAndroid();
-      }
-      // else {
-      //   continuePhysicalActivitySetupIOS();
+    _timerSubscription = new Timer.periodic(Duration(seconds: 1), (callback) {
+      updateChallengeTime();
+      // if(Platform.isAndroid) {
+      //   continuePhysicalActivitySetupAndroid();
       // }
     });
     return;
@@ -421,7 +439,7 @@ class _PageState extends State<TrackChallengeActivities> {
             }
             _currentLocation = result;
           });
-          // updateChallengeForegroundData(result);
+          updateChallengeForegroundData(result);
         });
   }
 
@@ -479,16 +497,25 @@ class _PageState extends State<TrackChallengeActivities> {
     super.dispose();
     saveDataAndCancelSubscription();
   }
+
+  Future<void> saveCurrentGPSPosition() async {
+    if(_currentLocation == null) return;
+    Map<String, dynamic> userLocation = new Map();
+    userLocation["latitude"] = _currentLocation.latitude;
+    userLocation["longitude"] = _currentLocation.longitude;
+    await ss.setPrefItem("currentPosition", jsonEncode(userLocation), isStoreOnline: false);
+  }
   
   saveDataAndCancelSubscription() async {
-    // Map<String, dynamic> userLocation = new Map();
-    // userLocation["latitude"] = _currentLocation.latitude;
-    // userLocation["longitude"] = _currentLocation.longitude;
-    // await ss.setPrefItem("currentPosition", jsonEncode(userLocation));
+    await saveCurrentGPSPosition();
     if(_locationSubscription != null) _locationSubscription.cancel();
     if(_timerSubscription != null) _timerSubscription.cancel();
-    if(challengeStepService != null) challengeStepService.stopCounting();
+    // if(challengeStepService != null) challengeStepService.stopCounting();
     if(await Screen.isKeptOn) await Screen.keepOn(false);
+    if(actionButton == "play") {
+      await ss.setPrefItem("statusCH", "pause");
+      await saveCurrentGPSPosition();
+    }
   }
 
   @override
@@ -795,7 +822,7 @@ class _PageState extends State<TrackChallengeActivities> {
                       // }
                       if (!_physicalActivityEnabled) {
                         setupPhysicalActivityTracking();
-                        // return;
+                        return;
                       }
                       // setupPhysicalActivityTracking();
                       // if(Platform.isAndroid) {
@@ -824,9 +851,9 @@ class _PageState extends State<TrackChallengeActivities> {
                             onTap: () async {
                               bool res = await new GeneralUtils().displayReturnedValueAlertDialog(context, "Attention", "Are you sure you want to end this challenge?");
                               if(!res) return;
-                              // if(_locationSubscription != null) _locationSubscription.pause();
+                              if(_locationSubscription != null) _locationSubscription.pause();
                               if(_timerSubscription != null) _timerSubscription.cancel();
-                              if(challengeStepService != null) challengeStepService.stopCounting();
+                              // if(challengeStepService != null) challengeStepService.stopCounting();
                               currentChallengeEnded(false);
                               // Navigator.pushNamed(
                               //     context, SaveActivities.routeName);
@@ -846,7 +873,8 @@ class _PageState extends State<TrackChallengeActivities> {
                               //   await ss.setPrefItem("resumedSteps", "${data["steps"]}");
                               // }
                               // if(_locationSubscription != null) _locationSubscription.resume();
-                              if(challengeStepService != null) challengeStepService.resumeCounting();
+                              // if(challengeStepService != null) challengeStepService.resumeCounting();
+                              await saveCurrentGPSPosition();
                               preSetupLocationPermission();
                               setState(() {
                                 actionButton = 'play';
@@ -861,12 +889,13 @@ class _PageState extends State<TrackChallengeActivities> {
                     : InkWell(
                     onTap: () async {
                       await ss.setPrefItem("statusCH", "pause");
+                      await saveCurrentGPSPosition();
                       // if(Platform.isAndroid) {
                       //   await ss.setPrefItem("pausedSteps", "$totalSteps");
                       // }
-                      // if(_locationSubscription != null) _locationSubscription.pause();
+                      if(_locationSubscription != null) _locationSubscription.pause();
                       if(_timerSubscription != null) _timerSubscription.cancel();
-                      if(challengeStepService != null) challengeStepService.pauseCounting();
+                      // if(challengeStepService != null) challengeStepService.pauseCounting();
                       setState(() {
                         actionButton = 'pause';
                       });
@@ -891,6 +920,7 @@ class _PageState extends State<TrackChallengeActivities> {
     new GeneralUtils().showToast(context, "Please wait...");
     String getStartLocation = await ss.getItem("startPosition");
     await ss.deletePref("currentChallenge");
+    await ss.deletePref("currentKm");
     await ss.deletePref("running");
     await ss.deletePref("statusCH");
     await ss.deletePref("startPosition");
@@ -967,17 +997,18 @@ class _PageState extends State<TrackChallengeActivities> {
       actionButton = statusCH;
     });
 
+    await saveCurrentGPSPosition();
+
     if(actionButton == "pause") {
       // print("pausseeeeeeee");
-      // if(_locationSubscription != null) _locationSubscription.pause();
+      if(_locationSubscription != null) _locationSubscription.pause();
       if(_timerSubscription != null) _timerSubscription.cancel();
-      if(challengeStepService != null) challengeStepService.pauseCounting();
+      // if(challengeStepService != null) challengeStepService.pauseCounting();
     }
 
     if(actionButton == "play") {
       // print("playyyyyy");
       preSetupLocationPermission();
-      if(challengeStepService != null) challengeStepService.resumeCounting();
       // if(challengeStepService != null) challengeStepService.resumeCounting();
     }
 
@@ -989,9 +1020,9 @@ class _PageState extends State<TrackChallengeActivities> {
     Map<String, dynamic> userLocation = new Map();
     userLocation["latitude"] = _currentLocation.latitude;
     userLocation["longitude"] = _currentLocation.longitude;
-    String startSteps = await myChallengeService.initPlatformState();
-    print("startSteps: $startSteps");
-    await ss.setPrefItem("startSteps", startSteps);
+    // String startSteps = await myChallengeService.initPlatformState();
+    // print("startSteps: $startSteps");
+    // await ss.setPrefItem("startSteps", startSteps);
     await ss.setPrefItem("running", "true");
     await ss.setPrefItem("statusCH", "play");
     await ss.setPrefItem("startPosition", jsonEncode(userLocation));
@@ -1003,9 +1034,9 @@ class _PageState extends State<TrackChallengeActivities> {
     // if(Platform.isIOS) ss.setPrefItem("init_step_count", initSteps.toString());
 
     preSetupLocationPermission();
-    if(Platform.isIOS) {
-      if(challengeStepService != null) challengeStepService.resumeCounting();
-    }
+    // if(Platform.isIOS) {
+    //   if(challengeStepService != null) challengeStepService.resumeCounting();
+    // }
 
     // await exerciseService.getRequiredTime(_currentLocation, ch);
 

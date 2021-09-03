@@ -580,9 +580,9 @@ Future<void> updateAndroidStepCount() async{
   final months = ["JAN", "FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 
   String formatDate = "${today.year}_${months[today.month - 1]}_${today.day}";
-  String getTodayCounts = await ss.getItem("step_count_$formatDate");
+  String getTodayCounts = await ss.getItem("step_count_$formatDate") ?? "";
 
-  if(getTodayCounts == null) {
+  if(getTodayCounts == null || getTodayCounts == "") {
     await ss.setPrefItem("step_count_$formatDate", "0", isStoreOnline: false);
   }
 }

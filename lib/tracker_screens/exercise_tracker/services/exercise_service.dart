@@ -65,8 +65,11 @@ class ExerciseService {
     });
   }
 
-  updateUserChallengeDataTime(VirtualChallenge ch, int time) async {
-    String user_ch_id = await ss.getItem("user_ch_id") ?? "-MaB74f3xFrYfQk1w-ep";
+  Future<void> updateUserChallengeDataTime(VirtualChallenge ch, int time) async {
+    if(!"$time".contains("0")) {
+      return;
+    }
+    String user_ch_id = await ss.getItem("user_ch_id") ?? "-MaB74f3xFrYfQk1w-ep$time";
 
     //update personal user record
     // await FirebaseFirestore.instance

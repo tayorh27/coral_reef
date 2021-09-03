@@ -145,6 +145,7 @@ class _PageState extends State<CommunityChallengeDetails> {
 
   @override
   Widget build(BuildContext context) {
+    print(ModalRoute.of(context).toString());
     ch = ModalRoute.of(context).settings.arguments as VirtualChallenge;
     if(!loadedMembers) {
       checkIfCurrentChallengeHasEnded();

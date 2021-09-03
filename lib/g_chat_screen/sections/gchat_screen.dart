@@ -76,8 +76,10 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
   List<String> selectedTopics = [];
   int gchatLimit = 50;
 
-  final _scafoldKey = GlobalKey<ScaffoldState>();
-  PersistentBottomSheetController bottomSheet;
+  PersistentBottomSheetController _controller; // <------ Instance variable
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  Map<String, dynamic> gAvatar = new Map();
 
   @override
   void initState() {
@@ -106,6 +108,18 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
       if(event == null) return;
       if(event) {
         displayBottomSheetDialog();
+      }
+    });
+
+    //get current user avartar
+    gAvatar["selectedAvatar"] = "avatar1";
+    gAvatar["selectedColor"] = 0xFFB0BEFF;
+
+    ss.getItem("avatar").then((value) {
+      if(value != null) {
+        setState(() {
+          gAvatar = jsonDecode(value);
+        });
       }
     });
 
@@ -215,7 +229,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
     // TODO: implement build
     return (!hasLoadedContent)
         ? ShimmerEffects(LoadingGChat(), 1.7)
-        : (chats.isEmpty) ? EmptyScreen("No data to display.") : Container(
+        : (chats.isEmpty) ? EmptyScreen("No data to display.") : Scaffold(key: _scaffoldKey, body:Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: ListView.builder(
@@ -293,6 +307,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                                 style: Theme.of(context).textTheme.subtitle1.copyWith(
                                     color: Color(MyColors.titleTextColor),
                                     fontSize: getProportionateScreenWidth(13))),
+
                               (gLocale == "" || deviceLocale == gLocale) ? SizedBox() : InkWell(onTap: (){
                                 translateGChatBodyText(index, deviceLocale);
                               }, child: Text("See translation",
@@ -371,7 +386,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                         ) : SizedBox(),
                         PostComment(GChatUserAvatar(
                           40.0,
-                          avatarData: chats[index].user_avatar,
+                          avatarData: gAvatar, //chats[index].user_avatar,
                         ), chats[index].id, onCreateComment: (comment) {
                           print(comment.message);
                           setState(() {
@@ -388,7 +403,7 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                   itemCount: chats.length,
                   scrollDirection: Axis.vertical,
                 ),
-          );
+          ));
   }
 
   Future<void> displaySinglePostScreen(int index, bool liked) async {
@@ -406,8 +421,8 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
   }
 
   //display topics to be selected by the user
-  displayBottomSheetDialog() {
-    showModalBottomSheet(context: context, builder: (context) {
+  displayBottomSheetDialog() async {
+    _controller = _scaffoldKey.currentState.showBottomSheet((context) {
       List<Widget> tops = [];
       topics.forEach((opt) {
         tops.add(TopicsSelection(
@@ -415,80 +430,80 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
           selected: (selectedTopics.contains(opt)) ? true : false,
           onTap: () {
             if (selectedTopics.contains(opt)) {
-              setState(() {
+              _controller.setState(() {
                 selectedTopics.remove(opt);
               });
             } else {
-              setState(() {
+              _controller.setState(() {
                 selectedTopics.add(opt);
               });
             }
             print(selectedTopics);
-            Navigator.pop(context);
-            displayBottomSheetDialog();
+            // Navigator.pop(context);
+            // displayBottomSheetDialog();
           },
         ));
       });
       return Container(
-        height: 220.0,
-        child: Padding(
-          padding: EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text("Filter by:",
-                    style: Theme.of(context)
-                        .textTheme
-                        .subtitle1
-                        .copyWith(color: Color(MyColors.primaryColor), fontSize: 16.0),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20.0,),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 50.0,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: tops,
+          height: 220.0,
+          child: Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text("Filter by:",
+                      style: Theme.of(context)
+                          .textTheme
+                          .subtitle1
+                          .copyWith(color: Color(MyColors.primaryColor), fontSize: 16.0),
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(height: 20.0,),
-              Row(
-                children: [
-                  Container(
-                    width: 120.0,
-                    height: 40.0,
-                    child: DefaultButton2(text: "Submit", press: () {
-                      Navigator.pop(context);
-                      if(selectedTopics.isNotEmpty) {
-                        getGChats();
-                      }
-                    },),
+                SizedBox(height: 20.0,),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 50.0,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: tops,
                   ),
-                  SizedBox(width: 20.0,),
-                  TextButton(onPressed: (){
-                    setState(() {
-                      selectedTopics.clear();
-                      Navigator.pop(context);
-                      getGChats();
-                    });
-                  }, child: Text("Reset",
-                    style: Theme.of(context)
-                        .textTheme
-                        .subtitle1
-                        .copyWith(color: Color(MyColors.primaryColor), fontSize: 16.0),
-                  ))
-                ],
-              )
-            ],
+                ),
+                SizedBox(height: 20.0,),
+                Row(
+                  children: [
+                    Container(
+                      width: 120.0,
+                      height: 40.0,
+                      child: DefaultButton2(text: "Submit", press: () {
+                        Navigator.pop(context);
+                        if(selectedTopics.isNotEmpty) {
+                          getGChats();
+                        }
+                      },),
+                    ),
+                    SizedBox(width: 20.0,),
+                    TextButton(onPressed: (){
+                      setState(() {
+                        selectedTopics.clear();
+                        Navigator.pop(context);
+                        getGChats();
+                      });
+                    }, child: Text("Reset",
+                      style: Theme.of(context)
+                          .textTheme
+                          .subtitle1
+                          .copyWith(color: Color(MyColors.primaryColor), fontSize: 16.0),
+                    ))
+                  ],
+                )
+              ],
+            ),
           ),
-        ),
-      );
-    });
+        );
+      }, elevation: 2.0,);
   }
 
   translateGChatBodyText(int index, String deviceLocale) {

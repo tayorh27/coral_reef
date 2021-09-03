@@ -109,6 +109,7 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     (gLocale == "" || deviceLocale == gLocale) ? SizedBox() : InkWell(onTap: (){
+                      if(translated[deviceLocale] == null) return;
                       setState(() {
                         com.message = translated[deviceLocale];
                       });
@@ -116,7 +117,7 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
                         style: Theme.of(context).textTheme.bodyText1.copyWith(
                             color: Color(MyColors.titleTextColor),
                             fontSize: getProportionateScreenWidth(12))),),
-                    SizedBox(width: (gLocale == "" || deviceLocale == gLocale) ? 0.0 : 20.0,),
+                    SizedBox(width: (gLocale == "" || deviceLocale == gLocale) ? 0.0 : 15.0,),
                     (com.number_of_likes == null || com.number_of_likes <= 0) ? SizedBox() : Text("${com.number_of_likes} ${(com.number_of_likes == 1) ? "like" : "likes"}",
                         style: Theme.of(context)
                             .textTheme
@@ -127,7 +128,7 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
                     Visibility(
                       visible: true,
                       child: Container(
-                        margin: EdgeInsets.only(left: (com.number_of_likes == null || com.number_of_likes <= 0) ? 0.0 : 20.0),
+                        margin: EdgeInsets.only(left: (com.number_of_likes == null || com.number_of_likes <= 0) ? 0.0 : 15.0),
                         child: InkWell(onTap: (){
                           // List<String> post = [com.username, com.main_comment_id];
                           Map<String, dynamic> data = new Map();
@@ -145,7 +146,7 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
                     ),
             SizedBox(width: 10,),
                     Container(
-                      margin: EdgeInsets.only(left: (com.number_of_likes == null || com.number_of_likes <= 0) ? 0.0 : 20.0, top: 3.0),
+                      margin: EdgeInsets.only(left: (com.number_of_likes == null || com.number_of_likes <= 0) ? 0.0 : 15.0, top: 3.0),
                       child: InkWell(
                         child: userLikeRecords.contains(com.id) ? Icon(Icons.favorite, size: 14.0, color: Colors.redAccent,) : Icon(Icons.favorite_border, size: 14.0,),
                         onTap: () async {
@@ -249,6 +250,7 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     (gLocale == "" || deviceLocale == gLocale) ? SizedBox() : InkWell(onTap: (){
+                      if(translated[deviceLocale] == null) return;
                       setState(() {
                         com.message = translated[deviceLocale];
                       });
@@ -256,7 +258,7 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
                         style: Theme.of(context).textTheme.bodyText1.copyWith(
                             color: Color(MyColors.titleTextColor),
                             fontSize: getProportionateScreenWidth(12))),),
-                    SizedBox(width: (gLocale == "" || deviceLocale == gLocale) ? 0.0 : 20.0,),
+                    SizedBox(width: (gLocale == "" || deviceLocale == gLocale) ? 0.0 : 15.0,),
                     (com.number_of_likes == null || com.number_of_likes <= 0) ? SizedBox() : Text("${com.number_of_likes} ${(com.number_of_likes == 1) ? "like" : "likes"}",
                         style: Theme.of(context)
                             .textTheme
@@ -267,7 +269,7 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
                     Visibility(
                       visible: true,
                       child: Container(
-                        margin: EdgeInsets.only(left: (com.number_of_likes == null || com.number_of_likes <= 0) ? 0.0 : 20.0),
+                        margin: EdgeInsets.only(left: (com.number_of_likes == null || com.number_of_likes <= 0) ? 0.0 : 15.0),
                         child: InkWell(onTap: (){
                           Map<String, dynamic> data = new Map();
                           data["username"] = com.username;
@@ -284,7 +286,7 @@ class _SinglePostPostComment extends State<SinglePostPostComment> {
                     ),
                     SizedBox(width: 10,),
                     Container(
-                      margin: EdgeInsets.only(left: (com.number_of_likes == null || com.number_of_likes <= 0) ? 0.0 : 20.0, top: 3.0),
+                      margin: EdgeInsets.only(left: (com.number_of_likes == null || com.number_of_likes <= 0) ? 0.0 : 15.0, top: 3.0),
                       child: InkWell(
                         child: userLikeRecords.contains(com.id) ? Icon(Icons.favorite, size: 14.0, color: Colors.redAccent,) : Icon(Icons.favorite_border, size: 14.0,),
                         onTap: () async {

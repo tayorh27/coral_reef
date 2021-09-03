@@ -1,9 +1,11 @@
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
+import 'package:location/location.dart';
 
 import 'exercise_service.dart';
 
@@ -153,5 +155,64 @@ class MyChallengeService {
 
     return data;
 
+  }
+
+  Future<double> calculateGPSDistance(LocationData currentLocation) async {
+
+    String cp = await ss.getItem("currentPosition");
+    if(cp == null) return 0.00;
+
+    Map<String, dynamic> lastKnownLocation = jsonDecode(cp);
+    double lat = lastKnownLocation["latitude"];
+    double lng = lastKnownLocation["longitude"];
+
+    String currentKm = await ss.getItem("currentKm") ?? "0.00";
+    double dCurrentKm = double.parse(currentKm);
+
+    double distance = ExerciseService.distance(lat, currentLocation.latitude, lng, currentLocation.longitude);
+
+    double total = dCurrentKm + distance;
+
+    await saveCurrentPosition(currentLocation);
+    await ss.setPrefItem("currentKm", "$total", isStoreOnline: false);
+
+    return double.parse(total.toStringAsFixed(2));
+  }
+
+  Future<void> saveCurrentPosition(LocationData _currentLocation) async {
+    Map<String, dynamic> userLocation = new Map();
+    userLocation["latitude"] = _currentLocation.latitude;
+    userLocation["longitude"] = _currentLocation.longitude;
+    await ss.setPrefItem("currentPosition", jsonEncode(userLocation), isStoreOnline: false);
+  }
+
+
+  Future<double> calculateActivityGPSDistance(LocationData currentLocation) async {
+
+    String cp = await ss.getItem("activityCurrentPosition");
+    if(cp == null) return 0.00;
+
+    Map<String, dynamic> lastKnownLocation = jsonDecode(cp);
+    double lat = lastKnownLocation["latitude"];
+    double lng = lastKnownLocation["longitude"];
+
+    String currentKm = await ss.getItem("activityCurrentKm") ?? "0.00";
+    double dCurrentKm = double.parse(currentKm);
+
+    double distance = ExerciseService.distance(lat, currentLocation.latitude, lng, currentLocation.longitude);
+
+    double total = dCurrentKm + distance;
+
+    await saveActivityCurrentPosition(currentLocation);
+    await ss.setPrefItem("activityCurrentKm", "$total", isStoreOnline: false);
+
+    return double.parse(total.toStringAsFixed(2));
+  }
+
+  Future<void> saveActivityCurrentPosition(LocationData _currentLocation) async {
+    Map<String, dynamic> userLocation = new Map();
+    userLocation["latitude"] = _currentLocation.latitude;
+    userLocation["longitude"] = _currentLocation.longitude;
+    await ss.setPrefItem("activityCurrentPosition", jsonEncode(userLocation), isStoreOnline: false);
   }
 }

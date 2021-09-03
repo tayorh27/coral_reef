@@ -36,6 +36,8 @@ class _TrackerLanding extends State<TrackerLanding> {
 
   StorageSystem ss = new StorageSystem();
 
+  String screenRoute = "diet-tracker-screen";
+
   @override
   void initState() {
     // TODO: implement initState
@@ -85,8 +87,22 @@ class _TrackerLanding extends State<TrackerLanding> {
               ),
               Container(
                 margin: EdgeInsets.only(top: 160.0),
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
                 child: SingleChildScrollView (
                     child: selectedScreen
+                    // PageView.builder(
+                    //       onPageChanged: (value) {
+                    //         Map<String, dynamic> screen = screens[value];
+                    //         setState(() {
+                    //           screenRoute = screen["screen_route"];
+                    //           selectedScreen = screen["screen_class"];
+                    //         });
+                    //       },
+                    //       itemCount: screens.length,
+                    //       itemBuilder: (context, index) {
+                    //         return selectedScreen;
+                    //   }),
                 ),
               )
             ],
