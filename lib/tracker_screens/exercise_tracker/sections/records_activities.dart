@@ -67,7 +67,7 @@ class _PageState extends State<RecordsActivities> {
       setState(() {
         myActivities = allActivities;
         totalActivities = allActivities.length;
-        allActivities.map((e) {
+        allActivities.forEach((e) {
           totalKm += e.km_covered;
         });
       });
@@ -77,7 +77,7 @@ class _PageState extends State<RecordsActivities> {
     setState(() {
       myActivities = filterAct;
       totalActivities = filterAct.length;
-      filterAct.map((e) {
+      filterAct.forEach((e) {
         totalKm += e.km_covered;
       });
     });

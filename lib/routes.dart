@@ -38,6 +38,7 @@ import 'package:coral_reef/homescreen/Home.dart';
 
 import 'account/notifications/notification.dart';
 import 'account/profile/account.dart';
+import 'account/reminders.dart';
 import 'account/settings/cycle.dart';
 import 'g_chat_screen/GChatScreen.dart';
 import 'g_chat_screen/sections/avatar_final_section.dart';
@@ -123,4 +124,5 @@ final Map<String, WidgetBuilder> routes = {
   WeightGoal.routeName: (context) => WeightGoal(),
   CaloriesGoal.routeName: (context) => CaloriesGoal(),
   DewInsights.routeName: (context) => DewInsights(),
+  Reminders.routeName: (context) => Reminders(),
 };

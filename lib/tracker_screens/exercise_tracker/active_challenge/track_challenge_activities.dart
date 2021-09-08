@@ -11,6 +11,7 @@ import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/homescreen/Home.dart';
 import 'package:coral_reef/services/challenge_step_service.dart';
 import 'package:coral_reef/size_config.dart';
+import 'package:coral_reef/tracker_screens/diet_tracker_screen/components/water_card.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/community_challenge_details.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/map_utils.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/post_complete_challenge.dart';
@@ -28,6 +29,7 @@ import 'package:location/location.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:permission_handler/permission_handler.dart' as ph;
 import 'package:screen/screen.dart';
+import 'package:rive/rive.dart';
 
 import '../../../constants.dart';
 
@@ -38,7 +40,6 @@ class TrackChallengeActivities extends StatefulWidget {
 }
 
 class _PageState extends State<TrackChallengeActivities> {
-
   var _startLocation;
   LocationData _currentLocation;
 
@@ -55,10 +56,10 @@ class _PageState extends State<TrackChallengeActivities> {
   GoogleMapController mapController;
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
-      mapController = controller;
-      controller.setMapStyle(Utils.mapStyles);
-      if(_controller.isCompleted) return;
-      _controller.complete(controller);
+    mapController = controller;
+    controller.setMapStyle(Utils.mapStyles);
+    if (_controller.isCompleted) return;
+    _controller.complete(controller);
   }
 
   LatLng user_location;
@@ -72,7 +73,6 @@ class _PageState extends State<TrackChallengeActivities> {
   PermissionStatus _permissionGranted;
 
   /////////////////////////////////////////////////////////////
-
 
   geo.Geolocator geolocator;
   geo.Position currentLocation;
@@ -145,29 +145,30 @@ class _PageState extends State<TrackChallengeActivities> {
     // geolocator = Geolocator();
     // setupCurrentLocation();
     // initPlatformState();
-    getActivityData();
     locationSetup();
     // preSetupLocationPermission(); //timer
     setupPhysicalActivityTracking();
+    getActivityData();
   }
 
   Future<void> locationSetup() async {
     var status = await ph.Permission.locationWhenInUse.status;
-    if(status.isGranted) {
+    if (status.isGranted) {
       initPlatformState();
       return;
     }
-    final allowPermission = await new GeneralUtils().requestPermission(context, "Location", "Allow Coral Reef to access your location in order to calculate your distance effectively.");
-    if(allowPermission) {
+    final allowPermission = await new GeneralUtils().requestPermission(
+        context,
+        "Location",
+        "Allow Coral Reef to access your location in order to calculate your distance effectively.");
+    if (allowPermission) {
       initPlatformState();
     }
   }
 
   setupPhysicalActivityTracking() async {
-    if(Platform.isAndroid) {
-      if (await ph.Permission.activityRecognition
-          .request()
-          .isGranted) {
+    if (Platform.isAndroid) {
+      if (await ph.Permission.activityRecognition.request().isGranted) {
         _physicalActivityEnabled = true;
         // if(Platform.isAndroid) {
         //   continuePhysicalActivitySetupAndroid();
@@ -176,10 +177,8 @@ class _PageState extends State<TrackChallengeActivities> {
         // }
         // return;
       }
-    }else {
-      if (await ph.Permission.sensors
-          .request()
-          .isGranted) {
+    } else {
+      if (await ph.Permission.sensors.request().isGranted) {
         _physicalActivityEnabled = true;
         // if(Platform.isAndroid) {
         //   continuePhysicalActivitySetupAndroid();
@@ -228,7 +227,7 @@ class _PageState extends State<TrackChallengeActivities> {
     // });
     // challengeStepService.stopCounting();
     String running = await ss.getItem("running");
-    if(running == null) return;
+    if (running == null) return;
 
     Map<String, dynamic> data = await myChallengeService.getCurrentSteps();
     if (data.isNotEmpty) {
@@ -261,10 +260,11 @@ class _PageState extends State<TrackChallengeActivities> {
       String running = await ss.getItem("running");
       String init_step_count = await ss.getItem("init_step_count");
       print("iRunning = $running");
-          print("i dey here - here $steps");
+      print("i dey here - here $steps");
       if (init_step_count == null || running == null) {
         initSteps = steps;
-        if(Platform.isIOS) await ss.setPrefItem("init_step_count", initSteps.toString());
+        if (Platform.isIOS)
+          await ss.setPrefItem("init_step_count", initSteps.toString());
         return;
       }
       if (steps != null || distance != null || timestamp != null) {
@@ -279,8 +279,8 @@ class _PageState extends State<TrackChallengeActivities> {
         await exerciseService.updateUserChallengeData(ch, distance);
 
         if (distance == double.parse(ch.distance) / 2) {
-          String activityText = "has completed ${double.parse(ch.distance) /
-              2} km.";
+          String activityText =
+              "has completed ${double.parse(ch.distance) / 2} km.";
           await exerciseService.logActivity(ch, activityText);
         }
 
@@ -296,9 +296,11 @@ class _PageState extends State<TrackChallengeActivities> {
   double distanceCovered = 0.0;
   String timeCovered = "0D:0H:0M:0S";
 
+  bool showWaterCard = false;
+
   updateChallengeForegroundData(LocationData result) async {
     String running = await ss.getItem("running");
-    if(running == null) return;
+    if (running == null) return;
     // String startPosition = await ss.getItem("startPosition");
     // Map<String, dynamic> sp = jsonDecode(startPosition);
 
@@ -328,7 +330,7 @@ class _PageState extends State<TrackChallengeActivities> {
     //
     // await ss.setPrefItem("currentTime", ct.add(Duration(seconds: 1)).toString());
 
-    if(!mounted) return;
+    if (!mounted) return;
 
     setState(() {
       distanceCovered = distance;
@@ -336,7 +338,7 @@ class _PageState extends State<TrackChallengeActivities> {
       // timeCovered = ExerciseService.formatTimeCovered(st, ct.add(Duration(seconds: 1)));
     });
 
-    if(ch == null) return;
+    if (ch == null) return;
 
     // await exerciseService.updateUserChallengeDataTime(ch, diff);
 
@@ -345,18 +347,17 @@ class _PageState extends State<TrackChallengeActivities> {
     //   await exerciseService.logActivity(ch, activityText);
     // }
     //
-    if(distance >= double.parse(ch.distance)) {
+    if (distance >= double.parse(ch.distance)) {
       currentChallengeEnded(true);
     }
-
   }
 
   Future<void> updateChallengeTime() async {
     String running = await ss.getItem("running");
-    if(running == null) return;
+    if (running == null) return;
 
     String startTime = await ss.getItem("startTime");
-    if(startTime == null) return;
+    if (startTime == null) return;
 
     DateTime st = DateTime.parse(startTime);
 
@@ -366,16 +367,18 @@ class _PageState extends State<TrackChallengeActivities> {
     // DateTime today = DateTime.now();
     int diff = ct.difference(st).inSeconds;
 
-    await ss.setPrefItem("currentTime", ct.add(Duration(seconds: 1)).toString(), isStoreOnline: false);
+    await ss.setPrefItem("currentTime", ct.add(Duration(seconds: 1)).toString(),
+        isStoreOnline: false);
 
-    if(!mounted) return;
+    if (!mounted) return;
 
     setState(() {
       userTime = diff;
-      timeCovered = ExerciseService.formatTimeCovered(st, ct.add(Duration(seconds: 1)));
+      timeCovered =
+          ExerciseService.formatTimeCovered(st, ct.add(Duration(seconds: 1)));
     });
 
-    if(ch == null) return;
+    if (ch == null) return;
 
     await exerciseService.updateUserChallengeDataTime(ch, diff);
   }
@@ -399,7 +402,11 @@ class _PageState extends State<TrackChallengeActivities> {
     //     }
   }
 
-  initPlatformState() async {
+  Future<void> initPlatformState() async {
+    if (_locationSubscription != null) {
+      await _locationSubscription.cancel();
+      _locationSubscription = null;
+    }
     _serviceEnabled = await mLocation.serviceEnabled();
     if (!_serviceEnabled) {
       _serviceEnabled = await mLocation.requestService();
@@ -425,45 +432,43 @@ class _PageState extends State<TrackChallengeActivities> {
     // start listening to change is location
     _locationSubscription =
         mLocation.onLocationChanged.listen((LocationData result) {
-          double lat = result.latitude;
-          double lng = result.longitude;
+      double lat = result.latitude;
+      double lng = result.longitude;
 
-          _userLat = result.latitude;
-          _userLng = result.longitude;
+      _userLat = result.latitude;
+      _userLng = result.longitude;
 
-          user_location = LatLng(_userLat, _userLng);
-          if(!mounted) return;
-          setState(() {
-            if (mapController != null) {
-              updateMapCamera(lat, lng);
-            }
-            _currentLocation = result;
-          });
-          updateChallengeForegroundData(result);
-        });
+      user_location = LatLng(_userLat, _userLng);
+      if (!mounted) return;
+      setState(() {
+        if (mapController != null) {
+          updateMapCamera(lat, lng);
+        }
+        _currentLocation = result;
+      });
+      updateChallengeForegroundData(result);
+    });
   }
 
   void updateMapCamera(double lat, double lng) {
     markers.clear();
-      mapController.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(
-          bearing: 90.0,
-          target: LatLng(lat, lng),
-          tilt: 30.0,
-          zoom: 15.0,
-        ),
-      ));
-      final MarkerId markerId = MarkerId('user');
-      final Marker marker = Marker(
-          markerId: markerId,
-          position: LatLng(lat, lng),
-          infoWindow: InfoWindow(
-              title: 'Your location',
-              snippet: ''),
-          icon: pinLocationIcon,
-          alpha: 1.0,
-          draggable: false);
-      markers[markerId] = marker;
+    mapController.animateCamera(CameraUpdate.newCameraPosition(
+      CameraPosition(
+        bearing: 90.0,
+        target: LatLng(lat, lng),
+        tilt: 30.0,
+        zoom: 15.0,
+      ),
+    ));
+    final MarkerId markerId = MarkerId('user');
+    final Marker marker = Marker(
+        markerId: markerId,
+        position: LatLng(lat, lng),
+        infoWindow: InfoWindow(title: 'Your location', snippet: ''),
+        icon: pinLocationIcon,
+        alpha: 1.0,
+        draggable: false);
+    markers[markerId] = marker;
   }
 
   //not used
@@ -499,20 +504,21 @@ class _PageState extends State<TrackChallengeActivities> {
   }
 
   Future<void> saveCurrentGPSPosition() async {
-    if(_currentLocation == null) return;
+    if (_currentLocation == null) return;
     Map<String, dynamic> userLocation = new Map();
     userLocation["latitude"] = _currentLocation.latitude;
     userLocation["longitude"] = _currentLocation.longitude;
-    await ss.setPrefItem("currentPosition", jsonEncode(userLocation), isStoreOnline: false);
+    await ss.setPrefItem("currentPosition", jsonEncode(userLocation),
+        isStoreOnline: false);
   }
-  
+
   saveDataAndCancelSubscription() async {
     await saveCurrentGPSPosition();
-    if(_locationSubscription != null) _locationSubscription.cancel();
-    if(_timerSubscription != null) _timerSubscription.cancel();
+    if (_locationSubscription != null) _locationSubscription.cancel();
+    if (_timerSubscription != null) _timerSubscription.cancel();
     // if(challengeStepService != null) challengeStepService.stopCounting();
-    if(await Screen.isKeptOn) await Screen.keepOn(false);
-    if(actionButton == "play") {
+    if (await Screen.isKeptOn) await Screen.keepOn(false);
+    if (actionButton == "play") {
       await ss.setPrefItem("statusCH", "pause");
       await saveCurrentGPSPosition();
     }
@@ -537,377 +543,475 @@ class _PageState extends State<TrackChallengeActivities> {
           title: Text(
             'Track Activities',
             style: Theme.of(context).textTheme.bodyText1.copyWith(
-              fontSize: getProportionateScreenWidth(15),
-            ),
+                  fontSize: getProportionateScreenWidth(15),
+                ),
           ),
         ),
         body: ModalProgressHUD(
-    inAsyncCall: _inAsyncCall,
-    opacity: 0.6,
-    progressIndicator: CircularProgressIndicator(),
-    color: Color(MyColors.titleTextColor),
-    child: counting
-            ? Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                  height: MediaQuery.of(context).size.height / 1.25,
-                  color: Color(MyColors.primaryColor).withOpacity(0.3),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Center(
-                            child: Text(
-                              '$timerText',
-                              style: TextStyle(
-                                  fontSize: 50,
-                                  color: Color(MyColors.primaryColor),
-                                  fontWeight: FontWeight.bold),
-                            )),
-                      ]))
-            ])
-            : Container(
-            padding: EdgeInsets.all(20),
-            child: SingleChildScrollView(
-              child: Column(children: [
-                actionButton != 'go'
-                    ? Container()
-                    : Row(
+            inAsyncCall: _inAsyncCall,
+            opacity: 0.6,
+            progressIndicator: CircularProgressIndicator(),
+            color: Color(MyColors.titleTextColor),
+            child: counting
+                ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            color: Color(MyColors.other3),
-                            borderRadius:
-                            BorderRadius.circular(10.0)),
-                        padding: EdgeInsets.only(
-                            right: 20,
-                            left: 20,
-                            top: 10.0,
-                            bottom: 10.0),
-                        margin: EdgeInsets.only(right: 15.0),
-                        child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.center,
-                          mainAxisAlignment:
-                          MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              ch.activity_type,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText2
-                                  .copyWith(
-                                  color: Color(MyColors.primaryColor)),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ]),
-                SizedBox(
-                  height: 30,
-                ),
-                actionButton == 'go'
-                    ? Container()
-                    : Container(
-                  decoration: BoxDecoration(
-                      color: Color(MyColors.other3),
-                      borderRadius: BorderRadius.circular(10.0)),
-                  padding: EdgeInsets.only(
-                      right: 20, left: 20, top: 10.0, bottom: 10.0),
-                  margin: EdgeInsets.only(right: 0.0, bottom: 15.0),
-                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        ch.activity_type,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyText2
-                            .copyWith(
+                        Container(
+                            height: MediaQuery.of(context).size.height / 1.25,
                             color:
-                            Color(MyColors.primaryColor)),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                    height: MediaQuery.of(context).size.height / 2.3,
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Expanded(
-                              child: Stack(children: <Widget>[
-                                mapToggle
-                                    ? GoogleMap(
-                                  initialCameraPosition:
-                                  CameraPosition(target: LatLng(0.0, 0.0)),
-                                  onMapCreated: _onMapCreated,
-                                  compassEnabled: false,
-                                  // mapType: MapType.normal,
-                                  myLocationEnabled: true,
-                                  rotateGesturesEnabled: true,
-                                  scrollGesturesEnabled: true,
-                                  tiltGesturesEnabled: true,
-                                  zoomGesturesEnabled: true,
-                                  myLocationButtonEnabled: true,
-                                  zoomControlsEnabled: false,
-                                  markers: Set<Marker>.of(markers.values),
-                                  // polylines: Set<Polyline>.of(polylines.values),
-                                )
-                                    : Center(
-                                  child: Text(
-                                    'Loading...',
-                                    style: TextStyle(fontSize: 28),
-                                  ),
+                                Color(MyColors.primaryColor).withOpacity(0.3),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Center(
+                                      child: Text(
+                                    '$timerText',
+                                    style: TextStyle(
+                                        fontSize: 50,
+                                        color: Color(MyColors.primaryColor),
+                                        fontWeight: FontWeight.bold),
+                                  )),
+                                ]))
+                      ])
+                : Container(
+                    padding: EdgeInsets.all(20),
+                    child: SingleChildScrollView(
+                      child: Column(children: [
+                        actionButton != 'go'
+                            ? Container()
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: Color(MyColors.other3),
+                                          borderRadius:
+                                              BorderRadius.circular(10.0)),
+                                      padding: EdgeInsets.only(
+                                          right: 20,
+                                          left: 20,
+                                          top: 10.0,
+                                          bottom: 10.0),
+                                      margin: EdgeInsets.only(right: 15.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            ch.activity_type,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText2
+                                                .copyWith(
+                                                    color: Color(
+                                                        MyColors.primaryColor)),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ]),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        actionButton == 'go'
+                            ? Container()
+                            : Container(
+                                decoration: BoxDecoration(
+                                    color: Color(MyColors.other3),
+                                    borderRadius: BorderRadius.circular(10.0)),
+                                padding: EdgeInsets.only(
+                                    right: 20,
+                                    left: 20,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                margin:
+                                    EdgeInsets.only(right: 0.0, bottom: 15.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      ch.activity_type,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText2
+                                          .copyWith(
+                                              color:
+                                                  Color(MyColors.primaryColor)),
+                                    ),
+                                  ],
                                 ),
-                                Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        InkWell(
-                                          onTap: (){
-                                            Navigator.pushNamed(
-                                                context, CommunityChallengeDetails.routeName, arguments: ch);
+                              ),
+                        Container(
+                            height: MediaQuery.of(context).size.height / 2.3,
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Expanded(
+                                      child: Stack(children: <Widget>[
+                                    mapToggle
+                                        ? GoogleMap(
+                                            initialCameraPosition:
+                                                CameraPosition(
+                                                    target: LatLng(0.0, 0.0)),
+                                            onMapCreated: _onMapCreated,
+                                            compassEnabled: false,
+                                            // mapType: MapType.normal,
+                                            myLocationEnabled: true,
+                                            rotateGesturesEnabled: true,
+                                            scrollGesturesEnabled: true,
+                                            tiltGesturesEnabled: true,
+                                            zoomGesturesEnabled: true,
+                                            myLocationButtonEnabled: true,
+                                            zoomControlsEnabled: false,
+                                            markers:
+                                                Set<Marker>.of(markers.values),
+                                            // polylines: Set<Polyline>.of(polylines.values),
+                                          )
+                                        : Center(
+                                            child: Text(
+                                              'Loading...',
+                                              style: TextStyle(fontSize: 28),
+                                            ),
+                                          ),
+                                    Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                Navigator.pushNamed(
+                                                    context,
+                                                    CommunityChallengeDetails
+                                                        .routeName,
+                                                    arguments: ch);
+                                              },
+                                              child: SvgPicture.asset(
+                                                "assets/exercise/white_r_location.svg",
+                                                height: 100.0,
+                                              ),
+                                            ),
+                                            // InkWell(
+                                            //     onTap: () {},
+                                            //     child: SvgPicture.asset(
+                                            //       "assets/exercise/white_music.svg",
+                                            //       height: 100.0,
+                                            //     )),
+                                            // InkWell(
+                                            //     onTap: () {},
+                                            //     child: SvgPicture.asset(
+                                            //       "assets/exercise/white_camera.svg",
+                                            //       height: 100.0,
+                                            //     )),
+                                            InkWell(
+                                              onTap: (){
+                                                setState(() {
+                                                  showWaterCard = !showWaterCard;
+                                                });
+                                              },
+                                              child: Padding(
+                                                  padding: EdgeInsets.only(right: 10.0),
+                                                  child: Container(
+                                                      width: 55,
+                                                      height: 55,
+                                                      padding: EdgeInsets.all(5.0),
+                                                      decoration: BoxDecoration(
+                                                          color: Color(MyColors.primaryColor),
+                                                          borderRadius: BorderRadius.circular(55.0),
+                                                          boxShadow: [
+                                                            BoxShadow(color: Colors.black, blurRadius: 2)
+                                                          ]
+                                                      ),
+                                                      child: Column(
+                                                        children: [
+                                                          SvgPicture.asset(
+                                                            "assets/diet/glass.svg",
+                                                          ),
+                                                          Text(
+                                                              'Water',
+                                                              style: Theme.of(context).textTheme.bodyText1.copyWith(
+                                                                  fontSize: 6.0,
+                                                                  color: Colors.white
+                                                              )
+                                                          )
+                                                        ],
+                                                      )
+                                                  )
+                                              ),
+                                            ),
+                                            Visibility(visible: showWaterCard, child: Stack(
+                                              alignment: Alignment.centerRight,
+                                              children: [
+                                                Container(
+                                                  width: MediaQuery.of(context).size.width - 0.0,
+                                                  margin: EdgeInsets.only(top: 10.0),
+                                                  child: WaterCard(),
+                                                )
+                                              ],
+                                            ))
+                                          ],
+                                        )),
+                                  ])),
+                                ])),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        actionButton == 'go'
+                            ? Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    children: [
+                                      SvgPicture.asset(
+                                        "assets/exercise/reset_location.svg",
+                                        height: 40.0,
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        'GPS',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1
+                                            .copyWith(
+                                                fontSize: 10.0,
+                                                color: Color(
+                                                    MyColors.titleTextColor)),
+                                      )
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      SvgPicture.asset(
+                                        "assets/exercise/music.svg",
+                                        height: 40.0,
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        'Music',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1
+                                            .copyWith(
+                                                fontSize: 10.0,
+                                                color: Color(
+                                                    MyColors.titleTextColor)),
+                                      )
+                                    ],
+                                  ),
+                                  InkWell(
+                                      onTap: () {
+                                        Navigator.pushNamed(context,
+                                            CommunityChallengeDetails.routeName,
+                                            arguments: ch);
+                                      },
+                                      child: Column(
+                                        children: [
+                                          SvgPicture.asset(
+                                            "assets/exercise/records.svg",
+                                            height: 40.0,
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            'Details',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1
+                                                .copyWith(
+                                                    fontSize: 10.0,
+                                                    color: Color(MyColors
+                                                        .titleTextColor)),
+                                          )
+                                        ],
+                                      )),
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "$distanceCovered",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline2
+                                                  .copyWith(
+                                                      fontSize:
+                                                          getProportionateScreenWidth(
+                                                              18),
+                                                      color: Color(MyColors
+                                                          .titleTextColor)),
+                                            ),
+                                            Text(
+                                              'km',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText1
+                                                  .copyWith(
+                                                      fontSize: 10.0,
+                                                      color: Color(MyColors
+                                                          .titleTextColor)),
+                                            ),
+                                          ]),
+                                      Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              timeCovered,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline2
+                                                  .copyWith(
+                                                      fontSize:
+                                                          getProportionateScreenWidth(
+                                                              18),
+                                                      color: Color(MyColors
+                                                          .titleTextColor)),
+                                            ),
+                                            Text(
+                                              'Time',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText1
+                                                  .copyWith(
+                                                      fontSize: 10.0,
+                                                      color: Color(MyColors
+                                                          .titleTextColor)),
+                                            ),
+                                          ]),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        actionButton == 'go'
+                            ? InkWell(
+                                onTap: () {
+                                  // if(!_serviceEnabled) {
+                                  //   initPlatformState();
+                                  // }
+                                  if (!_physicalActivityEnabled) {
+                                    setupPhysicalActivityTracking();
+                                    return;
+                                  }
+                                  // setupPhysicalActivityTracking();
+                                  // if(Platform.isAndroid) {
+                                  //
+                                  // }else {
+                                  //   setupPhysicalActivityTracking();
+                                  // }
+                                  setState(() {
+                                    counting = true;
+                                    startTimeout();
+                                    actionButton = 'play';
+                                  });
+                                },
+                                child: Center(
+                                  child: SvgPicture.asset(
+                                    "assets/exercise/go.svg",
+                                    height: 66.0,
+                                  ),
+                                ))
+                            : actionButton == 'pause'
+                                ? Center(
+                                    child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      InkWell(
+                                          onTap: () async {
+                                            bool res = await new GeneralUtils()
+                                                .displayReturnedValueAlertDialog(
+                                                    context,
+                                                    "Attention",
+                                                    "Are you sure you want to end this challenge?");
+                                            if (!res) return;
+                                            if (_locationSubscription != null)
+                                              _locationSubscription.pause();
+                                            if (_timerSubscription != null)
+                                              _timerSubscription.cancel();
+                                            // if(challengeStepService != null) challengeStepService.stopCounting();
+                                            currentChallengeEnded(false);
+                                            // Navigator.pushNamed(
+                                            //     context, SaveActivities.routeName);
                                           },
                                           child: SvgPicture.asset(
-                                            "assets/exercise/white_r_location.svg",
-                                            height: 100.0,
-                                          ),
-                                        ),
-    InkWell(
-    onTap: (){
-
-    },
-    child: SvgPicture.asset(
-                                          "assets/exercise/white_music.svg",
-                                          height: 100.0,
-                                        )),
-        InkWell(
-          onTap: (){
-
-          },
-          child: SvgPicture.asset(
-                                          "assets/exercise/white_camera.svg",
-                                          height: 100.0,
-                                        )),
-                                      ],
-                                    )),
-                              ])),
-                        ])),
-                SizedBox(
-                  height: 30,
-                ),
-                actionButton == 'go'
-                    ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        SvgPicture.asset(
-                          "assets/exercise/reset_location.svg",
-                          height: 40.0,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          'GPS',
-                          style: Theme.of(context).textTheme.bodyText1.copyWith(
-                              fontSize: 10.0,
-                              color: Color(MyColors.titleTextColor)
-                          ),
-                        )
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        SvgPicture.asset(
-                          "assets/exercise/music.svg",
-                          height: 40.0,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          'Music',
-                          style: Theme.of(context).textTheme.bodyText1.copyWith(
-                              fontSize: 10.0,
-                              color: Color(MyColors.titleTextColor)
-                          ),
-                        )
-                      ],
-                    ),
-                    InkWell(
-                        onTap: (){
-                          Navigator.pushNamed(
-                              context, CommunityChallengeDetails.routeName, arguments: ch);
-                        },
-                        child:
-                        Column(
-                          children: [
-                            SvgPicture.asset(
-                              "assets/exercise/records.svg",
-                              height: 40.0,
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              'Details',
-                              style: Theme.of(context).textTheme.bodyText1.copyWith(
-                                fontSize: 10.0,
-                                color: Color(MyColors.titleTextColor)
-                              ),
-                            )
-                          ],
-                        ) ),
-                  ],
-                ) : Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "$distanceCovered",
-                                    style: Theme.of(context).textTheme.headline2.copyWith(
-                                        fontSize: getProportionateScreenWidth(18),
-                                        color: Color(MyColors.titleTextColor)
-                                    ),
-                                  ),
-                                  Text('km', style: Theme.of(context).textTheme.bodyText1.copyWith(
-                                      fontSize: 10.0,
-                                      color: Color(MyColors.titleTextColor)
-                                  ),),
-                                ]),
-                            Column(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    timeCovered,
-                                    style: Theme.of(context).textTheme.headline2.copyWith(
-                                        fontSize: getProportionateScreenWidth(18),
-                                        color: Color(MyColors.titleTextColor)
-                                    ),
-                                  ),
-                                  Text('Time', style: Theme.of(context).textTheme.bodyText1.copyWith(
-                                      fontSize: 10.0,
-                                      color: Color(MyColors.titleTextColor)
-                                  ),),
-                                ]),
-                          ],
-                        ),
-                      ],
-                    ),
-                SizedBox(
-                  height: 30,
-                ),
-                actionButton == 'go'
-                    ? InkWell(
-                    onTap: () {
-                      // if(!_serviceEnabled) {
-                      //   initPlatformState();
-                      // }
-                      if (!_physicalActivityEnabled) {
-                        setupPhysicalActivityTracking();
-                        return;
-                      }
-                      // setupPhysicalActivityTracking();
-                      // if(Platform.isAndroid) {
-                      //
-                      // }else {
-                      //   setupPhysicalActivityTracking();
-                      // }
-                      setState(() {
-                        counting = true;
-                        startTimeout();
-                        actionButton = 'play';
-                      });
-                    },
-                    child: Center(
-                      child: SvgPicture.asset(
-                        "assets/exercise/go.svg",
-                        height: 66.0,
-                      ),
-                    ))
-                    : actionButton == 'pause'
-                    ? Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        InkWell(
-                            onTap: () async {
-                              bool res = await new GeneralUtils().displayReturnedValueAlertDialog(context, "Attention", "Are you sure you want to end this challenge?");
-                              if(!res) return;
-                              if(_locationSubscription != null) _locationSubscription.pause();
-                              if(_timerSubscription != null) _timerSubscription.cancel();
-                              // if(challengeStepService != null) challengeStepService.stopCounting();
-                              currentChallengeEnded(false);
-                              // Navigator.pushNamed(
-                              //     context, SaveActivities.routeName);
-                            },
-                            child: SvgPicture.asset(
-                              "assets/exercise/finish.svg",
-                              height: 66.0,
-                            )),
-                        SizedBox(
-                          width: 30,
-                        ),
-                        InkWell(
-                            onTap: () async {
-                              await ss.setPrefItem("statusCH", "play");
-                              // if(Platform.isAndroid) {
-                              //   Map<String, dynamic> data = await myChallengeService.getCurrentSteps();
-                              //   await ss.setPrefItem("resumedSteps", "${data["steps"]}");
-                              // }
-                              // if(_locationSubscription != null) _locationSubscription.resume();
-                              // if(challengeStepService != null) challengeStepService.resumeCounting();
-                              await saveCurrentGPSPosition();
-                              preSetupLocationPermission();
-                              setState(() {
-                                actionButton = 'play';
-                              });
-                            },
-                            child: SvgPicture.asset(
-                              "assets/exercise/resume.svg",
-                              height: 66.0,
-                            )),
-                      ],
-                    ))
-                    : InkWell(
-                    onTap: () async {
-                      await ss.setPrefItem("statusCH", "pause");
-                      await saveCurrentGPSPosition();
-                      // if(Platform.isAndroid) {
-                      //   await ss.setPrefItem("pausedSteps", "$totalSteps");
-                      // }
-                      if(_locationSubscription != null) _locationSubscription.pause();
-                      if(_timerSubscription != null) _timerSubscription.cancel();
-                      // if(challengeStepService != null) challengeStepService.pauseCounting();
-                      setState(() {
-                        actionButton = 'pause';
-                      });
-                    },
-                    child: Center(
-                      child: SvgPicture.asset(
-                        "assets/exercise/pause.svg",
-                        height: 66.0,
-                      ),
-                    ))
-              ]),
-            ))));
+                                            "assets/exercise/finish.svg",
+                                            height: 66.0,
+                                          )),
+                                      SizedBox(
+                                        width: 30,
+                                      ),
+                                      InkWell(
+                                          onTap: () async {
+                                            await ss.setPrefItem(
+                                                "statusCH", "play");
+                                            await initPlatformState();
+                                            // if(Platform.isAndroid) {
+                                            //   Map<String, dynamic> data = await myChallengeService.getCurrentSteps();
+                                            //   await ss.setPrefItem("resumedSteps", "${data["steps"]}");
+                                            // }
+                                            // if(_locationSubscription != null) _locationSubscription.resume();
+                                            // if(challengeStepService != null) challengeStepService.resumeCounting();
+                                            await saveCurrentGPSPosition();
+                                            await preSetupLocationPermission();
+                                            setState(() {
+                                              actionButton = 'play';
+                                            });
+                                          },
+                                          child: SvgPicture.asset(
+                                            "assets/exercise/resume.svg",
+                                            height: 66.0,
+                                          )),
+                                    ],
+                                  ))
+                                : InkWell(
+                                    onTap: () async {
+                                      await ss.setPrefItem("statusCH", "pause");
+                                      await saveCurrentGPSPosition();
+                                      // if(Platform.isAndroid) {
+                                      //   await ss.setPrefItem("pausedSteps", "$totalSteps");
+                                      // }
+                                      if (_locationSubscription != null)
+                                        _locationSubscription.pause();
+                                      if (_timerSubscription != null)
+                                        _timerSubscription.cancel();
+                                      // if(challengeStepService != null) challengeStepService.pauseCounting();
+                                      setState(() {
+                                        actionButton = 'pause';
+                                      });
+                                    },
+                                    child: Center(
+                                      child: SvgPicture.asset(
+                                        "assets/exercise/pause.svg",
+                                        height: 66.0,
+                                      ),
+                                    ))
+                      ]),
+                    ))));
   }
 
   currentChallengeEnded(bool success) async {
@@ -928,18 +1032,22 @@ class _PageState extends State<TrackChallengeActivities> {
     await ss.deletePref("startTime");
     await ss.deletePref("currentTime");
     await ss.deletePref("init_step_count");
-    await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("setups").doc("user-data").update(
-        {
-          "currentChallenge": FieldValue.delete(),
-          "running": FieldValue.delete(),
-          "statusCH": FieldValue.delete(),
-          "startPosition": FieldValue.delete(),
-          "currentPosition": FieldValue.delete(),
-          "startTime": FieldValue.delete(),
-          "currentTime": FieldValue.delete(),
-          "init_step_count": FieldValue.delete(),
-          "user_ch_id": FieldValue.delete(),
-        });
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user.uid)
+        .collection("setups")
+        .doc("user-data")
+        .update({
+      "currentChallenge": FieldValue.delete(),
+      "running": FieldValue.delete(),
+      "statusCH": FieldValue.delete(),
+      "startPosition": FieldValue.delete(),
+      "currentPosition": FieldValue.delete(),
+      "startTime": FieldValue.delete(),
+      "currentTime": FieldValue.delete(),
+      "init_step_count": FieldValue.delete(),
+      "user_ch_id": FieldValue.delete(),
+    });
     await FirebaseFirestore.instance
         .collection("users")
         .doc(user.uid)
@@ -950,41 +1058,48 @@ class _PageState extends State<TrackChallengeActivities> {
       "time_taken": userTime,
       "steps_taken": totalSteps,
     });
-    if(distanceCovered >= double.parse(ch.distance)) {
-      if(ch.funding_type == "Sponsor") {
-        if(ch.winner_reward_type == "All Completed Participants") {
+    if (distanceCovered >= double.parse(ch.distance)) {
+      if (ch.funding_type == "Sponsor") {
+        if (ch.winner_reward_type == "All Completed Participants") {
           await exerciseService.onChallengeParticipation(ch.id);
-        }else {
+        } else {
           //winners reward
           await exerciseService.onWinnersReward(ch.id);
         }
-      }else {
+      } else {
         //pool funding
         await exerciseService.onWinnersReward(ch.id);
       }
     }
     String activityText = "has finished the challenge.";
     await exerciseService.logActivity(ch, activityText);
-    String text = (success) ? "You have successfully completed your challenge." : "Thank you for participating.";
+    String text = (success)
+        ? "You have successfully completed your challenge."
+        : "Thank you for participating.";
     new GeneralUtils().showToast(context, text);
     setState(() {
       _inAsyncCall = false;
     });
-    if(getStartLocation == null) {
+    if (getStartLocation == null) {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (BuildContext context) => new HomeScreen()));
       return;
     }
     Map<String, dynamic> startLoc = jsonDecode(getStartLocation);
     Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (BuildContext context) => new PostCompleteChallenge(ch, "$distanceCovered", timeCovered, "$totalSteps", startLoc, _currentLocation)));
+        builder: (BuildContext context) => new PostCompleteChallenge(
+            ch,
+            "$distanceCovered",
+            timeCovered,
+            "$totalSteps",
+            startLoc,
+            _currentLocation)));
   }
 
   getActivityData() async {
     String running = await ss.getItem("running");
     print("running = $running");
-    if(running == null) return;
-
+    if (running == null) return;
 
     String statusCH = await ss.getItem("statusCH");
 
@@ -999,14 +1114,14 @@ class _PageState extends State<TrackChallengeActivities> {
 
     await saveCurrentGPSPosition();
 
-    if(actionButton == "pause") {
+    if (actionButton == "pause") {
       // print("pausseeeeeeee");
-      if(_locationSubscription != null) _locationSubscription.pause();
-      if(_timerSubscription != null) _timerSubscription.cancel();
+      if (_locationSubscription != null) _locationSubscription.pause();
+      if (_timerSubscription != null) _timerSubscription.cancel();
       // if(challengeStepService != null) challengeStepService.pauseCounting();
     }
 
-    if(actionButton == "play") {
+    if (actionButton == "play") {
       // print("playyyyyy");
       preSetupLocationPermission();
       // if(challengeStepService != null) challengeStepService.resumeCounting();
@@ -1044,7 +1159,7 @@ class _PageState extends State<TrackChallengeActivities> {
   }
 }
 
-void onStart() async{
+void onStart() async {
   // WidgetsFlutterBinding.ensureInitialized();
   // final service = FlutterBackgroundService();
   // service.onDataReceived.listen((event) {
@@ -1068,14 +1183,15 @@ void onStart() async{
       desiredAccuracy: geo.LocationAccuracy.high);
 
   String running = await ss.getItem("running");
-  if(running == null) return;
+  if (running == null) return;
   String startPosition = await ss.getItem("startPosition");
   Map<String, dynamic> sp = jsonDecode(startPosition);
 
   double lat = sp["latitude"];
   double lng = sp["longitude"];
 
-  double distance = ExerciseService.distance(lat, position.latitude, lng, position.longitude);
+  double distance =
+      ExerciseService.distance(lat, position.latitude, lng, position.longitude);
 
   // Map<String, dynamic> userLocation = new Map();
   // userLocation["latitude"] = result.latitude;
@@ -1089,17 +1205,17 @@ void onStart() async{
   int diff = today.difference(st).inMilliseconds;
 
   String currentCH = await ss.getItem("currentChallenge");
-  if(currentCH == null) return;
+  if (currentCH == null) return;
 
   Map<String, dynamic> getData = jsonDecode(currentCH);
 
   VirtualChallenge ch = VirtualChallenge.fromSnapshot(getData);
 
-  if(ch == null) return;
+  if (ch == null) return;
 
   // await new ExerciseService().updateUserChallengeData(ch, distance, diff);
 
-  if(distance >= double.parse(ch.distance)) {
+  if (distance >= double.parse(ch.distance)) {
     await ss.deletePref("currentChallenge");
     await ss.deletePref("running");
     await ss.deletePref("statusCH");
@@ -1107,16 +1223,20 @@ void onStart() async{
     await ss.deletePref("currentPosition");
     await ss.deletePref("startTime");
     await ss.deletePref("currentTime");
-    await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("setups").doc("user-data").update(
-        {
-          "currentChallenge": FieldValue.delete(),
-          "running": FieldValue.delete(),
-          "statusCH": FieldValue.delete(),
-          "startPosition": FieldValue.delete(),
-          "currentPosition": FieldValue.delete(),
-          "startTime": FieldValue.delete(),
-          "currentTime": FieldValue.delete(),
-        });
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user.uid)
+        .collection("setups")
+        .doc("user-data")
+        .update({
+      "currentChallenge": FieldValue.delete(),
+      "running": FieldValue.delete(),
+      "statusCH": FieldValue.delete(),
+      "startPosition": FieldValue.delete(),
+      "currentPosition": FieldValue.delete(),
+      "startTime": FieldValue.delete(),
+      "currentTime": FieldValue.delete(),
+    });
 
     // service.setNotificationInfo(
     //       title: "Challenge Alert",

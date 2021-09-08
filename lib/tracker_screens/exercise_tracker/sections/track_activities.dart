@@ -9,6 +9,7 @@ import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/homescreen/Home.dart';
 import 'package:coral_reef/size_config.dart';
+import 'package:coral_reef/tracker_screens/diet_tracker_screen/components/water_card.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/map_utils.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/post_complete_challenge.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/records_activities.dart';
@@ -16,6 +17,7 @@ import 'package:coral_reef/tracker_screens/exercise_tracker/sections/save_activi
 import 'package:coral_reef/tracker_screens/exercise_tracker/services/challenge_service.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/services/exercise_service.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -24,6 +26,7 @@ import 'package:location/location.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:permission_handler/permission_handler.dart' as ph;
 import 'package:screen/screen.dart';
+import 'package:rive/rive.dart';
 
 import '../../../constants.dart';
 
@@ -33,7 +36,7 @@ class TrackActivities extends StatefulWidget {
   _PageState createState() => _PageState();
 }
 
-class _PageState extends State<TrackActivities> {
+class _PageState extends State<TrackActivities> with SingleTickerProviderStateMixin {
 
   var _startLocation;
   LocationData _currentLocation;
@@ -86,8 +89,12 @@ class _PageState extends State<TrackActivities> {
   int totalSteps = 0;
   double distanceCovered = 0.0;
   String timeCovered = "0D:0H:0M:0S";
+  bool showWaterCard = false;
 
   Timer _timerSubscription;
+
+  Animation<double> _animation;
+  AnimationController _animationController;
 
   String get timerText => (timerMaxSeconds - currentSeconds).toString();
   startTimeout([int milliseconds]) {
@@ -119,13 +126,20 @@ class _PageState extends State<TrackActivities> {
 
   @override
   void initState() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 260),
+    );
+
+    final curvedAnimation = CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
+    _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
     super.initState();
     exerciseService = new ExerciseService();
     myChallengeService = new MyChallengeService(context);
     setCustomMapPin();
-    getActivityData();
     locationSetup();
     setupPhysicalActivityTracking();
+    getActivityData();
     geolocator = Geolocator();
   }
 
@@ -455,7 +469,7 @@ class _PageState extends State<TrackActivities> {
                                   scrollGesturesEnabled: true,
                                   tiltGesturesEnabled: true,
                                   zoomGesturesEnabled: true,
-                                  myLocationButtonEnabled: true,
+                                  myLocationButtonEnabled: false,
                                   zoomControlsEnabled: false,
                                   markers: Set<Marker>.of(markers.values),
                                       )
@@ -465,31 +479,69 @@ class _PageState extends State<TrackActivities> {
                                           style: TextStyle(fontSize: 28),
                                         ),
                                       ),
-                                    (actionButton != "go") ? Visibility(visible: false, child: Align(
+                                    Align(
                                         alignment: Alignment.centerRight,
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.end,
                                           mainAxisSize: MainAxisSize.min,
                                           mainAxisAlignment: MainAxisAlignment.end,
                                           children: [
+                                            // InkWell(
+                                            //     onTap: (){
+                                            //
+                                            //     },
+                                            //     child: SvgPicture.asset(
+                                            //       "assets/exercise/white_music.svg",
+                                            //       height: 100.0,
+                                            //     )),
                                             InkWell(
                                                 onTap: (){
-
+                                                  setState(() {
+                                                    showWaterCard = !showWaterCard;
+                                                  });
                                                 },
-                                                child: SvgPicture.asset(
-                                                  "assets/exercise/white_music.svg",
-                                                  height: 100.0,
-                                                )),
-                                            InkWell(
-                                                onTap: (){
-
-                                                },
-                                                child: SvgPicture.asset(
-                                                  "assets/exercise/white_camera.svg",
-                                                  height: 100.0,
-                                                )),
+                                                child: Padding(
+                                                  padding: EdgeInsets.only(right: 10.0),
+                                                  child: Container(
+                                                    width: 55,
+                                                    height: 55,
+                                                    padding: EdgeInsets.all(5.0),
+                                                    decoration: BoxDecoration(
+                                                      color: Color(MyColors.primaryColor),
+                                                      borderRadius: BorderRadius.circular(55.0),
+                                                      boxShadow: [
+                                                        BoxShadow(color: Colors.black, blurRadius: 2)
+                                                      ]
+                                                    ),
+                                                    child: Column(
+                                                      children: [
+                                                        SvgPicture.asset(
+                                                          "assets/diet/glass.svg",
+                                                        ),
+                                                        Text(
+                                                            'Water',
+                                                            style: Theme.of(context).textTheme.bodyText1.copyWith(
+                                                                fontSize: 6.0,
+                                                                color: Colors.white
+                                                            )
+                                                        )
+                                                      ],
+                                                    )
+                                                  )
+                                                ),
+                                            ),
+                                            Visibility(visible: showWaterCard, child: Stack(
+                                              alignment: Alignment.centerRight,
+                                              children: [
+                                                Container(
+                                                  width: MediaQuery.of(context).size.width - 0.0,
+                                                  margin: EdgeInsets.only(top: 10.0),
+                                                  child: WaterCard(),
+                                                )
+                                              ],
+                                            ))
                                           ],
-                                        )),) : SizedBox()
+                                        ))
                               ])),
                             ])),
                     SizedBox(
@@ -648,8 +700,9 @@ class _PageState extends State<TrackActivities> {
                                   InkWell(
                                       onTap: () async {
                                         await ss.setPrefItem("activityStatusCH", "play");
+                                        await initPlatformState();
                                         await saveCurrentGPSPosition();
-                                        preSetupLocationPermission();
+                                        await preSetupLocationPermission();
                                         setState(() {
                                           actionButton = 'play';
                                         });
@@ -675,7 +728,19 @@ class _PageState extends State<TrackActivities> {
                                     "assets/exercise/pause.svg",
                                     height: 66.0,
                                   ),
-                                ))
+                                )),
+                    // AnimatedContainer(
+                    //   width: MediaQuery.of(context).size.width,
+                    //   height: 400.0,
+                    //   duration: Duration(seconds: 5),
+                    //   child: Column(children: [
+                    //     Container(
+                    //       height: 200.0,
+                    //       child: RiveAnimation.asset("assets/rive/518-984-or-switch-it-up.riv"),
+                    //     ),
+                    //     Text("Record"),
+                    //   ])
+                    // )
                   ]),
                 ))));
   }
@@ -708,7 +773,11 @@ class _PageState extends State<TrackActivities> {
     }
   }
 
-  initPlatformState() async {
+  Future<void> initPlatformState() async {
+    if(_locationSubscription != null) {
+      await _locationSubscription.cancel();
+      _locationSubscription = null;
+    }
     _serviceEnabled = await mLocation.serviceEnabled();
     if (!_serviceEnabled) {
       _serviceEnabled = await mLocation.requestService();

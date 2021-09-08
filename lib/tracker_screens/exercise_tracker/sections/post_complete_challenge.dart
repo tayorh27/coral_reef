@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:coral_reef/ListItem/model_challenge.dart';
 import 'package:coral_reef/ListItem/route.dart';
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -129,11 +130,13 @@ class _PostCompleteChallenge extends State<PostCompleteChallenge> {
 
   GlobalKey key = GlobalKey();
   ShotService service = ShotService();
+  String kcal = "";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getKcal();
     setStopMapPin();
     setStartMapPin();
     LatLng start = new LatLng(widget.startLocation["latitude"],
@@ -141,6 +144,14 @@ class _PostCompleteChallenge extends State<PostCompleteChallenge> {
     LatLng end = new LatLng(widget.endLocation.latitude, widget.endLocation.longitude);
     addPolyLineToMap(start, end);
     geolocator = Geolocator();
+  }
+
+  Future<void> getKcal() async {
+    String calc = await new GeneralUtils().calculateKcal(double.parse(widget.distance), widget.challenge.time_taken);
+    if(!mounted) return;
+    setState(() {
+      kcal = calc;
+    });
   }
 
   @override
@@ -305,11 +316,7 @@ class _PostCompleteChallenge extends State<PostCompleteChallenge> {
                                   "assets/exercise/fire.svg",
                                   height: 40.0,
                                 ),
-                                Text(
-                                    (double.parse(widget.currentTakenSteps) / 63.4)
-                                        .floor()
-                                        .toString() +
-                                        " kcal",
+                                Text("$kcal kcal",
                                     style: Theme
                                         .of(context)
                                         .textTheme

@@ -101,6 +101,8 @@ dependencies:
   awesome_notifications: ^0.0.6+10
   rive: ^0.7.28
   image_downloader: ^0.30.0
+#  floating_action_bubble: ^1.1.2
+#  expandable: ^5.0.1
 #  translator: ^0.1.7
 #  spotify_auth_player: ^0.2.0
 #  activity_recognition_flutter: ^4.0.2
@@ -142,6 +144,7 @@ flutter:
     - assets/well_being/
     - assets/diet/
     - assets/exercise/
+    - assets/rive/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

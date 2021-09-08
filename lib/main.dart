@@ -9,6 +9,8 @@ import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
 import 'package:coral_reef/services/step_service.dart';
+import 'package:coral_reef/theme/app_theme.dart';
+import 'package:coral_reef/theme/theme_provider.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +23,7 @@ import 'package:coral_reef/routes.dart';
 import 'package:coral_reef/onboarding/splash/splash_screen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:neat_periodic_task/neat_periodic_task.dart';
+import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'ListItem/model_challenge.dart';
@@ -336,24 +339,30 @@ class _MyApp extends State<MyApp> {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
 
     //initialize notifications
-    dailyNotificationServices.displayDailyCaloriesNotification();
-    dailyNotificationServices.displayDailySleepNotification();
-    dailyNotificationServices.displayDailyStepsNotification();
-    dailyNotificationServices.displayDailyVitaminsNotification();
-    dailyNotificationServices.displayWeeklyPregnancyNotification();
-    dailyNotificationServices.displayDailyWaterNotification();
-    dailyNotificationServices.displayDailyPeriodNotification();
+    // dailyNotificationServices.displayDailyCaloriesNotification();
+    // dailyNotificationServices.displayDailySleepNotification();
+    // dailyNotificationServices.displayDailyStepsNotification();
+    // dailyNotificationServices.displayDailyVitaminsNotification();
+    // dailyNotificationServices.displayWeeklyPregnancyNotification();
+    // dailyNotificationServices.displayDailyWaterNotification();
+    // dailyNotificationServices.displayDailyPeriodNotification();
 
+    return ChangeNotifierProvider(
+        create: (context) => ThemeProvider(),
+        builder: (context, _) {
+          final themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
       title: 'Coral Reef',
-      theme: Constant.lightTheme,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: themeProvider.themeMode,
       debugShowCheckedModeBanner: false,
       home: SplashScreen(),
       routes: routes,
       navigatorObservers: [
         FirebaseAnalyticsObserver(analytics: analytics),
-      ],
-    );
+      ]);
+        });
   }
 
   @override

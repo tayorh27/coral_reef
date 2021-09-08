@@ -55,6 +55,8 @@ class _PageState extends State<SaveActivities> {
   PolylinePoints polylinePoints = PolylinePoints();
   String googleAPiKey = "AIzaSyCRrfbYY6rhh2qfMPo-My7y_gUfsl2eP14";
 
+  String kcal = "";
+
   void setCustomMapPin() async {
     pinLocationIcon = await BitmapDescriptor.fromAssetImage(
         ImageConfiguration(devicePixelRatio: 2.5),
@@ -65,12 +67,9 @@ class _PageState extends State<SaveActivities> {
     startIcon = await BitmapDescriptor.fromAssetImage(
         ImageConfiguration(devicePixelRatio: 2.5),
         'assets/exercise/details_pin.png');
-    // startIcon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
   }
 
   void setStopMapPin() async {
-    // stopIcon = await BitmapDescriptor.fromAssetImage(
-    //     ImageConfiguration(devicePixelRatio: 2.5), 'assets/exercise/end.png');
     stopIcon = BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
   }
 
@@ -79,7 +78,6 @@ class _PageState extends State<SaveActivities> {
     controller.setMapStyle(Utils.mapStyles);
     if(_controller.isCompleted) return;
     _controller.complete(controller);
-    print("asdfghjkl");
     setState(() {
       addMarker(LatLng(widget.startLocation["latitude"],
           widget.startLocation["longitude"]), "origin", "Start Position", startIcon);
@@ -102,6 +100,7 @@ class _PageState extends State<SaveActivities> {
   @override
   void initState() {
     super.initState();
+    getKcal();
     setStopMapPin();
     setStartMapPin();
     LatLng start = new LatLng(widget.startLocation["latitude"],
@@ -109,6 +108,14 @@ class _PageState extends State<SaveActivities> {
     LatLng end = new LatLng(widget.endLocation.latitude, widget.endLocation.longitude);
     addPolyLineToMap(start, end);
     geolocator = Geolocator();
+  }
+
+  Future<void> getKcal() async {
+    String calc = await new GeneralUtils().calculateKcal(double.parse(widget.distance), widget.activity.time_taken);
+    if(!mounted) return;
+    setState(() {
+      kcal = calc;
+    });
   }
 
   @override
@@ -271,11 +278,7 @@ class _PageState extends State<SaveActivities> {
                               "assets/exercise/fire.svg",
                               height: 40.0,
                             ),
-                            Text(
-                                (double.parse(widget.currentTakenSteps) / 63.4)
-                                    .floor()
-                                    .toString() +
-                                    " kcal",
+                            Text("$kcal kcal",
                                 style: Theme
                                     .of(context)
                                     .textTheme

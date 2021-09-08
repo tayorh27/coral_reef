@@ -29,7 +29,7 @@ class DailyNotificationServices {
     currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
   }
 
-  Future<void> displayDailySleepNotification() async {
+  Future<void> displayDailySleepNotification(bool value) async {
     String sleepNotificationAllowed = await ss.getItem("sleepNotificationAllowed") ?? "false";
     String isGeneralNotificationAllowed = await ss.getItem("generalNotificationAllowed") ?? "false";
     if(sleepNotificationAllowed == "false" || isGeneralNotificationAllowed == "false") return;
@@ -62,7 +62,7 @@ class DailyNotificationServices {
 
   }
 
-  Future<void> displayDailyVitaminsNotification() async {
+  Future<void> displayDailyVitaminsNotification(bool value) async {
     String vitaminsNotificationAllowed = await ss.getItem("vitaminsNotificationAllowed") ?? "false";
     String isGeneralNotificationAllowed = await ss.getItem("generalNotificationAllowed") ?? "false";
     if(vitaminsNotificationAllowed == "false" || isGeneralNotificationAllowed == "false") return;
@@ -92,7 +92,7 @@ class DailyNotificationServices {
     _showDailyAtTime(223, "Vitamins Intake", message, notificationDate, "vitamins");
   }
 
-  Future<void> displayDailyWaterNotification() async {
+  Future<void> displayDailyWaterNotification(bool value) async {
     String waterNotificationAllowed = await ss.getItem("waterNotificationAllowed") ?? "false";
     String isGeneralNotificationAllowed = await ss.getItem("generalNotificationAllowed") ?? "false";
     if(waterNotificationAllowed == "false" || isGeneralNotificationAllowed == "false") return;
@@ -122,7 +122,7 @@ class DailyNotificationServices {
     _showDailyAtTime(334, "Staying Hydrated", message, notificationDate, "water");
   }
 
-  Future<void> displayDailyCaloriesNotification() async {
+  Future<void> displayDailyCaloriesNotification(bool value) async {
     String caloriesNotificationAllowed = await ss.getItem("caloriesNotificationAllowed") ?? "false";
     String isGeneralNotificationAllowed = await ss.getItem("generalNotificationAllowed") ?? "false";
     if(caloriesNotificationAllowed == "false" || isGeneralNotificationAllowed == "false") return;
@@ -152,7 +152,7 @@ class DailyNotificationServices {
     _showDailyAtTime(445, "Calories Intake", message, notificationDate, "calories");
   }
 
-  Future<void> displayDailyStepsNotification() async {
+  Future<void> displayDailyStepsNotification(bool value) async {
     String stepsNotificationAllowed = await ss.getItem("stepsNotificationAllowed") ?? "false";
     String isGeneralNotificationAllowed = await ss.getItem("generalNotificationAllowed") ?? "false";
     if(stepsNotificationAllowed == "false" || isGeneralNotificationAllowed == "false") return;
@@ -183,7 +183,7 @@ class DailyNotificationServices {
     _showDailyAtTime(555, "$currentTakenSteps steps", message, notificationDate3, "steps");
   }
 
-  Future<void> displayDailyPeriodNotification() async {
+  Future<void> displayDailyPeriodNotification(bool value) async {
     String periodNotificationAllowed = await ss.getItem(
         "periodNotificationAllowed") ?? "false";
     String isGeneralNotificationAllowed = await ss.getItem(
@@ -192,7 +192,7 @@ class DailyNotificationServices {
         isGeneralNotificationAllowed == "false") return;
   }
 
-  Future<void> displayWeeklyPregnancyNotification() async {
+  Future<void> displayWeeklyPregnancyNotification(bool value) async {
     String pregnancyNotificationAllowed = await ss.getItem("pregnancyNotificationAllowed") ?? "false";
     String isGeneralNotificationAllowed = await ss.getItem("generalNotificationAllowed") ?? "false";
     if(pregnancyNotificationAllowed == "false" || isGeneralNotificationAllowed == "false") return;

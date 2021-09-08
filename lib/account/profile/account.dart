@@ -156,10 +156,10 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                   },
                 ),
                 AccountProfileMenu(
-                  text: "Reminders",
+                  text: "Notifications",
                   icon: Icon(Icons.alarm, color: Color(MyColors.titleTextColor),),
                   press: () {
-                    // Navigator.pushNamed(context, Reminders.routeName);
+                    Navigator.pushNamed(context, Reminders.routeName);
                   },
                 ),
                 AccountProfileMenu(

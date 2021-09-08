@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/constants.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -20,6 +21,7 @@ import 'colors.dart';
 class GeneralUtils {
 
   // String userCurrentTimeZone;
+  StorageSystem ss = new StorageSystem();
 
   GeneralUtils() {
     // currentTimeZone();
@@ -399,6 +401,29 @@ class GeneralUtils {
         );
       },
     );
+  }
+
+  Future<String> calculateKcal(double distanceInKm, int seconds) async {
+    String userMetric = await ss.getItem("weight_metric");
+    String dewRecord = await ss.getItem("dewRecord");
+    Map<String, dynamic> userWeight = jsonDecode(dewRecord);
+    double weight = double.parse("${userWeight["1"]}");
+
+    int mins = (seconds / 60).round();
+    if(userMetric == "kg") {
+      double speedkg = 1000 * distanceInKm / mins;
+      double grossvokg = 3.5 + 0.2 * speedkg + 0.9 * speedkg * 0.01;
+      double netcalkg = grossvokg * weight / 200;
+      double allkcalkg = netcalkg * mins;
+      return allkcalkg.toStringAsFixed(0);
+    }
+    double distanceInMiles = distanceInKm / 1.609;
+    //user metric is lbs
+    var speeddistancelbs = (1609.344 * distanceInMiles) / mins;
+    var grossvolbsdistance = 3.5 + 0.2 * speeddistancelbs + 0.9 * speeddistancelbs * 0.01;
+    var netcallbsdistance = grossvolbsdistance * weight * 0.4535924 / 200;
+    var allkcallbsdistance = netcallbsdistance * mins;
+    return allkcallbsdistance.toStringAsFixed(0);
   }
 
   showFlutterLocalNotification(String title, String body) {
