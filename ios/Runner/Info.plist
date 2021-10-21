@@ -80,10 +80,10 @@
 	<string>Need to use the microphone for call</string>
 	<key>NSMotionUsageDescription</key>
 	<string>This application tracks your steps</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>To save images locally</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>To upload featured images or profile image</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-    <string>To save images locally</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Allow access to recognize speech to text</string>
 	<key>UIBackgroundModes</key>

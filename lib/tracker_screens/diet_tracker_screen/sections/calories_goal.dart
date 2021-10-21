@@ -4,6 +4,8 @@ import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/components/default_button.dart';
 import 'package:coral_reef/g_chat_screen/components/topics_selection.dart';
 import 'package:coral_reef/shared_screens/pill_icon.dart';
+import 'package:coral_reef/tracker_screens/diet_tracker_screen/sections/meal/add_meal.dart';
+import 'package:coral_reef/tracker_screens/diet_tracker_screen/sections/meal/meal_info.dart';
 import 'package:coral_reef/tracker_screens/diet_tracker_screen/services/diet_service.dart';
 import 'package:coral_reef/tracker_screens/well_being_tracker/components/diet_header.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +29,8 @@ class _CaloriesGoal extends State<CaloriesGoal> {
   DietServices dietServices;
 
   StorageSystem ss = new StorageSystem();
+
+  List<Map<String, dynamic>> mealDetails = [];
 
   @override
   void initState() {
@@ -171,6 +175,10 @@ class _CaloriesGoal extends State<CaloriesGoal> {
                                             ])
                                       ]),
                                 ),
+                                buildMealDetails(Color(MyColors.other1), 0),
+                                buildMealDetails(Color(MyColors.other2), 1),
+                                buildMealDetails(Color(MyColors.other3), 2),
+                                SizedBox(height: SizeConfig.screenHeight * 0.02),
                                 (caloriesGoal != "0") ? Row(
                                   mainAxisSize: MainAxisSize.max,
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -178,14 +186,69 @@ class _CaloriesGoal extends State<CaloriesGoal> {
                                     TopicsSelection(text: "Remove calories", selected: true, onTap: (currentTakenCalories == "0") ? null : (){displayDialog("remove");},),
                                     TopicsSelection(text: "Add calories", selected: true, onTap: (){displayDialog("add");},),
                                   ],
-                                ) : Text(""),
-                                SizedBox(height: SizeConfig.screenHeight * 0.07),
+                                ) : SizedBox(),
+                                (caloriesGoal != "0") ? Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  margin: EdgeInsets.only(top: 40.0),
+                                  child: Center(
+                                    child: TopicsSelection(text: "Add meal", selected: true, onTap: () async {
+                                      await Navigator.pushNamed(context, MealList.routeName);
+                                      await getCaloriesLocalData();
+                                    },),
+                                  ),
+                                ) : SizedBox(),
+                                SizedBox(height: SizeConfig.screenHeight * 0.05),
                                 DefaultButton(
                                   text: "Set daily goal",
                                   loading: _loading,
                                   press: displayDialog2,
-                                )
+                                ),
+                                SizedBox(height: SizeConfig.screenHeight * 0.07),
                               ])))))),
+    );
+  }
+
+  Widget buildMealDetails(Color color, int index) {
+    if(mealDetails.length != 3) return SizedBox();
+    Map<String, dynamic> meal = mealDetails[index];
+    if(meal == null) return SizedBox();
+    if(meal.isEmpty) return SizedBox();
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: SizeConfig.screenHeight * 0.02,
+                height: SizeConfig.screenHeight * 0.02,
+                decoration: BoxDecoration(
+                    color: color
+                ),
+              ),
+              Text(meal["class"],
+                style: Theme.of(context).textTheme.subtitle1.copyWith(
+                  color: Color(MyColors.titleTextColor),
+                  fontSize: getProportionateScreenWidth(13),
+                ),),
+              Text(meal["weight"],
+                style: Theme.of(context).textTheme.subtitle1.copyWith(
+                  color: Color(MyColors.titleTextColor),
+                  fontSize: getProportionateScreenWidth(13),
+                ),),
+              Text(meal["percent"],
+                style: Theme.of(context).textTheme.headline2.copyWith(
+                  color: Color(MyColors.titleTextColor),
+                  fontSize: getProportionateScreenWidth(13),
+                ),),
+            ],
+          ),
+          Divider()
+        ],
+      ),
     );
   }
 

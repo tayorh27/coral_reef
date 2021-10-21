@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/daily_notification_sercives.dart';
 import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/progress.dart';
 import 'package:coral_reef/Utils/storage.dart';
@@ -43,6 +44,7 @@ class _SignFormState extends State<SignForm> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    dailyNotificationServices = new DailyNotificationServices(null);
     pd = new ProgressDisplay(context);
     SignInWithApple.isAvailable().then((value) => appleAvailable = value);
     authService = new AuthService(onComplete: (user, res, req, ext) {
@@ -95,6 +97,7 @@ class _SignFormState extends State<SignForm> {
 
   final formKey = new GlobalKey<FormState>();
 
+  DailyNotificationServices dailyNotificationServices;
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +223,7 @@ class _SignFormState extends State<SignForm> {
           'profile'
         ],
       );
-      await _googleSignIn.signIn();
+      await _googleSignIn.signOut();
     }
   }
 
@@ -302,7 +305,25 @@ class _SignFormState extends State<SignForm> {
     });
   }
 
-  gotoHome() {
+  Future<void> gotoHome() async {
+    String check = await ss.getItem("generalNotificationAllowed") ?? "false";
+    String check2 = await ss.getItem("waterNotificationAllowed") ?? "false";
+    String check3 = await ss.getItem("caloriesNotificationAllowed") ?? "false";
+    String check4 = await ss.getItem("stepsNotificationAllowed") ?? "false";
+    String check5 = await ss.getItem("pregnancyNotificationAllowed") ?? "false";
+    String check6 = await ss.getItem("periodNotificationAllowed") ?? "false";
+    String check7 = await ss.getItem("sleepNotificationAllowed") ?? "false";
+    String check8 = await ss.getItem("vitaminsNotificationAllowed") ?? "false";
+
+    if(check == "true") {
+      await dailyNotificationServices.displayDailyPeriodNotification(check6.startsWith("tr"));
+      await dailyNotificationServices.displayWeeklyPregnancyNotification(check5.startsWith("tr"));
+      await dailyNotificationServices.displayDailyWaterNotification(check2.startsWith("tr"));
+      await dailyNotificationServices.displayDailyCaloriesNotification(check3.startsWith("tr"));
+      await dailyNotificationServices.displayDailyStepsNotification(check4.startsWith("tr"));
+      await dailyNotificationServices.displayDailySleepNotification(check7.startsWith("tr"));
+      await dailyNotificationServices.displayDailyVitaminsNotification(check8.startsWith("tr"));
+    }
     setState(() {
       _loading = false;
     });

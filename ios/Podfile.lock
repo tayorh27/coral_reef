@@ -221,6 +221,8 @@ PODS:
   - AppAuth/ExternalUserAgent (1.4.0)
   - apple_sign_in (0.0.1):
     - Flutter
+  - awesome_notifications (0.0.2):
+    - Flutter
   - BoringSSL-GRPC (0.0.7):
     - BoringSSL-GRPC/Implementation (= 0.0.7)
     - BoringSSL-GRPC/Interface (= 0.0.7)
@@ -486,6 +488,8 @@ PODS:
   - image_cropper (0.0.4):
     - Flutter
     - TOCropViewController (~> 2.6.0)
+  - image_downloader (0.0.1):
+    - Flutter
   - leveldb-library (1.22.1)
   - libwebp (1.2.0):
     - libwebp/demux (= 1.2.0)
@@ -545,6 +549,7 @@ PODS:
 DEPENDENCIES:
   - akvelon_flutter_share_plugin (from `.symlinks/plugins/akvelon_flutter_share_plugin/ios`)
   - apple_sign_in (from `.symlinks/plugins/apple_sign_in/ios`)
+  - awesome_notifications (from `.symlinks/plugins/awesome_notifications/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - device_info (from `.symlinks/plugins/device_info/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
@@ -567,6 +572,7 @@ DEPENDENCIES:
   - google_sign_in (from `.symlinks/plugins/google_sign_in/ios`)
   - health (from `.symlinks/plugins/health/ios`)
   - image_cropper (from `.symlinks/plugins/image_cropper/ios`)
+  - image_downloader (from `.symlinks/plugins/image_downloader/ios`)
   - location (from `.symlinks/plugins/location/ios`)
   - modal_progress_hud_nsn (from `.symlinks/plugins/modal_progress_hud_nsn/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
@@ -628,6 +634,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/akvelon_flutter_share_plugin/ios"
   apple_sign_in:
     :path: ".symlinks/plugins/apple_sign_in/ios"
+  awesome_notifications:
+    :path: ".symlinks/plugins/awesome_notifications/ios"
   cloud_firestore:
     :path: ".symlinks/plugins/cloud_firestore/ios"
   device_info:
@@ -672,6 +680,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/health/ios"
   image_cropper:
     :path: ".symlinks/plugins/image_cropper/ios"
+  image_downloader:
+    :path: ".symlinks/plugins/image_downloader/ios"
   location:
     :path: ".symlinks/plugins/location/ios"
   modal_progress_hud_nsn:
@@ -704,6 +714,7 @@ SPEC CHECKSUMS:
   akvelon_flutter_share_plugin: 9dbd8b2574a66b8f683b7085756f257b5298d922
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   apple_sign_in: 7716c7ddfa195aeab7dec0dc374ef4ff45d1adb4
+  awesome_notifications: 74462bc8e68b11f8235d78422266886759e9da61
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
   cloud_firestore: 69d71054fcab9a1c0d4779362f85b94aec7ff7d7
   device_info: d7d233b645a32c40dfdc212de5cf646ca482f175
@@ -753,6 +764,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
   health: 44840ad4328aa5586e77bef289898bfed644a81c
   image_cropper: f1668dd8d2cad2d357955caad15a40547856edcb
+  image_downloader: 73e190d6c9f286f2649554051348d9cb319cd4b3
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   libwebp: e90b9c01d99205d03b6bb8f2c8c415e5a4ef66f0
   location: 3a2eed4dd2fab25e7b7baf2a9efefe82b512d740

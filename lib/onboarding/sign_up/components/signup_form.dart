@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/daily_notification_sercives.dart';
 import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/Utils/progress.dart';
 import 'package:coral_reef/Utils/storage.dart';
@@ -44,10 +45,13 @@ class _SignFormState extends State<SignForm> {
 
   bool appleAvailable = false;
 
+  DailyNotificationServices dailyNotificationServices;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    dailyNotificationServices = new DailyNotificationServices(null);
     pd = new ProgressDisplay(context);
     SignInWithApple.isAvailable().then((value) => appleAvailable = value);
     authService = new AuthService(onComplete: (user, res, req, ext) {
@@ -331,8 +335,10 @@ class _SignFormState extends State<SignForm> {
       userData['msgId'] = [msgId];
       userData['picture'] = _picture;
 
+      //activate notifications
       Map<String, dynamic> setupData = new Map();
       setupData["init"] = "true";
+      setupData["generalNotificationAllowed"] = "true";
       setupData["sleepNotificationAllowed"] = "true";
       setupData["vitaminsNotificationAllowed"] = "true";
       setupData["waterNotificationAllowed"] = "true";
@@ -342,6 +348,18 @@ class _SignFormState extends State<SignForm> {
       setupData["periodNotificationAllowed"] = "false";
       await FirebaseFirestore.instance.collection("users").doc(firebaseUser.uid).collection("setups").doc("user-data").set(setupData);
 
+      await ss.setPrefItem("generalNotificationAllowed", "true", isStoreOnline: false);
+      await ss.setPrefItem("sleepNotificationAllowed", "true", isStoreOnline: false);
+      await ss.setPrefItem("vitaminsNotificationAllowed", "true", isStoreOnline: false);
+      await ss.setPrefItem("waterNotificationAllowed", "true", isStoreOnline: false);
+      await ss.setPrefItem("caloriesNotificationAllowed", "true", isStoreOnline: false);
+      await ss.setPrefItem("stepsNotificationAllowed", "true", isStoreOnline: false);
+
+      await dailyNotificationServices.displayDailyWaterNotification(true);
+      await dailyNotificationServices.displayDailyCaloriesNotification(true);
+      await dailyNotificationServices.displayDailyStepsNotification(true);
+      await dailyNotificationServices.displayDailySleepNotification(true);
+      await dailyNotificationServices.displayDailyVitaminsNotification(true);
 
       await ss.setPrefItem('loggedin', 'true', isStoreOnline: false);
       await ss.setPrefItem('user', jsonEncode(userData), isStoreOnline: false);

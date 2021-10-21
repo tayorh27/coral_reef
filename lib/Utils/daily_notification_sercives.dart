@@ -12,24 +12,31 @@ class DailyNotificationServices {
 
   StorageSystem ss;
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-  String username;
+  String username = "";
   String currentTimeZone;
 
   DailyNotificationServices(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) {
     ss = new StorageSystem();
-    this.flutterLocalNotificationsPlugin = flutterLocalNotificationsPlugin;
+    // this.flutterLocalNotificationsPlugin = flutterLocalNotificationsPlugin;
+    this.flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     tz.initializeTimeZones();
     getUserDetails();
   }
 
   Future<void> getUserDetails() async {
+    currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
     String user = await ss.getItem("user");
+    if(user == null) return;
     dynamic json = jsonDecode(user);
     username = (json["firstname"] == "") ? json["lastname"] : json["firstname"];
-    currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
   }
 
   Future<void> displayDailySleepNotification(bool value) async {
+    if(!value) {
+      await cancelNotification(111);
+      await cancelNotification(112);
+      return;
+    }
     String sleepNotificationAllowed = await ss.getItem("sleepNotificationAllowed") ?? "false";
     String isGeneralNotificationAllowed = await ss.getItem("generalNotificationAllowed") ?? "false";
     if(sleepNotificationAllowed == "false" || isGeneralNotificationAllowed == "false") return;
@@ -63,6 +70,11 @@ class DailyNotificationServices {
   }
 
   Future<void> displayDailyVitaminsNotification(bool value) async {
+    if(!value) {
+      await cancelNotification(222);
+      await cancelNotification(223);
+      return;
+    }
     String vitaminsNotificationAllowed = await ss.getItem("vitaminsNotificationAllowed") ?? "false";
     String isGeneralNotificationAllowed = await ss.getItem("generalNotificationAllowed") ?? "false";
     if(vitaminsNotificationAllowed == "false" || isGeneralNotificationAllowed == "false") return;
@@ -93,6 +105,11 @@ class DailyNotificationServices {
   }
 
   Future<void> displayDailyWaterNotification(bool value) async {
+    if(!value) {
+      await cancelNotification(333);
+      await cancelNotification(334);
+      return;
+    }
     String waterNotificationAllowed = await ss.getItem("waterNotificationAllowed") ?? "false";
     String isGeneralNotificationAllowed = await ss.getItem("generalNotificationAllowed") ?? "false";
     if(waterNotificationAllowed == "false" || isGeneralNotificationAllowed == "false") return;
@@ -123,6 +140,11 @@ class DailyNotificationServices {
   }
 
   Future<void> displayDailyCaloriesNotification(bool value) async {
+    if(!value) {
+      await cancelNotification(444);
+      await cancelNotification(445);
+      return;
+    }
     String caloriesNotificationAllowed = await ss.getItem("caloriesNotificationAllowed") ?? "false";
     String isGeneralNotificationAllowed = await ss.getItem("generalNotificationAllowed") ?? "false";
     if(caloriesNotificationAllowed == "false" || isGeneralNotificationAllowed == "false") return;
@@ -153,6 +175,12 @@ class DailyNotificationServices {
   }
 
   Future<void> displayDailyStepsNotification(bool value) async {
+    if(!value) {
+      await cancelNotification(555);
+      await cancelNotification(556);
+      await cancelNotification(557);
+      return;
+    }
     String stepsNotificationAllowed = await ss.getItem("stepsNotificationAllowed") ?? "false";
     String isGeneralNotificationAllowed = await ss.getItem("generalNotificationAllowed") ?? "false";
     if(stepsNotificationAllowed == "false" || isGeneralNotificationAllowed == "false") return;
@@ -179,8 +207,8 @@ class DailyNotificationServices {
     // final notificationDate3 = DateTime(date.year, date.month, date.day, 18, 0, 0);
 
     _showDailyAtTime(555, "$currentTakenSteps steps", message, notificationDate1, "steps");
-    _showDailyAtTime(555, "$currentTakenSteps steps", message, notificationDate2, "steps");
-    _showDailyAtTime(555, "$currentTakenSteps steps", message, notificationDate3, "steps");
+    _showDailyAtTime(556, "$currentTakenSteps steps", message, notificationDate2, "steps");
+    _showDailyAtTime(557, "$currentTakenSteps steps", message, notificationDate3, "steps");
   }
 
   Future<void> displayDailyPeriodNotification(bool value) async {
@@ -192,7 +220,11 @@ class DailyNotificationServices {
         isGeneralNotificationAllowed == "false") return;
   }
 
-  Future<void> displayWeeklyPregnancyNotification(bool value) async {
+  Future<void> displayWeeklyPregnancyNotification(bool v) async {
+    if(!v) {
+      await cancelNotification(666);
+      return;
+    }
     String pregnancyNotificationAllowed = await ss.getItem("pregnancyNotificationAllowed") ?? "false";
     String isGeneralNotificationAllowed = await ss.getItem("generalNotificationAllowed") ?? "false";
     if(pregnancyNotificationAllowed == "false" || isGeneralNotificationAllowed == "false") return;
@@ -226,7 +258,6 @@ class DailyNotificationServices {
     _showWeeklyAtTime(666, "Week $weekNumber", message, notificationDate, "pregnancy");
   }
 
-
   Future<void> _showDailyAtTime(int id, String title, String body, tz.TZDateTime timestamp, String activity) async {
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
         'high_importance_channel', // id
@@ -248,5 +279,13 @@ class DailyNotificationServices {
     var platformChannelSpecifics = NotificationDetails(
         android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.zonedSchedule(id, title, body, timestamp, platformChannelSpecifics, uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, androidAllowWhileIdle: true, matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime, payload: activity);
+  }
+
+  Future<void> cancelNotification(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
+  }
+
+  Future<void> cancelAllNotification() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
   }
 }

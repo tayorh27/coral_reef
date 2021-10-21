@@ -8,7 +8,9 @@ import '../../../size_config.dart';
 class DietHeader {
 
   final String titleText;
-  DietHeader(this.titleText);
+  final bool showAction;
+  final Function onPress;
+  DietHeader(this.titleText, {this.showAction = false, this.onPress});
 
   Widget appBar(BuildContext context) {
     return AppBar(
@@ -25,6 +27,18 @@ class DietHeader {
             color: Color(MyColors.titleTextColor),
             fontSize: getProportionateScreenWidth(15)),
       ),
+      actions: (showAction) ? [
+      Container(
+        margin: EdgeInsets.only(right: 30.0),
+        child: TextButton(
+            child: Text("Reset", style: Theme.of(context).textTheme.bodyText1.copyWith(
+                color: Color(MyColors.primaryColor),
+                fontSize: 14.0
+            ),),
+            onPressed: onPress
+        ),
+      )
+      ] : [],
     );
   }
 }

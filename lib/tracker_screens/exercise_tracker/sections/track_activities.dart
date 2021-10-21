@@ -17,7 +17,6 @@ import 'package:coral_reef/tracker_screens/exercise_tracker/sections/save_activi
 import 'package:coral_reef/tracker_screens/exercise_tracker/services/challenge_service.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/services/exercise_service.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -803,6 +802,7 @@ class _PageState extends State<TrackActivities> with SingleTickerProviderStateMi
     // start listening to change is location
     _locationSubscription =
         mLocation.onLocationChanged.listen((LocationData result) {
+          // print(result.toString());
           double lat = result.latitude;
           double lng = result.longitude;
 
@@ -824,6 +824,7 @@ class _PageState extends State<TrackActivities> with SingleTickerProviderStateMi
   updateActivityForegroundData(LocationData result) async {
     String running = await ss.getItem("activityRunning");
     if(running == null) return;
+    if(actionButton != "play") return;
     double distance = await myChallengeService.calculateActivityGPSDistance(result);
 
     print("$distance");

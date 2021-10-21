@@ -4,7 +4,9 @@ import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
 import 'package:coral_reef/onboarding/sign_up/signup_screen.dart';
 import 'package:coral_reef/onboarding/forgotpassword/forgotpassword.dart';
 import 'package:coral_reef/tracker_screens/bottom_navigation_bar.dart';
+import 'package:coral_reef/tracker_screens/diet_tracker_screen/sections/meal/add_meal.dart';
 import 'package:coral_reef/tracker_screens/diet_tracker_screen/sections/calories_goal.dart';
+import 'package:coral_reef/tracker_screens/diet_tracker_screen/sections/meal/meal_info.dart';
 import 'package:coral_reef/tracker_screens/diet_tracker_screen/sections/water_goal.dart';
 import 'package:coral_reef/tracker_screens/diet_tracker_screen/sections/weight_goal.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/active_challenge/track_challenge_activities.dart';
@@ -125,4 +127,6 @@ final Map<String, WidgetBuilder> routes = {
   CaloriesGoal.routeName: (context) => CaloriesGoal(),
   DewInsights.routeName: (context) => DewInsights(),
   Reminders.routeName: (context) => Reminders(),
+  MealList.routeName: (context) => MealList(),
+  MealInfo.routeName: (context) => MealInfo(),
 };

@@ -301,6 +301,7 @@ class _PageState extends State<TrackChallengeActivities> {
   updateChallengeForegroundData(LocationData result) async {
     String running = await ss.getItem("running");
     if (running == null) return;
+    if(actionButton != "play") return;
     // String startPosition = await ss.getItem("startPosition");
     // Map<String, dynamic> sp = jsonDecode(startPosition);
 

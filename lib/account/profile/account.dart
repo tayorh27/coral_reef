@@ -1,10 +1,14 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coral_reef/Utils/daily_notification_sercives.dart';
+import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/account/components/account_header.dart';
 import 'package:coral_reef/account/services/account_services.dart';
 import 'package:coral_reef/constants.dart';
+import 'package:coral_reef/onboarding/sign_in/sign_in_screen.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:convert';
@@ -22,6 +26,8 @@ import 'package:coral_reef/account/notifications/notification.dart';
 import 'package:coral_reef/account/reminders.dart';
 import 'package:coral_reef/account/settings.dart';
 import 'package:coral_reef/size_config.dart';
+import 'package:flutter_login_facebook/flutter_login_facebook.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_cropper/image_cropper.dart';
 
 class Account extends StatefulWidget {
@@ -141,13 +147,13 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                 //   icon: Icon(Icons.person_outline_rounded, color: Color(MyColors.titleTextColor),),
                 //   press: () => {Navigator.pushNamed(context, ContactInfo.routeName)},
                 // ),
-                AccountProfileMenu(
-                  text: "Graphs and reports",
-                  icon: Icon(Icons.analytics_outlined, color: Color(MyColors.titleTextColor),),
-                  press: () {
-                    // Navigator.pushNamed(context, Notifications.routeName);
-                  },
-                ),
+                // AccountProfileMenu(
+                //   text: "Graphs and reports",
+                //   icon: Icon(Icons.analytics_outlined, color: Color(MyColors.titleTextColor),),
+                //   press: () {
+                //     // Navigator.pushNamed(context, Notifications.routeName);
+                //   },
+                // ),
                 AccountProfileMenu(
                   text: "Settings",
                   icon: Icon(Icons.settings_outlined, color: Color(MyColors.titleTextColor),),
@@ -163,7 +169,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                   },
                 ),
                 AccountProfileMenu(
-                  text: "Cycle and ovulation",
+                  text: "Cycle and Ovulation",
                   icon: Icon(Icons.whatshot_outlined, color: Color(MyColors.titleTextColor),),
                   press: () {
                     Navigator.pushNamed(context, SettingsCycle.routeName);
@@ -177,17 +183,50 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
                   },
                 ),
                 AccountProfileMenu(
-                  text: "Contact support",
+                  text: "Contact Support",
                   icon: Icon(Icons.chat_bubble_outline_rounded, color: Color(MyColors.titleTextColor),),
                   press: () {
                     // Navigator.pushNamed(context, Analysis.routeName);
                   },
                 ),
                 AccountProfileMenu(
-                  text: "About Coral reef",
+                  text: "About CoralReef",
                   icon: Icon(Icons.info_outline, color: Color(MyColors.titleTextColor),),
                   press: () {
                     // Navigator.pushNamed(context, About.routeName);
+                  },
+                ),
+                AccountProfileMenu(
+                  text: "Log out",
+                  icon: Icon(Icons.logout, color: Color(MyColors.titleTextColor),),
+                  press: () async {
+                    try {
+                      final verify = await new GeneralUtils()
+                          .displayReturnedValueAlertDialog(context, "Attention",
+                          "Are you sure you want to logout?",
+                          confirmText: "YES");
+                      if (verify) {
+                        await ss.clearPref();
+                        await FirebaseAuth.instance.signOut();
+                        await new DailyNotificationServices(null).cancelAllNotification();
+                        final GoogleSignIn _googleSignIn = GoogleSignIn(
+                          scopes: [
+                            'email',
+                            'profile'
+                          ],
+                        );
+                        await _googleSignIn.signOut();
+                        final facebookLogin = FacebookLogin();
+                        await facebookLogin.logOut();
+                      }
+                    }catch (e) {
+                      await ss.clearPref();
+                      await FirebaseAuth.instance.signOut();
+                    } finally {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (
+                              BuildContext context) => new SignInScreen()));
+                    }
                   },
                 ),
               ],
