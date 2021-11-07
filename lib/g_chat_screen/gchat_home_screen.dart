@@ -12,6 +12,7 @@ import 'package:coral_reef/g_chat_screen/sections/job_opportunities.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../constants.dart';
 import '../size_config.dart';
 import 'components/gchat_scrolling_options.dart';
 
@@ -135,6 +136,9 @@ class _GChatHomeScreen extends State<GChatHomeScreen> {
                 child: GChatScrollingOptions(
                   onSelectedMenu: (String selectedMenu) {
                     getTrackerScreen(selectedMenu);
+                    if(selectedMenu == "G-chat") {
+                      showBottomSheetController.add(false);
+                    }
                   },
                 ),
               ),

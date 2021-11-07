@@ -47,4 +47,8 @@ class MyColors {
 
   static int challengeCardTextColor = 0xFF8E6DDB;
 
+  static int mealTransparentProgressColor1 = 0xFFF7E9F6;
+  static int mealTransparentProgressColor2 = 0xFFE1E6FF;
+  static int mealTransparentProgressColor3 = 0xFFFFE2DF;
+
 }

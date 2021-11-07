@@ -288,4 +288,6 @@ class DailyNotificationServices {
   Future<void> cancelAllNotification() async {
     await flutterLocalNotificationsPlugin.cancelAll();
   }
+
+  
 }

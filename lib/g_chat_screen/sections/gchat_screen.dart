@@ -27,6 +27,7 @@ import 'package:truncate/truncate.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../size_config.dart';
+import 'create_new_gchat.dart';
 import 'gchat_single_post_view.dart';
 
 class GChatTimelineScreen extends StatefulWidget {
@@ -106,6 +107,12 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
 
     streamSubscription = stream.listen((event) {
       if(event == null) return;
+      if(!event) {
+        if(_scrollController.hasClients){
+          _scrollController.jumpTo(0);
+        }
+        return;
+      }
       if(event) {
         displayBottomSheetDialog();
       }
@@ -276,9 +283,13 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                           ),
                           trailing: TextButton(
                             onPressed: () {
+                              if(chats[index].user_uid == user.uid) {
+                                Navigator.pushNamed(context, CreateNewGChat.routeName, arguments: chats[index]);
+                                return;
+                              }
                               onReportClick(index);
                             },
-                            child: Text("Report",
+                            child: Text((chats[index].user_uid == user.uid) ? "Edit" : "Report",
                               style: Theme.of(context).textTheme.subtitle1.copyWith(
                                 color: Color(MyColors.accentColor),
                                 fontSize: getProportionateScreenWidth(12),
@@ -453,6 +464,9 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("Filter by:",
                       style: Theme.of(context)
@@ -460,6 +474,15 @@ class _GChatTimelineScreen extends State<GChatTimelineScreen> {
                           .subtitle1
                           .copyWith(color: Color(MyColors.primaryColor), fontSize: 16.0),
                     ),
+                    InkWell(onTap: (){
+                      Navigator.pop(context);
+                      showBottomSheetController.add(false);
+                    }, child: Text("Cancel",
+                      style: Theme.of(context)
+                          .textTheme
+                          .subtitle1
+                          .copyWith(color: Color(MyColors.primaryColor), fontSize: 16.0),
+                    ),)
                   ],
                 ),
                 SizedBox(height: 20.0,),

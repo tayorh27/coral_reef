@@ -351,8 +351,7 @@ class GeneralUtils {
     }
   }
 
-  Future<bool> requestPermission(
-      BuildContext context, String _title, String _body) async {
+  Future<bool> requestPermission(BuildContext context, String _title, String _body) async {
     return showDialog<bool>(
       context: context,
       barrierDismissible: true, // user must tap button!
@@ -404,6 +403,9 @@ class GeneralUtils {
   }
 
   Future<String> calculateKcal(double distanceInKm, int seconds) async {
+    if(distanceInKm == 0.0) {
+      return "0";
+    }
     String userMetric = await ss.getItem("weight_metric");
     String dewRecord = await ss.getItem("dewRecord");
     Map<String, dynamic> userWeight = jsonDecode(dewRecord);

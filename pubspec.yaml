@@ -101,6 +101,8 @@ dependencies:
   awesome_notifications: ^0.0.6+10
   rive: ^0.7.28
   image_downloader: ^0.30.0
+  image_picker: ^0.8.4
+#  image_picker: ^0.8.4+4
 #  floating_action_bubble: ^1.1.2
 #  expandable: ^5.0.1
 #  translator: ^0.1.7

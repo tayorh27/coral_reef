@@ -336,7 +336,7 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
     // TODO: implement initState
     super.initState();
     wMetric = widget.wMetric;
-    _textEditingController = new TextEditingController(text: widget.initialValue);
+    _textEditingController = new TextEditingController(text: ""); //widget.initialValue
     dietServices = new DietServices();
   }
 

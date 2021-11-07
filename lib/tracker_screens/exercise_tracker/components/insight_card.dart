@@ -1,11 +1,13 @@
 import 'dart:math';
 
+import 'package:coral_reef/ListItem/model_diet_data.dart';
 import 'package:coral_reef/Utils/colors.dart';
 import 'package:coral_reef/Utils/storage.dart';
 import 'package:coral_reef/shared_screens/pill_icon.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/insight.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/services/exercise_service.dart';
 import 'package:coral_reef/tracker_screens/insights/dew_insights.dart';
+import 'package:coral_reef/tracker_screens/services/general_dew_services.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -27,16 +29,23 @@ class _ExerciseInsightCard extends State<ExerciseInsightCard> {
 
   int touchedGroupIndex;
 
-  String stepsGoal = "0", currentTakenSteps = "0";
+  String stepsGoal = "0", currentTakenSteps = "0", averageStepsPerMonth = "0";
 
   ExerciseService exerciseService;
+  DewServices dewServices;
 
   StorageSystem ss = new StorageSystem();
+
+  final date = DateTime.now();
+  final months = [
+    "JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG", "SEP","OCT","NOV","DEC"
+  ];
 
   @override
   void initState() {
     super.initState();
     exerciseService = new ExerciseService();
+    dewServices = new DewServices(context);
     getStepsLocalData();
     final barGroup1 = makeGroupData(0, 5, 12);
     final barGroup2 = makeGroupData(1, 16, 12);
@@ -59,6 +68,20 @@ class _ExerciseInsightCard extends State<ExerciseInsightCard> {
     rawBarGroups = items;
 
     showingBarGroups = rawBarGroups;
+    getStepsPerMonthData();
+  }
+
+  getStepsPerMonthData() async {
+    Map<String, dynamic> data = await dewServices.getStepsDataInsight("Months");
+    List<WaterData> sd = data["data"];
+
+    WaterData currentMonthData = sd.firstWhere((element) => (element.created_date == months[date.month - 1] && element.year == "${date.year}") );
+    // print(currentMonthData.toJSON());
+    setState(() {
+      if(currentMonthData != null) {
+        averageStepsPerMonth = currentMonthData.glasses_count;
+      }
+    });
   }
 
   getStepsLocalData() async {
@@ -121,10 +144,10 @@ class _ExerciseInsightCard extends State<ExerciseInsightCard> {
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: "$stepsGoal\n",
+                        text: "$averageStepsPerMonth (${months[date.month - 1].toLowerCase()})\n",
                         style: Theme.of(context).textTheme.bodyText2.copyWith(
                             fontSize: getProportionateScreenWidth(15),
-                            color: Color(MyColors.titleTextColor)),
+                            color: Color(MyColors.primaryColor)),
                       ),
                       TextSpan(
                         text: "Average steps",

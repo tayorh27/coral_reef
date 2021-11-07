@@ -20,6 +20,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:giphy_picker/giphy_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_downloader/image_downloader.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:video_compress/video_compress.dart';
 
@@ -146,6 +147,11 @@ class _CreateNewGChat extends State<CreateNewGChat> {
               thumbnail = File(path);
               _inAsyncCall = false;
             });
+          }else {
+            new GeneralUtils().showToast(context, "Cannot download video file.");
+            setState(() {
+              _inAsyncCall = false;
+            });
           }
         }else {
           var imageId2 = await ImageDownloader.downloadImage(mediaInfo["url"], destination: AndroidDestinationType.directoryDCIM);
@@ -154,6 +160,11 @@ class _CreateNewGChat extends State<CreateNewGChat> {
             setState(() {
               thumbnail = File(path2);
               postFile = File(path2);
+              _inAsyncCall = false;
+            });
+          }else {
+            new GeneralUtils().showToast(context, "Cannot download image file.");
+            setState(() {
               _inAsyncCall = false;
             });
           }
@@ -168,18 +179,18 @@ class _CreateNewGChat extends State<CreateNewGChat> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    if(editGChat == null) {
-      if (!published) {
-        if (_controllerTitle.text.isNotEmpty ||
-            _controllerBody.text.isNotEmpty) {
-          gServices.saveDraft(title: _controllerTitle.text,
-              body: _controllerBody.text,
-              file: postFile,
-              fileType: fileType,
-              thumbnail: thumbnail);
-        }
-      }
-    }
+    // if(editGChat == null) {
+    //   if (!published) {
+    //     if (_controllerTitle.text.isNotEmpty ||
+    //         _controllerBody.text.isNotEmpty) {
+    //       gServices.saveDraft(title: _controllerTitle.text,
+    //           body: _controllerBody.text,
+    //           file: postFile,
+    //           fileType: fileType,
+    //           thumbnail: thumbnail);
+    //     }
+    //   }
+    // }
     _subscription.unsubscribe();
   }
 
@@ -275,7 +286,7 @@ class _CreateNewGChat extends State<CreateNewGChat> {
                                 height: 100.0,
                                 width:
                                     MediaQuery.of(context).size.width - 130.0,
-                                padding: EdgeInsets.only(top: 20.0),
+                                padding: EdgeInsets.only(top: 25.0),
                                 child: TextFormField(
                                   keyboardType: TextInputType.text,
                                   controller: _controllerTitle,
@@ -308,9 +319,9 @@ class _CreateNewGChat extends State<CreateNewGChat> {
                             color: Colors.grey[300],
                           ),
                           Container(
-                            height: 250,
+                            height: 200,
                             width: MediaQuery.of(context).size.width,
-                            padding: EdgeInsets.only(top: 25.0, left: 0.0, bottom: 10.0),
+                            padding: EdgeInsets.only(top: 20.0, left: 0.0, bottom: 10.0),
                             child: TextFormField(
                               keyboardType: TextInputType.multiline,
                               controller: _controllerBody,
@@ -376,10 +387,11 @@ class _CreateNewGChat extends State<CreateNewGChat> {
                                     style: ButtonStyle(
                                         alignment: Alignment.centerLeft),
                                   ),
-                                  // TextButton(
-                                  //     onPressed: onVideoSelectionPressed,
-                                  //     child: SvgPicture.asset(
-                                  //         "assets/icons/gchat_video.svg")),
+                                  // SvgPicture.asset(
+                                  //     "assets/icons/gchat_video.svg")
+                                  TextButton(
+                                      onPressed: onCameraSelectionPressed,
+                                      child: Icon(Icons.camera_alt_outlined, color: Color(MyColors.primaryColor), size: 30,)),
                                   TextButton(
                                       onPressed: onGifImageSelectionPressed,
                                       child: SvgPicture.asset(
@@ -487,6 +499,15 @@ class _CreateNewGChat extends State<CreateNewGChat> {
       ));
     });
     return tops;
+  }
+
+  onCameraSelectionPressed() async {
+    final result = await ImagePicker().pickImage(source: ImageSource.camera);
+
+    if (result != null) {
+      File file = File(result.path);
+      cropImageFileAndCompress(file);
+    }
   }
 
   onImageSelectionPressed() async {

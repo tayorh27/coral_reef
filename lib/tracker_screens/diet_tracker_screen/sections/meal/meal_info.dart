@@ -84,15 +84,15 @@ class _MealInfo extends State<MealInfo> {
       mealBrand= resp["brand"];
       calories = "${nut["calories"]}";
 
-      fats = nut["fat"];
-      carbs = nut["carbs"];
-      protein = nut["protein"];
+      fats = nut["fat"] ?? "0g";
+      carbs = nut["carbs"] ?? "0g";
+      protein = nut["protein"] ?? "0g";
 
       nutrients = nut["nutrients"];
 
-      carbsPercent = facts["percentCarbs"];
-      proteinPercent = facts["percentProtein"];
-      fatPercent = facts["percentFat"];
+      carbsPercent = facts["percentCarbs"] ?? 0.0;
+      proteinPercent = facts["percentProtein"] ?? 0.0;
+      fatPercent = facts["percentFat"] ?? 0.0;
     });
   }
 
@@ -167,14 +167,14 @@ class _MealInfo extends State<MealInfo> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                MealNutritionSlider(carbsPercent, trackColor: Color(MyColors.other1), progressColor: Color(MyColors.other4), percentValue: "${carbsPercent.toInt()}%", title: 'Carbs',),
-                                MealNutritionSlider(proteinPercent, trackColor: Color(MyColors.other2), progressColor: Color(MyColors.other5), percentValue: "${proteinPercent.toInt()}%", title: 'Protein'),
-                                MealNutritionSlider(fatPercent, trackColor: Color(MyColors.other3), progressColor: Color(MyColors.primaryColor), percentValue: "${fatPercent.toInt()}%", title: 'Fats'),
+                                MealNutritionSlider(carbsPercent, trackColor: Color(MyColors.mealTransparentProgressColor1), progressColor: Color(MyColors.primaryColor), percentValue: "${carbsPercent.toInt()}%", title: 'Carbs',),
+                                MealNutritionSlider(proteinPercent, trackColor: Color(MyColors.mealTransparentProgressColor2), progressColor: Color(MyColors.stroke2Color), percentValue: "${proteinPercent.toInt()}%", title: 'Protein'),
+                                MealNutritionSlider(fatPercent, trackColor: Color(MyColors.mealTransparentProgressColor3), progressColor: Color(MyColors.stroke1Color), percentValue: "${fatPercent.toInt()}%", title: 'Fats'),
                               ]),
                                 SizedBox(height: SizeConfig.screenHeight * 0.08),
-                                buildMealDetails(Color(MyColors.other1), "Carbs", carbs),
-                                buildMealDetails(Color(MyColors.other2), "Proteins", protein),
-                                buildMealDetails(Color(MyColors.other3), "Fats", fats),
+                                buildMealDetails(Color(MyColors.mealTransparentProgressColor1), "Carbs", carbs),
+                                buildMealDetails(Color(MyColors.mealTransparentProgressColor2), "Proteins", protein),
+                                buildMealDetails(Color(MyColors.mealTransparentProgressColor3), "Fats", fats),
                                 SizedBox(height: SizeConfig.screenHeight * 0.04),
                                 DefaultButton(
                                   text: "Add",
@@ -189,6 +189,34 @@ class _MealInfo extends State<MealInfo> {
                                   },
                                 ),
                                 SizedBox(height: SizeConfig.screenHeight * 0.02),
+                                Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    TextButton(
+                                      child: Text("Remove meal", style: Theme.of(context).textTheme.headline2.copyWith(
+                                        color: Color(MyColors.primaryColor),
+                                        fontSize: getProportionateScreenWidth(15),
+                                      ),),
+                                      onPressed: () async {
+                                        bool awaitResponse = await new GeneralUtils().displayReturnedValueAlertDialog(context, "Attention", "Do you want to continue with this action?", confirmText: "YES");
+                                        if(!awaitResponse) return;
+                                        double initCount = double.parse(currentTakenCalories);
+                                        double current = double.parse(calories);
+                                        if(current > initCount) {
+                                          new GeneralUtils().displayAlertDialog(context, "Attention", "Your current calories intake is not up to ${current}kcal.");
+                                          return;
+                                        }
+                                        String reduce = (initCount - current).ceil().toString();
+                                        await dietServices.updateCaloriesTakenCount(reduce, caloriesGoal);
+                                        new GeneralUtils().showToast(context, "Meal removed successfully");
+                                        Navigator.of(context).pop({"hello": "world"});
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: SizeConfig.screenHeight * 0.04),
+
                               ],
                             )
                         )
@@ -220,7 +248,8 @@ class _MealInfo extends State<MealInfo> {
                     width: SizeConfig.screenHeight * 0.02,
                     height: SizeConfig.screenHeight * 0.02,
                     decoration: BoxDecoration(
-                        color: color
+                        color: color,
+                      borderRadius: BorderRadius.circular(3.0)
                     ),
                   ),
                   SizedBox(width: SizeConfig.screenWidth * 0.02),

@@ -105,7 +105,7 @@ class _GChatMyPosts extends State<GChatMyPosts> {
     streamSubscription = stream.listen((event) {
       if(event == null) return;
       if(event) {
-        displayBottomSheetDialog();
+        // displayBottomSheetDialog();
       }
     });
 
@@ -413,6 +413,7 @@ class _GChatMyPosts extends State<GChatMyPosts> {
   }
 
   //display topics to be selected by the user
+  //not used
   displayBottomSheetDialog() {
     showModalBottomSheet(context: context, builder: (context) {
       List<Widget> tops = [];
@@ -432,7 +433,7 @@ class _GChatMyPosts extends State<GChatMyPosts> {
             }
             print(selectedTopics);
             Navigator.pop(context);
-            displayBottomSheetDialog();
+            // displayBottomSheetDialog();
           },
         ));
       });
@@ -445,6 +446,9 @@ class _GChatMyPosts extends State<GChatMyPosts> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Filter by:",
                     style: Theme.of(context)
@@ -452,6 +456,15 @@ class _GChatMyPosts extends State<GChatMyPosts> {
                         .subtitle1
                         .copyWith(color: Color(MyColors.primaryColor), fontSize: 16.0),
                   ),
+                  InkWell(onTap: (){
+                    Navigator.pop(context);
+                    showBottomSheetController.add(false);
+                  }, child: Text("Cancel",
+                    style: Theme.of(context)
+                        .textTheme
+                        .subtitle1
+                        .copyWith(color: Color(MyColors.primaryColor), fontSize: 16.0),
+                  ),)
                 ],
               ),
               SizedBox(height: 20.0,),
@@ -471,6 +484,7 @@ class _GChatMyPosts extends State<GChatMyPosts> {
                     height: 40.0,
                     child: DefaultButton2(text: "Submit", press: () {
                       Navigator.pop(context);
+                      showBottomSheetController.add(false);
                       if(selectedTopics.isNotEmpty) {
                         getGChats();
                       }
@@ -481,6 +495,7 @@ class _GChatMyPosts extends State<GChatMyPosts> {
                     setState(() {
                       selectedTopics.clear();
                       Navigator.pop(context);
+                      showBottomSheetController.add(false);
                       getGChats();
                     });
                   }, child: Text("Reset",

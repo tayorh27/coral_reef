@@ -103,6 +103,13 @@ class _MealList extends State<MealList> {
         keyboardType: TextInputType.name,
         obscureText: false,
         controller: _textEditingController,
+        textInputAction: TextInputAction.search,
+        onFieldSubmitted: (searchText) {
+          if(searchText.isEmpty) {
+            return;
+          }
+          getMealsBySearchItem(searchText);
+        },
         decoration: InputDecoration(
           contentPadding: EdgeInsets.symmetric(
             horizontal: 10,

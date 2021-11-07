@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coral_reef/ListItem/model_exercise_activity.dart';
 import 'package:coral_reef/Utils/colors.dart';
+import 'package:coral_reef/Utils/general.dart';
 import 'package:coral_reef/shared_screens/EmptyScreen.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/map_utils.dart';
@@ -361,7 +362,7 @@ class _PageState extends State<RecordsActivities> {
                     ]),
                     Column(children: [
                       Text(
-                        '$totalKm',
+                        '${totalKm.toStringAsFixed(2)}',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20),
                       ),
@@ -399,86 +400,94 @@ class _PageState extends State<RecordsActivities> {
       //'8 February 2021,10:25 AM'
       String date = "${dt.day} ${months[dt.month - 1]} ${dt.year}, ${dt.hour}:${dt.minute}";
       layout.add(
-        Row(children: [
-          Container(
-              height: MediaQuery.of(context).size.height / 5,
-              width: MediaQuery.of(context).size.width / 2.7,
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    (myActivities.isNotEmpty) ? Image.network(
-                      "https://maps.googleapis.com/maps/api/staticmap?center=${act.start_location["latitude"]},${act.start_location["longitude"]}&zoom=15&size=300x200&maptype=roadmap&markers=size:tiny%7Ccolor:green%7C${act.start_location["latitude"]},${act.start_location["longitude"]}&markers=size:tiny%7Ccolor:red%7C${act.end_location["latitude"]},${act.end_location["longitude"]}&key=$googleAPiKey",
-                      repeat: ImageRepeat.noRepeat,
-                    ) : SizedBox(),
-                  ])),
-          Padding(
-              padding: EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      SvgPicture.asset("assets/exercise/run.svg",
-                          height: 13.0),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        date,
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .bodyText1
-                            .copyWith(
-                          color: Color(MyColors.titleTextColor),
-                          fontSize:
-                          getProportionateScreenWidth(
-                              12),
+        InkWell(
+          onLongPress: () async {
+            final confirm = await new GeneralUtils().displayReturnedValueAlertDialog(context, "Attention", "Are you sure you want to delete this activity?", confirmText: "DELETE");
+            if(!confirm) return;
+            await FirebaseFirestore.instance.collection("users").doc(user.uid).collection("my-activities").doc(act.id).delete();
+            new GeneralUtils().showToast(context, "Activity deleted successfully.");
+          },
+          child: Row(children: [
+            Container(
+                height: MediaQuery.of(context).size.height / 5,
+                width: MediaQuery.of(context).size.width / 2.7,
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      (myActivities.isNotEmpty) ? Image.network(
+                        "https://maps.googleapis.com/maps/api/staticmap?center=${act.start_location["latitude"]},${act.start_location["longitude"]}&zoom=15&size=300x200&maptype=roadmap&markers=size:tiny%7Ccolor:green%7C${act.start_location["latitude"]},${act.start_location["longitude"]}&markers=size:tiny%7Ccolor:red%7C${act.end_location["latitude"]},${act.end_location["longitude"]}&key=$googleAPiKey",
+                        repeat: ImageRepeat.noRepeat,
+                      ) : SizedBox(),
+                    ])),
+            Padding(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        SvgPicture.asset("assets/exercise/run.svg",
+                            height: 13.0),
+                        SizedBox(
+                          width: 5,
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    '${act.km_covered}km',
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .headline2
-                        .copyWith(
-                      color: Color(MyColors.titleTextColor),
-                      fontSize:
-                      getProportionateScreenWidth(
-                          20),
+                        Text(
+                          date,
+                          style: Theme
+                              .of(context)
+                              .textTheme
+                              .bodyText1
+                              .copyWith(
+                            color: Color(MyColors.titleTextColor),
+                            fontSize:
+                            getProportionateScreenWidth(
+                                12),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${act.time_covered}',
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .bodyText1
-                            .copyWith(
-                          color: Color(MyColors.titleTextColor),
-                          fontSize:
-                          getProportionateScreenWidth(
-                              12),
-                        ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      '${act.km_covered}km',
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .headline2
+                          .copyWith(
+                        color: Color(MyColors.titleTextColor),
+                        fontSize:
+                        getProportionateScreenWidth(
+                            20),
                       ),
-                    ],
-                  ),
-                ],
-              ))
-        ])
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${act.time_covered}',
+                          style: Theme
+                              .of(context)
+                              .textTheme
+                              .bodyText1
+                              .copyWith(
+                            color: Color(MyColors.titleTextColor),
+                            fontSize:
+                            getProportionateScreenWidth(
+                                12),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ))
+          ]),
+        )
       );
     });
 

@@ -317,7 +317,7 @@ class _AlertDialogPageState extends State<AlertDialogPage> {
     // TODO: implement initState
     super.initState();
     String init = (widget.initialValue == "0") ? "" : widget.initialValue;
-    _textEditingController = new TextEditingController(text: init);
+    _textEditingController = new TextEditingController(text: "");
     dietServices = new DietServices();
   }
 
@@ -488,7 +488,7 @@ class _AlertDialogPageStateGoal extends State<AlertDialogPageGoal> {
     // TODO: implement initState
     super.initState();
     String init = (widget.initialValue == "0") ? "" : widget.initialValue;
-    _textEditingController = new TextEditingController(text: init);
+    _textEditingController = new TextEditingController(text: ""); //init
     dietServices = new DietServices();
   }
 

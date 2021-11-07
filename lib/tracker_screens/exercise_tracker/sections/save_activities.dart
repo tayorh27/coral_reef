@@ -11,6 +11,7 @@ import 'package:coral_reef/constants.dart';
 import 'package:coral_reef/homescreen/Home.dart';
 import 'package:coral_reef/size_config.dart';
 import 'package:coral_reef/tracker_screens/exercise_tracker/sections/map_utils.dart';
+import 'package:coral_reef/tracker_screens/exercise_tracker/sections/track_activities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -125,11 +126,11 @@ class _PageState extends State<SaveActivities> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
-          leading: InkWell(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Icon(Icons.arrow_back_ios)),
+          // leading: InkWell(
+          //     onTap: () {
+          //       Navigator.pop(context);
+          //     },
+          //     child: Icon(Icons.arrow_back_ios)),
           elevation: 0,
           title: Text(
             'Save Activity',
@@ -321,7 +322,9 @@ class _PageState extends State<SaveActivities> {
                 DefaultButton(
                   text: 'Save',
                   press: () {
-                    Navigator.pop(context);
+                    // Navigator.pop(context);
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (BuildContext context) => new TrackActivities()));
                   },
                 )
               ]),
@@ -364,7 +367,7 @@ class _PageState extends State<SaveActivities> {
   List<LatLng> decodePolyLine(final String poly) {
     int len = poly.length;
     int index = 0;
-    List<LatLng> decoded = new List<LatLng>();
+    List<LatLng> decoded = [];
     int lat = 0;
     int lng = 0;
 
