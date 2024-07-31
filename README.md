@@ -1,16 +1,11 @@
-# coral_reef
+# CoralReef App
 
-A new Flutter application.
+Watch a preview of the app.
 
-## Getting Started
+[https://www.youtube.com/watch?v=cRWqbhuyKVo](https://www.youtube.com/watch?v=cRWqbhuyKVo)
 
-This project is a starting point for a Flutter application.
+## Description
 
-A few resources to get you started if this is your first Flutter project:
+We designed a user-friendly interface that keeps track of the user’s wellness such as weight, sleep, water intake, etc. The platform will also provide tools and features to help in (a) monitoring and storing daily activities i.e. exercise and diet tracking, (b) providing health tips, and (c) visualizing health records on a chart.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+We developed a community platform that also provides a space for users to interact, give comments, share tips and ideas, public display goals achieved, and so on. Also, it provides a reward system whereby users can get rewards based on the number of votes given by other users. Blockchain is used for the reward system.
